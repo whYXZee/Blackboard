@@ -25,7 +25,7 @@ public class MathDisplay extends JPanel {
     // UI Components
     //
     private final DisplayDaemon DAEMON;
-    private final JLabel testLabel = new JLabel("line 1");
+    private final BlackboardLabel testLabel2 = new BlackboardLabel("line 2: electric boogaloo", .1);
     private final JPanel scriptPanel = new JPanel();
 
     /* Grid */
@@ -43,9 +43,7 @@ public class MathDisplay extends JPanel {
         scriptPanel.setLayout(new GridBagLayout());
 
         /* Adding Display */
-        this.add(testLabel, grid);
-        grid.gridy++;
-        this.add(new JLabel("line 2"), grid);
+        this.add(testLabel2, grid);
         grid.gridy++;
         this.add(scriptPanel, grid);
 
@@ -58,12 +56,25 @@ public class MathDisplay extends JPanel {
     // UI Methods
     //
     public void resizeComponents(Dimension dimension) {
+        /* Variables */
         int width = (int) dimension.getWidth();
         int height = (int) dimension.getHeight();
 
-        testLabel.setFont(
-                new Font(Constants.DisplayConstants.FONT_NAME, Constants.DisplayConstants.FONT_STYLE, height / 10));
+        // testLabel.setFont(
+        // new Font(Constants.DisplayConstants.FONT_NAME,
+        // Constants.DisplayConstants.FONT_STYLE, height / 10));
+
+        testLabel2.resize(dimension);
+
+        /* Script */
         scriptPanel.setPreferredSize(new Dimension((int) (width / 1.25), height / 4));
+    }
+
+    //
+    // Get, Set, & Append Methods
+    //
+    public void appendScript() {
+
     }
 }
 
