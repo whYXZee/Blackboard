@@ -2,12 +2,21 @@ package whyxzee.blackboard.terms;
 
 import java.util.ArrayList;
 
+import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.terms.variables.Variable;
+
 /**
- * The API for a polynomial term. The term is a*x^n.
+ * The package for a polynomial term. The term is a*x^n.
  * 
  * <p>
- * The methods in this class have been checked on {@code 2/16/2025}, and nothing
- * has changed since then.
+ * The package is contructed as an y=x^n equation.
+ * 
+ * <p>
+ * The methods in this class have been checked on {@code 4/16/2025}, and the
+ * following has changed since then:
+ * <ul>
+ * <li>multiply()
+ * <li>derive()
  */
 public class PolynomialTerm extends Term {
     //
@@ -36,6 +45,17 @@ public class PolynomialTerm extends Term {
         }
     }
 
+    @Override
+    public String printConsole() {
+        if (getNum() == 0) {
+            return "";
+        } else if (getVar().getNumeratorPower() == 0) {
+            return Double.toString(getNum());
+        } else {
+            return getNum() + getVar().printConsole();
+        }
+    }
+
     //
     // Static Arithmetic
     //
@@ -48,7 +68,7 @@ public class PolynomialTerm extends Term {
      * This method can also be used for subtraction.
      * 
      * @param addends The terms being added into the first term in the ArrayList.
-     *                The variables should all be equal.
+     *                The variables need to be equal.
      * @return
      */
     public static PolynomialTerm add(ArrayList<PolynomialTerm> addends) {
@@ -70,7 +90,9 @@ public class PolynomialTerm extends Term {
 
     /**
      * Multiplies n polynomial terms together. The variable power does not matter,
-     * while the variable itself does.
+     * while the variable itself does. The variables must be the same. Used for
+     * non-special variables (no u-sub,
+     * factorials, multivariate).
      * 
      * <p>
      * This method can also be used for division.
@@ -79,7 +101,7 @@ public class PolynomialTerm extends Term {
      * @param factors   The terms being multiplied together.
      * @return
      */
-    public static PolynomialTerm multiply(char varLetter, ArrayList<PolynomialTerm> factors) {
+    public static PolynomialTerm multiply(String varLetter, ArrayList<PolynomialTerm> factors) {
         int numOfFactors = factors.size();
 
         if (numOfFactors == 1) {
@@ -94,6 +116,7 @@ public class PolynomialTerm extends Term {
             int numPower = variable.getNumeratorPower();
             int denomPower = variable.getDenominatorPower();
 
+            /* If the variable is not u-sub / multivariate */
             for (PolynomialTerm factor : factors) {
                 numPower = variable.getNumeratorPower();
                 denomPower = variable.getDenominatorPower();
@@ -101,14 +124,13 @@ public class PolynomialTerm extends Term {
                 int factorNumPower = factor.getVar().getNumeratorPower();
                 int factorDenomPower = factor.getVar().getDenominatorPower();
 
-                if (variable.getVar() == factor.getVar().getVar()) {
-                    number *= factor.getNum();
+                number *= factor.getNum();
 
-                    if (denomPower != factorDenomPower) {
-                        // implement later (and check functionality later)
-                    } else {
-                        variable.setPower(numPower + factorNumPower, denomPower);
-                    }
+                if (denomPower != factorDenomPower) {
+                    // implement later (and check functionality later)
+                } else {
+                    // if denominators are the same
+                    variable.setPower(numPower + factorNumPower, denomPower);
                 }
             }
             return new PolynomialTerm(number, variable);
@@ -141,23 +163,53 @@ public class PolynomialTerm extends Term {
      * @param degree how many times the derivative should be taken.
      * @return
      */
-    public PolynomialTerm derive(int degree) {
+    public Term derive() {
         double number = getNum();
         Variable variable = getVar();
+        int numPower = variable.getNumeratorPower();
         int denomPower = variable.getDenominatorPower();
 
         // Derivative of a constant is 0
-        if (variable.getNumeratorPower() == 0) {
+        if (numPower == 0) {
             return new PolynomialTerm(0, variable);
         }
 
-        for (int i = 0; i < degree; i++) {
+        if (variable.getShouldChainRule()) {
+            // chain rule
+            EQMultiplication eq = new EQMultiplication(
+                    // outer function (x^n)
+                    new PolynomialTerm((double) numPower / denomPower,
+                            variable.setPower(numPower - denomPower, denomPower)),
+
+                    // inner function (x)
+                    variable.derive());
+
+            return new PolynomialTerm(number, variable);
+
+        } else {
+            // no chain rule
             number *= (double) variable.getNumeratorPower() / denomPower;
             variable.setPower(variable.getNumeratorPower() - denomPower, denomPower);
             System.out.println(variable.getNumeratorPower());
         }
 
         return new PolynomialTerm(number, getVar());
+    }
+
+    @Override
+    public double limInfSolve() {
+        /* Without respect to the variable */
+        double power = getVar().getPower();
+        if (power > 0) {
+            // if the power is positive (in the numerator)
+            return Double.POSITIVE_INFINITY;
+        } else if (power < 0) {
+            // if the power is negative (in the denominator)
+            return 0;
+        } else {
+            // if the power is 0
+            return getNum();
+        }
     }
 
     // /**

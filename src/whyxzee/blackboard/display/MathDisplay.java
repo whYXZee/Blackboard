@@ -1,77 +1,110 @@
 package whyxzee.blackboard.display;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import whyxzee.blackboard.Constants;
+
 /**
- * A class which contains a way to display math in JSwing.
+ * A package for displaying math functions in Swing.
+ * 
+ * The functionality of this class has been checked on {@code 5/9/2025}, and
+ * nothing has changed since.
  */
 public class MathDisplay extends JPanel {
+
     //
-    // Display
+    // UI Components
     //
-    private Dimension scriptSize = new Dimension(10, 10);
-    private Dimension superscriptSize = new Dimension(10, 10);
-    private Dimension subscriptSize = new Dimension(10, 10);
-    private Font scriptFont = new Font("Noto Sans", Font.PLAIN, 14);
-    private Font superscriptFont = new Font("Noto Sans", Font.PLAIN, 14);
-    private Font subscriptFont = new Font("Noto Sans", Font.PLAIN, 14);
-    private JPanel scriptPanel = new JPanel();
-    private JPanel superscriptPanel = new JPanel();
-    private JPanel subscriptPanel = new JPanel();
+    private final DisplayDaemon DAEMON;
+    private final JLabel testLabel = new JLabel("line 1");
+    private final JPanel scriptPanel = new JPanel();
 
-    // Text
-    private JLabel script = new JLabel();
-    private JLabel superscript = new JLabel();
-    private JLabel subscript = new JLabel();
+    /* Grid */
+    private GridBagConstraints grid;
 
-    public MathDisplay() {
+    public MathDisplay(JFrame frame) {
+        /* Display layout */
+        this.setLayout(new GridBagLayout());
+        grid = new GridBagConstraints();
+        grid.gridx = 0;
+        grid.gridy = 0;
+        grid.anchor = GridBagConstraints.CENTER;
 
-    }
+        scriptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        scriptPanel.setLayout(new GridBagLayout());
 
-    /**
-     * Resizes the size of the MathDisplay.
-     * 
-     * @param width  the width of the frame
-     * @param height the height of the frame
-     */
-    public void resize(int width, int height) {
-        // Panels
-        scriptSize = new Dimension(width, height);
-        superscriptSize = new Dimension(width, height);
-        subscriptSize = new Dimension(width, height);
+        /* Adding Display */
+        this.add(testLabel, grid);
+        grid.gridy++;
+        this.add(new JLabel("line 2"), grid);
+        grid.gridy++;
+        this.add(scriptPanel, grid);
 
-        scriptPanel.setSize(scriptSize);
-        superscriptPanel.setSize(superscriptSize);
-        subscriptPanel.setSize(subscriptSize);
-
-        // Font
-        scriptFont = new Font("Noto Sans", Font.PLAIN, 14);
-        superscriptFont = new Font("Noto Sans", Font.PLAIN, 14);
-        subscriptFont = new Font("Noto Sans", Font.PLAIN, 14);
-
-        script.setFont(scriptFont);
-        superscript.setFont(superscriptFont);
-        subscript.setFont(subscriptFont);
+        /* Daemon */
+        DAEMON = new DisplayDaemon(this, frame);
+        DAEMON.start();
     }
 
     //
-    // Get, Set, and Update Methods
+    // UI Methods
     //
+    public void resizeComponents(Dimension dimension) {
+        int width = (int) dimension.getWidth();
+        int height = (int) dimension.getHeight();
 
-    public void updateScript(String text) {
-        script.setText(text);
+        testLabel.setFont(
+                new Font(Constants.DisplayConstants.FONT_NAME, Constants.DisplayConstants.FONT_STYLE, height / 10));
+        scriptPanel.setPreferredSize(new Dimension((int) (width / 1.25), height / 4));
+    }
+}
+
+/**
+ * The daemon thread is for resizing the components of the math display in
+ * relation to the frame.
+ * 
+ * <p>
+ * The functionality of the daemon was checked on {@code 5/9/2025}, and nothing
+ * has changed since then.
+ */
+class DisplayDaemon extends Thread {
+    /* UI */
+    private final MathDisplay DISPLAY;
+    private final JFrame FRAME;
+
+    /* Boolean */
+    private boolean shouldRun;
+
+    public DisplayDaemon(MathDisplay display, JFrame frame) {
+        /* Variable Declarations */
+        super("Display Daemon");
+        DISPLAY = display;
+        FRAME = frame;
+        shouldRun = true;
+
+        /* Thread */
+        this.setDaemon(true);
     }
 
-    public void updateSubscript(String text) {
-        subscript.setText(text);
+    @Override
+    public void run() {
+        while (shouldRun) {
+            DISPLAY.resizeComponents(FRAME.getSize());
+        }
     }
 
-    public void updateSuperscript(String text) {
-        superscript.setText(text);
+    //
+    // Get & Set Methods
+    //
+    public void setShouldRun(boolean shouldRun) {
+        this.shouldRun = shouldRun;
     }
-
 }

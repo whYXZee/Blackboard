@@ -1,4 +1,4 @@
-package whyxzee.blackboard;
+package whyxzee.blackboard.utils;
 
 public class UnicodeUtils {
     //

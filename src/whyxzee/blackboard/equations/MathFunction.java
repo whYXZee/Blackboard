@@ -8,9 +8,7 @@ import whyxzee.blackboard.terms.Term;
  * The highest-class for
  */
 public abstract class MathFunction {
-    //
-    // Variables
-    //
+    /* Terms */
     private Term[] termArray;
     private ArrayList<Term> polynomialTerms = new ArrayList<Term>();
     private ArrayList<Term> integralTerms = new ArrayList<Term>();
@@ -66,7 +64,7 @@ public abstract class MathFunction {
      * @param degree how many times the derivative should be taken.
      * @return
      */
-    public abstract MathFunction derive(int degree);
+    public abstract MathFunction derive();
 
     //
     // Get & Set Methods

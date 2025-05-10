@@ -1,5 +1,7 @@
 package whyxzee.blackboard;
 
+import java.awt.Font;
+
 public final class Constants {
     public static final class Unicode {
         public static final char SUPERSCRIPT_X = '\u02E3';
@@ -18,11 +20,21 @@ public final class Constants {
     }
 
     public static final class DisplayConstants {
-        public static final double kPrintWidthPercent = 1.0;
-        public static final double kPrintHeightPercent = 1.0;
-        public static final double kSupWidthPercent = 1.0;
-        public static final double kSupHeightPercent = 1.0;
-        public static final double kSubWidthPercent = 1.0;
-        public static final double kSubHeightPercent = 1.0;
+        /* Font */
+        public static final double PRINT_WIDTH_PERCENT = 1.0;
+        public static final double PRINT_HEIGHT_PERCENT = 1.0;
+        public static final double SUP_WIDTH_PERCENT = 1.0;
+        public static final double SUP_HEIGHT_PERCENT = 1.0;
+        public static final double SUB_WIDTH_PERCENT = 1.0;
+        public static final double SUB_HEIGHT_PERCENT = 1.0;
+
+        public static final String FONT_NAME = "Noto Sans";
+        public static final int FONT_STYLE = Font.PLAIN;
+    }
+
+    public static final class NumberConstants {
+        public static final int[] PRIME_NUMBERS = {
+                2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31
+        };
     }
 }

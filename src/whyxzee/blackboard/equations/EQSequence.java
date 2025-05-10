@@ -26,11 +26,11 @@ public class EQSequence extends MathFunction {
     }
 
     @Override
-    public MathFunction derive(int degree) {
+    public MathFunction derive() {
         Term[] outputTerms = {};
         int index = 0;
         for (Term term : getTermArray()) {
-            outputTerms[index] = term.derive(degree);
+            outputTerms[index] = term.derive();
             index++;
         }
 

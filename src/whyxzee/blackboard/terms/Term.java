@@ -1,19 +1,17 @@
 package whyxzee.blackboard.terms;
 
+import whyxzee.blackboard.terms.variables.Variable;
+
 /**
  * The abstract class which all term types inherit from.
  */
 public abstract class Term {
+    /* Logic */
     private TermType termType;
-    //
-    // Outer Variables
-    //
-    private double num;
 
-    //
-    // Inner Variables
-    //
-    Variable var;
+    /* Outer Variables */
+    private double num;
+    private Variable var;
 
     public static enum TermType {
         POLYNOMIAL,
@@ -36,6 +34,8 @@ public abstract class Term {
         this.var = var;
         this.termType = termType;
     }
+
+    public abstract String printConsole();
 
     //
     // Get & Set Methods
@@ -79,9 +79,19 @@ public abstract class Term {
     public abstract Term negate();
 
     /**
+     * Derive the term once.
      * 
-     * @param degree The amount of times the derivative should occur.
      * @return
      */
-    public abstract Term derive(int degree);
+    public abstract Term derive();
+
+    /**
+     * Evaluates a function at the limit as the variable approaches infinity.
+     */
+    public abstract double limInfSolve();
+
+    // /**
+    // *
+    // */
+    // public abstract Term limInfTerm();
 }
