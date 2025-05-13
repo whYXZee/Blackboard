@@ -10,6 +10,7 @@ import whyxzee.blackboard.Constants;
 /**
  * A package for the label of symbols, equations, etc.
  * 
+ * <p>
  * The functionality of this class has been checked on {@code 5/10/2025}, and
  * nothing has changed since.
  */

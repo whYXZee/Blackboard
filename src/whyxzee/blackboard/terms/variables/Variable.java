@@ -10,13 +10,10 @@ import whyxzee.blackboard.utils.UnicodeUtils;
  * the variable x^n.
  * 
  * <p>
- * The methods in this class have been checked on {@code 2/16/2025}, and the
- * following have been added:
+ * The functionalityof this class was checked on {@code 5/10/2025}, and nothing
+ * has changed since. However, the following remain unimplemented:
  * <ul>
  * <li>simplifyPower() unimplemented
- * <li>setUnicode()
- * <li>exponentiate()
- * <li>derive()
  */
 public class Variable {
     /* General Use : static */
@@ -43,11 +40,7 @@ public class Variable {
         denomPower = 1;
         setUnicode();
 
-        if (power == 1) {
-            shouldChainRule = false;
-        } else {
-            shouldChainRule = true;
-        }
+        shouldChainRule = false;
     }
 
     /**
@@ -63,11 +56,7 @@ public class Variable {
         this.denomPower = denomPower;
         setUnicode();
 
-        if (numPower == 1 && denomPower == 1) {
-            shouldChainRule = false;
-        } else {
-            shouldChainRule = true;
-        }
+        shouldChainRule = false;
     }
 
     /**
@@ -99,7 +88,7 @@ public class Variable {
             return new PolynomialTerm(0, noVar);
         } else {
             // not a constant
-            return new PolynomialTerm(numPower, this.setPower(numPower - denomPower, denomPower));
+            return new PolynomialTerm((double) numPower / denomPower, this.setPower(numPower - denomPower, denomPower));
         }
     }
 
@@ -140,8 +129,16 @@ public class Variable {
     }
 
     private final void setUnicode() {
-        powerUnicode = UnicodeUtils.intToSuperscript(numPower) + Constants.Unicode.SUPERSCRIPT_SLASH
-                + UnicodeUtils.intToSuperscript(denomPower);
+        if (denomPower == 1) {
+            powerUnicode = UnicodeUtils.intToSuperscript(numPower);
+        } else {
+            powerUnicode = UnicodeUtils.intToSuperscript(numPower) + Constants.Unicode.SUPERSCRIPT_SLASH
+                    + UnicodeUtils.intToSuperscript(denomPower);
+        }
+    }
+
+    public final void setShouldChainRule(boolean shouldChainRule) {
+        this.shouldChainRule = shouldChainRule;
     }
 
     public final boolean getShouldChainRule() {
@@ -157,12 +154,14 @@ public class Variable {
      */
     public final Variable exponentiate(int power) {
         numPower *= power;
+        setUnicode();
         return this;
     }
 
     public final Variable exponentiate(int numPower, int denomPower) {
         this.numPower *= numPower;
         this.denomPower *= denomPower;
+        setUnicode();
         return this;
     }
 
@@ -185,8 +184,8 @@ public class Variable {
     public String toString() {
         if (numPower == 0) {
             return "1";
-        } else if (numPower == 1) {
-            return "" + var;
+        } else if (numPower == 1 && denomPower == 1) {
+            return var;
         } else {
             return var + powerUnicode;
         }

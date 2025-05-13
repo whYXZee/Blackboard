@@ -2,6 +2,12 @@ package whyxzee.blackboard.equations;
 
 import whyxzee.blackboard.terms.Term;
 
+/**
+ * A package for an equation based on multiplication
+ * 
+ * <p>
+ * The functionality of this class has not been checked, and it does not work.
+ */
 public class EQMultiplication extends MathFunction {
 
     /**

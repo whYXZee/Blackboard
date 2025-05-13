@@ -2,24 +2,22 @@ package whyxzee.blackboard.display;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import whyxzee.blackboard.Constants;
 
 /**
  * A package for displaying math functions in Swing.
  * 
- * The functionality of this class has been checked on {@code 5/9/2025}, and
- * nothing has changed since.
+ * <p>
+ * The functionality of this class has been checked on {@code 5/10/2025}, and
+ * nothing has changed.
  */
-public class MathDisplay extends JPanel {
+public class BlackboardDisplay extends JPanel {
 
     //
     // UI Components
@@ -30,8 +28,12 @@ public class MathDisplay extends JPanel {
 
     /* Grid */
     private GridBagConstraints grid;
+    private GridBagConstraints scriptGrid;
 
-    public MathDisplay(JFrame frame) {
+    /* Labels */
+    private ArrayList<BlackboardLabel> scriptLabels;
+
+    public BlackboardDisplay(JFrame frame) {
         /* Display layout */
         this.setLayout(new GridBagLayout());
         grid = new GridBagConstraints();
@@ -41,6 +43,15 @@ public class MathDisplay extends JPanel {
 
         scriptPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         scriptPanel.setLayout(new GridBagLayout());
+
+        /* Internal Grids */
+        scriptGrid = new GridBagConstraints();
+        scriptGrid.gridx = 0;
+        scriptGrid.gridy = 0;
+        scriptGrid.anchor = GridBagConstraints.CENTER;
+
+        /* Labels */
+        scriptLabels = new ArrayList<BlackboardLabel>();
 
         /* Adding Display */
         this.add(testLabel2, grid);
@@ -68,13 +79,35 @@ public class MathDisplay extends JPanel {
 
         /* Script */
         scriptPanel.setPreferredSize(new Dimension((int) (width / 1.25), height / 4));
+        for (BlackboardLabel i : scriptLabels) {
+            i.resize(height);
+        }
+    }
+
+    private void updateScriptDisplay() {
+        /* Set Up */
+        scriptPanel.removeAll();
+        scriptGrid.gridx = 0;
+
+        /* Adding */
+        for (BlackboardLabel i : scriptLabels) {
+            scriptPanel.add(i);
+            scriptGrid.gridx++;
+        }
     }
 
     //
     // Get, Set, & Append Methods
     //
-    public void appendScript() {
+    public void appendScript(BlackboardLabel... labels) {
+        for (BlackboardLabel i : labels) {
+            scriptLabels.add(i);
+        }
+        updateScriptDisplay();
+    }
 
+    public void appendScript(String text, double resizeFactor) {
+        appendScript(new BlackboardLabel(text, resizeFactor));
     }
 }
 
@@ -88,13 +121,13 @@ public class MathDisplay extends JPanel {
  */
 class DisplayDaemon extends Thread {
     /* UI */
-    private final MathDisplay DISPLAY;
+    private final BlackboardDisplay DISPLAY;
     private final JFrame FRAME;
 
     /* Boolean */
     private boolean shouldRun;
 
-    public DisplayDaemon(MathDisplay display, JFrame frame) {
+    public DisplayDaemon(BlackboardDisplay display, JFrame frame) {
         /* Variable Declarations */
         super("Display Daemon");
         DISPLAY = display;

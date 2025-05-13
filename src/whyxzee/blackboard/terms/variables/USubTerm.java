@@ -3,7 +3,9 @@ package whyxzee.blackboard.terms.variables;
 import whyxzee.blackboard.terms.Term;
 
 /**
- * A type of
+ * A type of variable where a term is subsituted into the Variable class.
+ * 
+ * The functionality of this class has not been checked.
  */
 public class USubTerm extends Variable {
     //
@@ -14,11 +16,15 @@ public class USubTerm extends Variable {
     public USubTerm(int power, Term innerTerm) {
         super("u", power);
         this.innerTerm = innerTerm;
+
+        setShouldChainRule(true);
     }
 
     public USubTerm(int numPower, int denomPower, Term innerTerm) {
         super("u", numPower, denomPower);
         this.innerTerm = innerTerm;
+
+        setShouldChainRule(true);
     }
 
     @Override

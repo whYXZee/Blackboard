@@ -61,7 +61,6 @@ public abstract class MathFunction {
 
     /**
      * 
-     * @param degree how many times the derivative should be taken.
      * @return
      */
     public abstract MathFunction derive();
@@ -75,6 +74,7 @@ public abstract class MathFunction {
 
     public void setTermArray(Term... terms) {
         termArray = terms;
+        sortTerms();
     }
 
     /**

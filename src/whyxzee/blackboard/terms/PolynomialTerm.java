@@ -3,6 +3,7 @@ package whyxzee.blackboard.terms;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 
 /**
@@ -12,7 +13,7 @@ import whyxzee.blackboard.terms.variables.Variable;
  * The package is contructed as an y=x^n equation.
  * 
  * <p>
- * The methods in this class have been checked on {@code 4/16/2025}, and the
+ * The functionalityof this class was checked on {@code 4/16/2025}, and the
  * following has changed since then:
  * <ul>
  * <li>multiply()
@@ -31,6 +32,10 @@ public class PolynomialTerm extends Term {
         super(num, var, TermType.POLYNOMIAL);
     }
 
+    public PolynomialTerm(double num) {
+        super(num, Variable.noVar, TermType.POLYNOMIAL);
+    }
+
     /**
      * Prints the polynomial term. If the number is 0, then nothing will be printed.
      */
@@ -41,7 +46,11 @@ public class PolynomialTerm extends Term {
         } else if (getVar().getNumeratorPower() == 0) {
             return Double.toString(getNum());
         } else {
-            return getNum() + getVar().toString();
+            if (getNum() == 1) {
+                return getVar().toString();
+            } else {
+                return getNum() + getVar().toString();
+            }
         }
     }
 
@@ -175,6 +184,7 @@ public class PolynomialTerm extends Term {
         }
 
         if (variable.getShouldChainRule()) {
+            System.out.println("chain rule");
             // chain rule
             EQMultiplication eq = new EQMultiplication(
                     // outer function (x^n)
@@ -184,13 +194,14 @@ public class PolynomialTerm extends Term {
                     // inner function (x)
                     variable.derive());
 
-            return new PolynomialTerm(number, variable);
+            return new PolynomialTerm(1, new USub(1, eq));
 
         } else {
-            // no chain rule
-            number *= (double) variable.getNumeratorPower() / denomPower;
-            variable.setPower(variable.getNumeratorPower() - denomPower, denomPower);
-            System.out.println(variable.getNumeratorPower());
+            System.out.println("no chain rule");
+
+            // no chain rule - functional
+            number *= (double) numPower / denomPower;
+            variable.setPower(numPower - denomPower, denomPower);
         }
 
         return new PolynomialTerm(number, getVar());

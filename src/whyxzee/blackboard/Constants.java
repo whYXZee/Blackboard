@@ -16,7 +16,10 @@ public final class Constants {
         public static final char SUPERSCRIPT_8 = '\u2078';
         public static final char SUPERSCRIPT_9 = '\u2079';
         public static final char SUPERSCRIPT_DASH = '\u207B';
-        public static final char SUPERSCRIPT_SLASH = '\u141F';
+        // public static final char SUPERSCRIPT_SLASH = '\u141F';
+        public static final char SUPERSCRIPT_SLASH = '\u2E0D';
+
+        public static final char SUBSCRIPT_SLASH = '\u2E1D';
     }
 
     public static final class DisplayConstants {

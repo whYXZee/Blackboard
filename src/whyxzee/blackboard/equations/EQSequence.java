@@ -2,6 +2,9 @@ package whyxzee.blackboard.equations;
 
 import whyxzee.blackboard.terms.Term;
 
+/**
+ * 
+ */
 public class EQSequence extends MathFunction {
 
     public EQSequence(Term... terms) {

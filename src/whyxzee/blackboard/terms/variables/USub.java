@@ -7,6 +7,8 @@ import whyxzee.blackboard.terms.Term;
 
 /**
  * A type of variable where a function is subsituted into the Variable class.
+ * 
+ * The functionality of this class has not been checked.
  */
 public class USub extends Variable {
     /* Variables */
@@ -15,11 +17,15 @@ public class USub extends Variable {
     public USub(int power, MathFunction innerFunction) {
         super("u", power);
         this.innerFunction = innerFunction;
+
+        setShouldChainRule(true);
     }
 
     public USub(int numPower, int denomPower, MathFunction innerFunction) {
         super("u", numPower, denomPower);
         this.innerFunction = innerFunction;
+
+        setShouldChainRule(true);
     }
 
     @Override
@@ -47,7 +53,7 @@ public class USub extends Variable {
     public String toString() {
         if (getNumeratorPower() == 0) {
             return "";
-        } else if (getDenominatorPower() == 1) {
+        } else if (getNumeratorPower() == 1 && getDenominatorPower() == 1) {
             return innerFunction.toString();
         } else {
             return "(" + innerFunction.toString() + ")" + getPowerUnicode();
