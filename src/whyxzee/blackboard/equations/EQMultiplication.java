@@ -37,4 +37,13 @@ public class EQMultiplication extends MathFunction {
         throw new UnsupportedOperationException("Unimplemented method 'derive'");
     }
 
+    @Override
+    public String toString() {
+        String output = "";
+        for (Term term : getTermArray()) {
+            output += "(" + term.toString() + ")";
+        }
+        return output;
+    }
+
 }

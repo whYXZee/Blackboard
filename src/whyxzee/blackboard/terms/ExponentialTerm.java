@@ -117,7 +117,7 @@ public class ExponentialTerm extends Term {
     public Term derive() {
         /* Initiating variables */
         double number = getNum();
-        Variable variable = getVar();
+        Variable variable = getVar().clone();
 
         /* The coefficient */
         if (base != Math.E) {

@@ -41,8 +41,8 @@ public class USub extends Variable {
 
         /* Chain rule */
         EQMultiplication eq = new EQMultiplication(
-                // Outer function (u^n)
-                new PolynomialTerm((double) nPower / dPower, this.setPower(nPower - dPower, dPower)),
+                // Outer function (u^n) - functional
+                new PolynomialTerm((double) nPower / dPower, setPower(nPower - dPower, dPower)),
 
                 // Inner function (u)
                 new PolynomialTerm(1, new USub(1, innerFunction.derive())));

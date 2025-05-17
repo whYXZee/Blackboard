@@ -5,10 +5,12 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 /**
  * A package for displaying math functions in Swing.
@@ -56,7 +58,7 @@ public class BlackboardDisplay extends JPanel {
         /* Adding Display */
         this.add(testLabel2, grid);
         grid.gridy++;
-        this.add(scriptPanel, grid);
+        this.add(scriptPanel, grid); // jscrollpane panel for debugging
 
         /* Daemon */
         DAEMON = new DisplayDaemon(this, frame);
@@ -102,8 +104,10 @@ public class BlackboardDisplay extends JPanel {
     public void appendScript(BlackboardLabel... labels) {
         for (BlackboardLabel i : labels) {
             scriptLabels.add(i);
+            System.out.println(i.getText());
         }
         updateScriptDisplay();
+
     }
 
     public void appendScript(String text, double resizeFactor) {
@@ -141,7 +145,11 @@ class DisplayDaemon extends Thread {
     @Override
     public void run() {
         while (shouldRun) {
-            DISPLAY.resizeComponents(FRAME.getSize());
+            try {
+                DISPLAY.resizeComponents(FRAME.getSize());
+            } catch (ConcurrentModificationException e) {
+
+            }
         }
     }
 

@@ -13,13 +13,17 @@ import whyxzee.blackboard.terms.variables.Variable;
  * The package is contructed as an y=x^n equation.
  * 
  * <p>
- * The functionalityof this class was checked on {@code 4/16/2025}, and the
+ * The functionality of this class was checked on {@code 5/16/2025}, and the
  * following has changed since then:
  * <ul>
  * <li>multiply()
- * <li>derive()
  */
 public class PolynomialTerm extends Term {
+    //
+    // General use: static
+    //
+    public static final PolynomialTerm ZERO_TERM = new PolynomialTerm(0);
+
     //
     // Variables
     //
@@ -60,6 +64,8 @@ public class PolynomialTerm extends Term {
             return "";
         } else if (getVar().getNumeratorPower() == 0) {
             return Double.toString(getNum());
+        } else if (getNum() == 1) {
+            return getVar().printConsole();
         } else {
             return getNum() + getVar().printConsole();
         }
@@ -172,19 +178,19 @@ public class PolynomialTerm extends Term {
      * @param degree how many times the derivative should be taken.
      * @return
      */
+    @Override
     public Term derive() {
         double number = getNum();
-        Variable variable = getVar();
+        Variable variable = getVar().clone();
         int numPower = variable.getNumeratorPower();
         int denomPower = variable.getDenominatorPower();
 
-        // Derivative of a constant is 0
         if (numPower == 0) {
-            return new PolynomialTerm(0, variable);
+            // Derivative of a constant is 0
+            return PolynomialTerm.ZERO_TERM;
         }
 
         if (variable.getShouldChainRule()) {
-            System.out.println("chain rule");
             // chain rule
             EQMultiplication eq = new EQMultiplication(
                     // outer function (x^n)
@@ -197,14 +203,12 @@ public class PolynomialTerm extends Term {
             return new PolynomialTerm(1, new USub(1, eq));
 
         } else {
-            System.out.println("no chain rule");
-
             // no chain rule - functional
             number *= (double) numPower / denomPower;
             variable.setPower(numPower - denomPower, denomPower);
         }
 
-        return new PolynomialTerm(number, getVar());
+        return new PolynomialTerm(number, variable);
     }
 
     @Override

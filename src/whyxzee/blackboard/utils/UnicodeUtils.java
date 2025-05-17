@@ -34,6 +34,15 @@ public class UnicodeUtils {
         }
     }
 
+    public static String stringToNum(String input) {
+        String output = "";
+        for (char i : input.toCharArray()) {
+            output += superscriptToNum(i);
+        }
+
+        return output;
+    }
+
     /**
      * Transfers an integer value into a String power.
      * 

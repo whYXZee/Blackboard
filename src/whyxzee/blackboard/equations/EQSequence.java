@@ -1,13 +1,25 @@
 package whyxzee.blackboard.equations;
 
+import java.util.ArrayList;
+
+import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
 
 /**
+ * A package for equations that are a sequence, meaning that they are chained
+ * with addition and subtraction.
  * 
+ * <p>
+ * The functionality of this class has been checked on {@code 5/16/2025}, and
+ * nothing has changed since.
  */
 public class EQSequence extends MathFunction {
 
     public EQSequence(Term... terms) {
+        super(terms);
+    }
+
+    public EQSequence(ArrayList<Term> terms) {
         super(terms);
     }
 
@@ -30,11 +42,13 @@ public class EQSequence extends MathFunction {
 
     @Override
     public MathFunction derive() {
-        Term[] outputTerms = {};
-        int index = 0;
+        ArrayList<Term> outputTerms = new ArrayList<Term>();
         for (Term term : getTermArray()) {
-            outputTerms[index] = term.derive();
-            index++;
+            Term derived = term.derive();
+            if (!derived.equals(PolynomialTerm.ZERO_TERM)) {
+                // if the derivative is not 0 nor DNE
+                outputTerms.add(derived);
+            }
         }
 
         return new EQSequence(outputTerms);
@@ -54,7 +68,7 @@ public class EQSequence extends MathFunction {
                 if (term.isNegative()) {
                     output += " - " + term.negate();
                 } else {
-                    output += "+ " + term;
+                    output += " + " + term;
                 }
             }
 

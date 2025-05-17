@@ -85,7 +85,7 @@ public class Variable {
     public Term derive() {
         if (numPower == 0) {
             // constant
-            return new PolynomialTerm(0, noVar);
+            return PolynomialTerm.ZERO_TERM;
         } else {
             // not a constant
             return new PolynomialTerm((double) numPower / denomPower, this.setPower(numPower - denomPower, denomPower));
@@ -121,6 +121,7 @@ public class Variable {
         this.numPower = numPower;
         this.denomPower = denomPower;
         setUnicode();
+
         return this;
     }
 
@@ -189,6 +190,11 @@ public class Variable {
         } else {
             return var + powerUnicode;
         }
+    }
+
+    @Override
+    public Variable clone() {
+        return new Variable(getVar(), getNumeratorPower(), getDenominatorPower());
     }
 
     public String printConsole() {

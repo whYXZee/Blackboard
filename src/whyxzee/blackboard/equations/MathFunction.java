@@ -21,6 +21,16 @@ public abstract class MathFunction {
         sortTerms();
     }
 
+    public MathFunction(ArrayList<Term> terms) {
+        /* Transfer terms from ArrayList to array */
+        Term[] tempTermArray = new Term[terms.size()];
+        for (int i = 0; i < terms.size(); i++) {
+            tempTermArray[i] = terms.get(i);
+        }
+        termArray = tempTermArray;
+        sortTerms();
+    }
+
     public abstract void simplify();
 
     /**
