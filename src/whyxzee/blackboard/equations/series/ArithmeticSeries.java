@@ -7,8 +7,8 @@ public class ArithmeticSeries extends SeriesAbstract {
     private double difference;
     private double a_1;
 
-    public ArithmeticSeries(double difference, double a_1, int startIndex, int endIndex) {
-        super(startIndex, endIndex);
+    public ArithmeticSeries(double difference, double a_1, int lowerBound, int upperBound) {
+        super(lowerBound, upperBound, SeriesType.ARITHMETIC);
         this.difference = difference;
         this.a_1 = a_1;
     }
@@ -23,6 +23,7 @@ public class ArithmeticSeries extends SeriesAbstract {
         return ((double) n / 2) * (a_1 + aOfN(n));
     }
 
+    @Override
     public double limInfSolve() {
         if (difference > 0) {
             // positive difference

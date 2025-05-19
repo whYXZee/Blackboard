@@ -1,5 +1,7 @@
 package whyxzee.blackboard.utils;
 
+import whyxzee.blackboard.Constants;
+
 public class UnicodeUtils {
     //
     // Parsing Methods
@@ -50,6 +52,50 @@ public class UnicodeUtils {
      * @return
      */
     public static String intToSuperscript(int input) {
+        String output = "";
+        for (char i : Integer.toString(input).toCharArray()) {
+            switch (i) {
+                case '0':
+                    output += Constants.Unicode.SUPERSCRIPT_0;
+                    break;
+                case '1':
+                    output += Constants.Unicode.SUPERSCRIPT_1;
+                    break;
+                case '2':
+                    output += Constants.Unicode.SUPERSCRIPT_2;
+                    break;
+                case '3':
+                    output += Constants.Unicode.SUPERSCRIPT_3;
+                    break;
+                case '4':
+                    output += Constants.Unicode.SUPERSCRIPT_4;
+                    break;
+                case '5':
+                    output += Constants.Unicode.SUPERSCRIPT_5;
+                    break;
+                case '6':
+                    output += Constants.Unicode.SUPERSCRIPT_6;
+                    break;
+                case '7':
+                    output += Constants.Unicode.SUPERSCRIPT_7;
+                    break;
+                case '8':
+                    output += Constants.Unicode.SUPERSCRIPT_8;
+                    break;
+                case '9':
+                    output += Constants.Unicode.SUPERSCRIPT_9;
+                    break;
+                case '-':
+                    output += Constants.Unicode.SUPERSCRIPT_DASH;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return output;
+    }
+
+    public static String intToSubscript(int input) {
         String output = "";
         for (char i : Integer.toString(input).toCharArray()) {
             switch (i) {

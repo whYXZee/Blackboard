@@ -3,7 +3,9 @@ package whyxzee.blackboard.terms;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.terms.TrigTerm.TrigType;
 import whyxzee.blackboard.terms.variables.USub;
+import whyxzee.blackboard.terms.variables.USubTerm;
 import whyxzee.blackboard.terms.variables.Variable;
 
 /**
@@ -17,12 +19,14 @@ import whyxzee.blackboard.terms.variables.Variable;
  * following has changed since then:
  * <ul>
  * <li>multiply()
+ * <li>integrate()
  */
 public class PolynomialTerm extends Term {
     //
     // General use: static
     //
     public static final PolynomialTerm ZERO_TERM = new PolynomialTerm(0);
+    public static final Variable SEC_SQUARED = new USubTerm(2, new TrigTerm(1, new Variable("x", 1), TrigType.SECANT));
 
     //
     // Variables
@@ -211,6 +215,44 @@ public class PolynomialTerm extends Term {
         return new PolynomialTerm(number, variable);
     }
 
+    public Term integrate() {
+        double number = getNum();
+        Variable variable = getVar().clone();
+        int numPower = variable.getNumeratorPower();
+        int denomPower = variable.getDenominatorPower();
+
+        if (numPower == 0) {
+            // Derivative of a constant is 0
+            return PolynomialTerm.ZERO_TERM;
+        }
+
+        if (variable.getShouldChainRule()) {
+            /* Special cases */
+            if (variable.varEquals(PolynomialTerm.SEC_SQUARED)) {
+                // (sec(x))^2 -> tan(x)
+
+            }
+
+            // chain rule - not functional
+            EQMultiplication eq = new EQMultiplication(
+                    // outer function (x^n)
+                    new PolynomialTerm((double) numPower / denomPower,
+                            variable.setPower(numPower - denomPower, denomPower)),
+
+                    // inner function (x)
+                    variable.integrate());
+
+            return new PolynomialTerm(1, new USub(1, eq));
+
+        } else {
+            // no chain rule
+            number *= (double) denomPower / numPower;
+            variable.setPower(numPower + denomPower, denomPower);
+        }
+
+        return new PolynomialTerm(number, variable);
+    }
+
     @Override
     public double limInfSolve() {
         /* Without respect to the variable */
@@ -227,12 +269,4 @@ public class PolynomialTerm extends Term {
         }
     }
 
-    // /**
-    // * Applies the integration power rule to a mono-variate polynomial term.
-    // *
-    // * @return
-    // */
-    // public PolynomialTerm integrate() {
-
-    // }
 }

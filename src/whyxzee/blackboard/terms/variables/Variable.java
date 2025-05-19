@@ -1,6 +1,8 @@
 package whyxzee.blackboard.terms.variables;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.equations.MathFunction;
+import whyxzee.blackboard.terms.LogarithmicTerm;
 import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.utils.UnicodeUtils;
@@ -27,6 +29,14 @@ public class Variable {
 
     /* Variable Identification */
     private boolean shouldChainRule;
+    private VarType varType;
+
+    public enum VarType {
+        VARIABLE,
+        U_SUB_TERM,
+        U_SUB_EQ,
+        FACTORIAL
+    }
 
     /**
      * The constructor class for a variable with a integer power.
@@ -40,7 +50,26 @@ public class Variable {
         denomPower = 1;
         setUnicode();
 
+        /* Variable identification */
         shouldChainRule = false;
+        varType = VarType.VARIABLE;
+    }
+
+    /**
+     * The constructor class for a specialized variable with a integer power.
+     * 
+     * @param var
+     * @param power
+     */
+    public Variable(String var, int power, VarType varType) {
+        this.var = var;
+        numPower = power;
+        denomPower = 1;
+        setUnicode();
+
+        /* Variable identification */
+        shouldChainRule = false;
+        this.varType = varType;
     }
 
     /**
@@ -56,7 +85,27 @@ public class Variable {
         this.denomPower = denomPower;
         setUnicode();
 
+        /* Variable Identification */
         shouldChainRule = false;
+        varType = VarType.VARIABLE;
+    }
+
+    /**
+     * The constructor class for a specialized variable with a fractional power.
+     * 
+     * @param var
+     * @param numPower
+     * @param denomPower
+     */
+    public Variable(String var, int numPower, int denomPower, VarType varType) {
+        this.var = var;
+        this.numPower = numPower;
+        this.denomPower = denomPower;
+        setUnicode();
+
+        /* Variable Identification */
+        shouldChainRule = false;
+        this.varType = varType;
     }
 
     /**
@@ -88,7 +137,20 @@ public class Variable {
             return PolynomialTerm.ZERO_TERM;
         } else {
             // not a constant
-            return new PolynomialTerm((double) numPower / denomPower, this.setPower(numPower - denomPower, denomPower));
+            return new PolynomialTerm((double) numPower / denomPower, setPower(numPower - denomPower, denomPower));
+        }
+    }
+
+    /**
+     * 
+     * @return the integral of the variable
+     */
+    public Term integrate() {
+        if (numPower == -1) {
+            // derivative of natural log
+            return new LogarithmicTerm(1, exponentiate(-1), Math.E);
+        } else {
+            return new PolynomialTerm((double) denomPower / numPower, setPower(numPower + denomPower, denomPower));
         }
     }
 
@@ -146,6 +208,18 @@ public class Variable {
         return shouldChainRule;
     }
 
+    public final void setVarType(VarType varType) {
+        this.varType = varType;
+    }
+
+    public final VarType getVarType() {
+        return varType;
+    }
+
+    public MathFunction getInnerFunction() {
+        throw new UnsupportedOperationException("'getInnerFunction()' not utilized in Variable.");
+    }
+
     //
     // Arithmetic
     //
@@ -179,6 +253,10 @@ public class Variable {
                                                                                // need to be a conditional for int and
                                                                                // one for fractional
         return sameVar && samePower;
+    }
+
+    public boolean varEquals(Variable other) {
+        throw new UnsupportedOperationException("Unimplemented method 'varEquals'");
     }
 
     @Override

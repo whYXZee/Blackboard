@@ -357,6 +357,124 @@ public class TrigTerm extends Term {
     }
 
     @Override
+    public Term integrate() {
+        /* Initializing variables */
+        double number = getNum();
+        Variable variable = getVar();
+        boolean shouldChainRule = variable.getShouldChainRule();
+
+        /* With chain rule */
+        switch (trigType) {
+            case SINE:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    return new TrigTerm(-number, variable, TrigType.COSINE);
+                }
+            case COSINE:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+
+                } else {
+                    // no chain rule
+                    return new TrigTerm(number, variable, TrigType.SINE);
+                }
+            case TANGENT:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                }
+            case COSECANT:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                }
+            case SECANT:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                }
+            case COTANGENT:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                }
+
+            case ARC_SINE:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                }
+            case ARC_COSINE:
+                // TODO: derivative of arccos unimplemented
+            case ARC_TANGENT:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                }
+            case ARC_COSECANT:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                }
+            case ARC_SECANT:
+                // TODO: derivative of arcsec unimplemented
+            case ARC_COTANGENT:
+                if (shouldChainRule) {
+                    // chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                } else {
+                    // no chain rule
+                    // TODO Auto-generated method stub
+                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
+                }
+            default:
+                return null;
+        }
+    }
+
+    @Override
     public double limInfSolve() {
         return Double.NaN;
     }

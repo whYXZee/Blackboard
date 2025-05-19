@@ -16,12 +16,23 @@ public abstract class MathFunction {
     private ArrayList<Term> logTerms = new ArrayList<Term>();
     private ArrayList<Term> trigTerms = new ArrayList<Term>();
 
-    public MathFunction(Term... terms) {
-        termArray = terms;
-        sortTerms();
+    /* Function Identification */
+    private FunctionType functionType;
+
+    public enum FunctionType {
+        SEQUENCE,
+        MULTIPLICATION
     }
 
-    public MathFunction(ArrayList<Term> terms) {
+    public MathFunction(FunctionType functionType, Term... terms) {
+        termArray = terms;
+        sortTerms();
+
+        /* Identification */
+        this.functionType = functionType;
+    }
+
+    public MathFunction(FunctionType functionType, ArrayList<Term> terms) {
         /* Transfer terms from ArrayList to array */
         Term[] tempTermArray = new Term[terms.size()];
         for (int i = 0; i < terms.size(); i++) {
@@ -29,7 +40,14 @@ public abstract class MathFunction {
         }
         termArray = tempTermArray;
         sortTerms();
+
+        /* Identification */
+        this.functionType = functionType;
     }
+
+    public abstract String toString();
+
+    public abstract String printConsole();
 
     public abstract void simplify();
 
@@ -61,6 +79,10 @@ public abstract class MathFunction {
         }
     }
 
+    //
+    // Arithmetic Functions
+    //
+
     /**
      * Solves the function with an input.
      * 
@@ -78,13 +100,17 @@ public abstract class MathFunction {
     //
     // Get & Set Methods
     //
-    public Term[] getTermArray() {
+    public final Term[] getTermArray() {
         return termArray;
     }
 
-    public void setTermArray(Term... terms) {
+    public final void setTermArray(Term... terms) {
         termArray = terms;
         sortTerms();
+    }
+
+    public final FunctionType getFunctionType() {
+        return functionType;
     }
 
     /**
@@ -92,7 +118,7 @@ public abstract class MathFunction {
      * 
      * @param term
      */
-    public void addPolynomialTerm(Term term) {
+    public final void addPolynomialTerm(Term term) {
         polynomialTerms.add(term);
     }
 
@@ -101,7 +127,7 @@ public abstract class MathFunction {
      * 
      * @param term
      */
-    public void addIntegralTerm(Term term) {
+    public final void addIntegralTerm(Term term) {
         integralTerms.add(term);
     }
 
@@ -110,7 +136,7 @@ public abstract class MathFunction {
      * 
      * @param term
      */
-    public void addExponentialTerm(Term term) {
+    public final void addExponentialTerm(Term term) {
         exponentialTerms.add(term);
     }
 
@@ -119,7 +145,7 @@ public abstract class MathFunction {
      * 
      * @param term
      */
-    public void addLogTerm(Term term) {
+    public final void addLogTerm(Term term) {
         logTerms.add(term);
     }
 
@@ -128,7 +154,17 @@ public abstract class MathFunction {
      * 
      * @param term
      */
-    public void addTrigTerm(Term term) {
+    public final void addTrigTerm(Term term) {
         trigTerms.add(term);
+    }
+
+    //
+    // Boolean Methods
+    //
+    public final boolean equals(MathFunction other) {
+        if (functionType == other.getFunctionType()) {
+            return termArray == other.getTermArray();
+        }
+        return false;
     }
 }

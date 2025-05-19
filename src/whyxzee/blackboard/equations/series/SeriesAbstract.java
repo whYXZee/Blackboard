@@ -1,45 +1,168 @@
 package whyxzee.blackboard.equations.series;
 
+import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.display.BlackboardDisplay;
 import whyxzee.blackboard.equations.MathFunction;
 
+/**
+ * A package for series equaations.
+ * 
+ * <p>
+ * The functionality of this class has not been checked.
+ */
 public class SeriesAbstract {
-    /*  */
+    /* General Series Variables */
     private MathFunction generalFunction;
-    private int startIndex;
-    private int endIndex;
+    private int lowerBound;
+    private int upperBound;
+
+    /* Series classification */
+    private SeriesType seriesType;
     private boolean isInfinite;
+    private boolean isAlternating;
 
-    public SeriesAbstract(MathFunction generalFunction, int startIndex, int endIndex) {
-        this.generalFunction = generalFunction;
-        this.startIndex = startIndex;
-        this.endIndex = endIndex;
-        this.isInfinite = false;
+    public enum SeriesType {
+        ARITHMETIC,
+        GEOMETRIC,
+        P_SERIES,
+        NONE
     }
 
-    public SeriesAbstract(MathFunction generalFunction, int startIndex) {
+    public SeriesAbstract(MathFunction generalFunction, int lowerBound, int upperBound) {
         this.generalFunction = generalFunction;
-        this.startIndex = startIndex;
-        this.endIndex = Integer.MAX_VALUE;
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+
+        seriesType = SeriesType.NONE;
+        this.isInfinite = false;
+        this.isAlternating = false;
+    }
+
+    public SeriesAbstract(MathFunction generalFunction, int lowerBound) {
+        this.generalFunction = generalFunction;
+        this.lowerBound = lowerBound;
+        this.upperBound = Integer.MAX_VALUE;
+
+        seriesType = SeriesType.NONE;
         this.isInfinite = true;
+        this.isAlternating = false;
     }
 
-    public SeriesAbstract(int startIndex, int endIndex) {
+    public SeriesAbstract(int startIndex, int endIndex, SeriesType seriesType) {
         this.generalFunction = null;
-        this.startIndex = startIndex;
-        this.endIndex = endIndex;
+        this.lowerBound = startIndex;
+        this.upperBound = endIndex;
+
+        this.seriesType = seriesType;
         this.isInfinite = false;
+        this.isAlternating = false;
+
+        /* Infinity Upper Bound */
+        if (endIndex == Integer.MAX_VALUE) {
+            isInfinite = true;
+        }
     }
+
+    public String toString() {
+        if (isInfinite) {
+            return Constants.Unicode.UPPERCASE_SIGMA + generalFunction.toString() + "\nLower Bound: n = " + lowerBound
+                    + ", Upper Bound: " + Constants.Unicode.INFINITY;
+        }
+        return Constants.Unicode.UPPERCASE_SIGMA + generalFunction.toString() + "\nLower Bound: n = " + lowerBound
+                + ", Upper Bound: " + upperBound;
+    }
+
+    public String printConsole() {
+        if (isInfinite) {
+            return Constants.Unicode.UPPERCASE_SIGMA + generalFunction.printConsole() + "\nLower Bound: n = "
+                    + lowerBound + ", Upper Bound: " + Constants.Unicode.INFINITY;
+        }
+        return Constants.Unicode.UPPERCASE_SIGMA + generalFunction.printConsole() + "\nLower Bound: n = " + lowerBound
+                + ", Upper Bound: " + upperBound;
+    }
+
+    public void createBlackboardLabels(BlackboardDisplay display) {
+        // TODO: unimplemented method "createBlackboardLabels()"
+        throw new UnsupportedOperationException("Unimplemented method 'createBlackboardLabels'");
+    }
+
+    //
+    // Arithmetic
+    //
 
     public double aOfN(int n) {
         return generalFunction.solve(n);
     }
 
     public double partialSum(int n) {
-        return 0;
+        double output = 0;
+        for (int i = lowerBound; i < n; i++) {
+            output += aOfN(i);
+        }
+        return output;
     }
 
+    /**
+     * @return the value of the series as n approaches infinity.
+     */
     public double limInfSolve() {
-        return 0;
+        throw new UnsupportedOperationException("Unsupported method 'limInfSolve'");
+    }
+
+    //
+    // Series Tests
+    //
+    /**
+     * 
+     * @return the value of the general equation as n approaches infinity.
+     */
+    public double nthTermTest() {
+        // TODO: unimplemented method "nthTermTest()"
+        throw new UnsupportedOperationException("Unimplemented method 'nthTermTest'");
+    }
+
+    public void integralTest() {
+        // TODO: unimplemented method "integralTest()"
+        throw new UnsupportedOperationException("Unimplemented method 'integralTest'");
+    }
+
+    public void directComparison() {
+        // TODO: unimplemented method "directComparison()"
+        throw new UnsupportedOperationException("Unimplemented method 'directComparison'");
+    }
+
+    public void limitComparison() {
+        // TODO: unimplemented method "lmiitComparison()"
+        throw new UnsupportedOperationException("Unimplemented method 'limitComparison'");
+    }
+
+    public void ratioTest() {
+        // TODO: unimplemented method "ratioTest()"
+        throw new UnsupportedOperationException("Unimplemented method 'ratioTest'");
+    }
+
+    public boolean alternatingSeriesTest() {
+        if (nthTermTest() != 0) {
+            // step one: nth term test. if failed, then can't be alternating
+            return false;
+        }
+
+        // TODO: unimplemented method "alternatingSeriesTest()"
+        throw new UnsupportedOperationException("Uncomplete method 'alternatingSeriesTest'");
+    }
+
+    /**
+     * 
+     * @param n the index of the series
+     * @return the error of the series. If NaN, then the series is not alternating.
+     */
+    public double alternatingSeriesError(int n) {
+        if (alternatingSeriesTest() && isAlternating) {
+            // if the series is alternating and is a valid alternating series
+            return Math.abs(generalFunction.solve(n + 1));
+        }
+        // non alternating series, so no error
+        return Double.NaN;
     }
 
     //
@@ -61,19 +184,38 @@ public class SeriesAbstract {
         this.generalFunction = generalFunction;
     }
 
-    public final int getStartIndex() {
-        return startIndex;
+    public final int getLowerBound() {
+        return lowerBound;
     }
 
-    public final void setStartIndex(int startIndex) {
-        this.startIndex = startIndex;
+    public final void setLowerBound(int lowerBound) {
+        this.lowerBound = lowerBound;
     }
 
-    public final int getEndIndex() {
-        return endIndex;
+    public final int getUpperBound() {
+        return upperBound;
     }
 
-    public final void setEndIndex(int endIndex) {
-        this.endIndex = endIndex;
+    public final void setUpperBound(int upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    public final SeriesType getSeriesType() {
+        return seriesType;
+    }
+
+    public final void setSeriesType(SeriesType seriesType) {
+        this.seriesType = seriesType;
+    }
+
+    /**
+     * @return the number of terms in the series
+     */
+    public final int getTermNumber() {
+        if (isInfinite) {
+            // infinite series have infinite terms
+            return Integer.MAX_VALUE;
+        }
+        return upperBound - lowerBound + 1;
     }
 }

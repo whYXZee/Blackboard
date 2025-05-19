@@ -22,4 +22,8 @@ public class SpecialFunctions {
         return output;
     }
 
+    public static double log_b(double base, double value) {
+        return Math.log(value) / Math.log(base);
+    }
+
 }

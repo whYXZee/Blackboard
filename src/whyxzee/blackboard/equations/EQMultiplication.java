@@ -1,5 +1,7 @@
 package whyxzee.blackboard.equations;
 
+import java.util.ArrayList;
+
 import whyxzee.blackboard.terms.Term;
 
 /**
@@ -16,7 +18,29 @@ public class EQMultiplication extends MathFunction {
      * @param terms
      */
     public EQMultiplication(Term... terms) {
-        super(terms);
+        super(FunctionType.MULTIPLICATION, terms);
+    }
+
+    public EQMultiplication(ArrayList<Term> terms) {
+        super(FunctionType.MULTIPLICATION, terms);
+    }
+
+    @Override
+    public String toString() {
+        String output = "";
+        for (Term term : getTermArray()) {
+            output += "(" + term.toString() + ")";
+        }
+        return output;
+    }
+
+    @Override
+    public String printConsole() {
+        String output = "";
+        for (Term term : getTermArray()) {
+            output += "(" + term.printConsole() + ")";
+        }
+        return output;
     }
 
     @Override
@@ -36,14 +60,4 @@ public class EQMultiplication extends MathFunction {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'derive'");
     }
-
-    @Override
-    public String toString() {
-        String output = "";
-        for (Term term : getTermArray()) {
-            output += "(" + term.toString() + ")";
-        }
-        return output;
-    }
-
 }

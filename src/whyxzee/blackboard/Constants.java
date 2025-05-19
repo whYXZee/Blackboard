@@ -2,8 +2,14 @@ package whyxzee.blackboard;
 
 import java.awt.Font;
 
+import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.terms.TrigTerm;
+import whyxzee.blackboard.terms.TrigTerm.TrigType;
+import whyxzee.blackboard.terms.variables.Variable;
+
 public final class Constants {
     public static final class Unicode {
+        /* Superscript */
         public static final char SUPERSCRIPT_X = '\u02E3';
         public static final char SUPERSCRIPT_0 = '\u2070';
         public static final char SUPERSCRIPT_1 = '\u00B9';
@@ -19,7 +25,14 @@ public final class Constants {
         // public static final char SUPERSCRIPT_SLASH = '\u141F';
         public static final char SUPERSCRIPT_SLASH = '\u2E0D';
 
+        /* Subscript */
         public static final char SUBSCRIPT_SLASH = '\u2E1D';
+
+        /* Greek characters */
+        public static final char UPPERCASE_SIGMA = '\u03A3';
+
+        /* General characters */
+        public static final char INFINITY = '\u221E';
     }
 
     public static final class DisplayConstants {
@@ -39,5 +52,26 @@ public final class Constants {
         public static final int[] PRIME_NUMBERS = {
                 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31
         };
+    }
+
+    public static final class VariableConstants {
+        public static final Variable BASE_VAR = new Variable("x", 1);
+    }
+
+    public static final class TrigConstants {
+        /* Terms */
+        public static final TrigTerm SECANT = new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.SECANT);
+        public static final TrigTerm COSECANT = new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.COSECANT);
+
+    }
+
+    public static final class EquationConstants {
+        /* Derivatives */
+        public static final EQMultiplication SEC_X_DERIVATIVE = new EQMultiplication(
+                new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.TANGENT),
+                new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.SECANT));
+        public static final EQMultiplication CSC_X_DERIVATIVE = new EQMultiplication(
+                new TrigTerm(-1, VariableConstants.BASE_VAR, TrigType.COTANGENT),
+                new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.COSECANT));
     }
 }

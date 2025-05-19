@@ -1,9 +1,13 @@
 package whyxzee.blackboard.terms.variables;
 
+import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.Constants.VariableConstants;
 import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.equations.MathFunction;
 import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
+import whyxzee.blackboard.terms.TrigTerm;
+import whyxzee.blackboard.terms.TrigTerm.TrigType;
 
 /**
  * A type of variable where a function is subsituted into the Variable class.
@@ -15,19 +19,30 @@ public class USub extends Variable {
     private MathFunction innerFunction;
 
     public USub(int power, MathFunction innerFunction) {
-        super("u", power);
+        super("u", power, VarType.U_SUB_EQ);
         this.innerFunction = innerFunction;
 
         setShouldChainRule(true);
     }
 
     public USub(int numPower, int denomPower, MathFunction innerFunction) {
-        super("u", numPower, denomPower);
+        super("u", numPower, denomPower, VarType.U_SUB_EQ);
         this.innerFunction = innerFunction;
 
         setShouldChainRule(true);
     }
 
+    //
+    // Get and Set Methods
+    //
+
+    public final MathFunction getInnerFunction() {
+        return innerFunction;
+    }
+
+    //
+    // Arirthmetic Methods
+    //
     @Override
     public double solve(double value) {
         return Math.pow(innerFunction.solve(value), (double) getNumeratorPower() / getDenominatorPower());
@@ -47,6 +62,40 @@ public class USub extends Variable {
                 // Inner function (u)
                 new PolynomialTerm(1, new USub(1, innerFunction.derive())));
         return new PolynomialTerm(1, new USub(1, eq));
+    }
+
+    @Override
+    public Term integrate() {
+        /* Initiating Variables */
+        int nPower = getNumeratorPower();
+        int dPower = getDenominatorPower();
+
+        /* Integration Algorithm */
+        if (getShouldChainRule()) {
+
+        } else {
+            // no chain rule
+            if (innerFunction.equals(Constants.EquationConstants.SEC_X_DERIVATIVE)) {
+                // tan(x)sec(x)
+                return new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.SECANT);
+            } else if (innerFunction.equals(Constants.EquationConstants.CSC_X_DERIVATIVE)) {
+                return new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.COSECANT);
+            }
+        }
+
+        return null;
+    }
+
+    //
+    // Boolean Methods
+    //
+    @Override
+    public boolean varEquals(Variable other) {
+        if (getVarType() == other.getVarType()) {
+            // if both USub
+            return innerFunction.equals(other.getInnerFunction());
+        }
+        return false;
     }
 
     @Override

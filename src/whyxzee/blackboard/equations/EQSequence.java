@@ -16,11 +16,57 @@ import whyxzee.blackboard.terms.Term;
 public class EQSequence extends MathFunction {
 
     public EQSequence(Term... terms) {
-        super(terms);
+        super(FunctionType.SEQUENCE, terms);
     }
 
     public EQSequence(ArrayList<Term> terms) {
-        super(terms);
+        super(FunctionType.SEQUENCE, terms);
+    }
+
+    @Override
+    public String toString() {
+        String output = "";
+        Term[] termArray = getTermArray();
+
+        for (int i = 0; i < termArray.length; i++) {
+            Term term = termArray[i];
+
+            if (i == 0) {
+                output += term;
+            } else {
+                if (term.isNegative()) {
+                    output += " - " + term.negate();
+                } else {
+                    output += " + " + term;
+                }
+            }
+
+        }
+
+        return output;
+    }
+
+    @Override
+    public String printConsole() {
+        String output = "";
+        Term[] termArray = getTermArray();
+
+        for (int i = 0; i < termArray.length; i++) {
+            Term term = termArray[i];
+
+            if (i == 0) {
+                output += term.printConsole();
+            } else {
+                if (term.isNegative()) {
+                    output += " - " + term.negate().printConsole();
+                } else {
+                    output += " + " + term.printConsole();
+                }
+            }
+
+        }
+
+        return output;
     }
 
     @Override
@@ -53,28 +99,4 @@ public class EQSequence extends MathFunction {
 
         return new EQSequence(outputTerms);
     }
-
-    @Override
-    public String toString() {
-        String output = "";
-        Term[] termArray = getTermArray();
-
-        for (int i = 0; i < termArray.length; i++) {
-            Term term = termArray[i];
-
-            if (i == 0) {
-                output += term;
-            } else {
-                if (term.isNegative()) {
-                    output += " - " + term.negate();
-                } else {
-                    output += " + " + term;
-                }
-            }
-
-        }
-
-        return output;
-    }
-
 }
