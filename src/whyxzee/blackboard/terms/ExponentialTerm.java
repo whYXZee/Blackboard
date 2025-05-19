@@ -142,29 +142,6 @@ public class ExponentialTerm extends Term {
     }
 
     @Override
-    public Term integrate() {
-        /* Initiating variables */
-        double number = getNum();
-        Variable variable = getVar().clone();
-
-        /* The coefficient */
-        if (base != Math.E) {
-            number *= 1 / Math.log(base); // should I multiply to constant or to an eq?
-        }
-
-        /* The variable */
-        if (variable.getShouldChainRule()) {
-            // chain rule
-
-            // TODO Auto-generated method stub
-            throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-        } else {
-            // no chain rule
-            return new ExponentialTerm(number, variable, base);
-        }
-    }
-
-    @Override
     public double limInfSolve() {
         /* Without respect to the variable */
         if (base < 1) {

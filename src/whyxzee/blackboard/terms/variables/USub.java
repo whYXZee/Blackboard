@@ -1,18 +1,16 @@
 package whyxzee.blackboard.terms.variables;
 
-import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.Constants.VariableConstants;
 import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.equations.MathFunction;
 import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
-import whyxzee.blackboard.terms.TrigTerm;
-import whyxzee.blackboard.terms.TrigTerm.TrigType;
 
 /**
  * A type of variable where a function is subsituted into the Variable class.
  * 
- * The functionality of this class has not been checked.
+ * <p>
+ * The functionality of this class has been checked on {@code 5/19/2025} and
+ * nothing has changed since.
  */
 public class USub extends Variable {
     /* Variables */
@@ -64,39 +62,9 @@ public class USub extends Variable {
         return new PolynomialTerm(1, new USub(1, eq));
     }
 
-    @Override
-    public Term integrate() {
-        /* Initiating Variables */
-        int nPower = getNumeratorPower();
-        int dPower = getDenominatorPower();
-
-        /* Integration Algorithm */
-        if (getShouldChainRule()) {
-
-        } else {
-            // no chain rule
-            if (innerFunction.equals(Constants.EquationConstants.SEC_X_DERIVATIVE)) {
-                // tan(x)sec(x)
-                return new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.SECANT);
-            } else if (innerFunction.equals(Constants.EquationConstants.CSC_X_DERIVATIVE)) {
-                return new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.COSECANT);
-            }
-        }
-
-        return null;
-    }
-
     //
     // Boolean Methods
     //
-    @Override
-    public boolean varEquals(Variable other) {
-        if (getVarType() == other.getVarType()) {
-            // if both USub
-            return innerFunction.equals(other.getInnerFunction());
-        }
-        return false;
-    }
 
     @Override
     public String toString() {

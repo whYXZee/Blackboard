@@ -98,53 +98,6 @@ public class LogarithmicTerm extends Term {
         }
     }
 
-    /**
-     * The integration of the logarithmic term is done through integration by parts.
-     */
-    @Override
-    public Term integrate() {
-        /* Initializing variables */
-        double number = getNum();
-        Variable variable = getVar().clone();
-
-        /* Integration Algorithm */
-        if (base == Math.E) {
-            if (variable.getShouldChainRule()) {
-                // chain rule
-                EQMultiplication termOne = new EQMultiplication(
-                        new PolynomialTerm(1, new Variable("x", 1)),
-                        new LogarithmicTerm(1, variable, base));
-                EQMultiplication innerFunctionIntegral = new EQMultiplication(
-                        // logarithmic part
-                        new PolynomialTerm(1, variable.exponentiate(-1)),
-
-                        // chain rule part
-                        variable.derive(),
-
-                        // integration by parts
-                        new PolynomialTerm(1, new Variable("x", 1)));
-
-                // return new PolynomialTerm(number, new USub(1, new EQSequence(
-                // new USub(1, termOne),
-                // new USub(1, innerFunctionIntegral.integrate());
-                // )));
-
-            } else {
-                // no chain rule
-                EQSequence innerEQ = new EQSequence(
-                        new LogarithmicTerm(1, variable, base),
-                        new PolynomialTerm(-1));
-
-                EQMultiplication overallEQ = new EQMultiplication(
-                        new PolynomialTerm(number, variable),
-                        new PolynomialTerm(1, new USub(1, innerEQ)));
-                return new PolynomialTerm(1, new USub(1, overallEQ));
-            }
-        }
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-    }
-
     @Override
     public double limInfSolve() {
         if (getNum() > 0) {

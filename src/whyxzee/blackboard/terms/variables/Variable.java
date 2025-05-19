@@ -141,19 +141,6 @@ public class Variable {
         }
     }
 
-    /**
-     * 
-     * @return the integral of the variable
-     */
-    public Term integrate() {
-        if (numPower == -1) {
-            // derivative of natural log
-            return new LogarithmicTerm(1, exponentiate(-1), Math.E);
-        } else {
-            return new PolynomialTerm((double) denomPower / numPower, setPower(numPower + denomPower, denomPower));
-        }
-    }
-
     //
     // Get & Set Methods
     //

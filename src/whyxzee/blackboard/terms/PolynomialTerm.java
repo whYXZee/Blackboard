@@ -19,7 +19,6 @@ import whyxzee.blackboard.terms.variables.Variable;
  * following has changed since then:
  * <ul>
  * <li>multiply()
- * <li>integrate()
  */
 public class PolynomialTerm extends Term {
     //
@@ -210,44 +209,6 @@ public class PolynomialTerm extends Term {
             // no chain rule - functional
             number *= (double) numPower / denomPower;
             variable.setPower(numPower - denomPower, denomPower);
-        }
-
-        return new PolynomialTerm(number, variable);
-    }
-
-    public Term integrate() {
-        double number = getNum();
-        Variable variable = getVar().clone();
-        int numPower = variable.getNumeratorPower();
-        int denomPower = variable.getDenominatorPower();
-
-        if (numPower == 0) {
-            // Derivative of a constant is 0
-            return PolynomialTerm.ZERO_TERM;
-        }
-
-        if (variable.getShouldChainRule()) {
-            /* Special cases */
-            if (variable.varEquals(PolynomialTerm.SEC_SQUARED)) {
-                // (sec(x))^2 -> tan(x)
-
-            }
-
-            // chain rule - not functional
-            EQMultiplication eq = new EQMultiplication(
-                    // outer function (x^n)
-                    new PolynomialTerm((double) numPower / denomPower,
-                            variable.setPower(numPower - denomPower, denomPower)),
-
-                    // inner function (x)
-                    variable.integrate());
-
-            return new PolynomialTerm(1, new USub(1, eq));
-
-        } else {
-            // no chain rule
-            number *= (double) denomPower / numPower;
-            variable.setPower(numPower + denomPower, denomPower);
         }
 
         return new PolynomialTerm(number, variable);

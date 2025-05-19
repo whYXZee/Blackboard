@@ -6,7 +6,10 @@ import javax.swing.JFrame;
 import whyxzee.blackboard.display.BlackboardLabel;
 import whyxzee.blackboard.equations.EQSequence;
 import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.TrigTerm;
+import whyxzee.blackboard.terms.TrigTerm.TrigType;
 import whyxzee.blackboard.terms.variables.USub;
+import whyxzee.blackboard.terms.variables.USubTerm;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.display.BlackboardDisplay;
 
@@ -17,12 +20,9 @@ public class Debugger {
         BlackboardDisplay display = new BlackboardDisplay(frame);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        // /* Math Debugging */
-        PolynomialTerm term = new PolynomialTerm(1, new Variable("x", 2));
-        EQSequence eq = new EQSequence(term, new PolynomialTerm(1));
-        USub uSub = new USub(3, eq);
-        display.appendScript(new BlackboardLabel(uSub.derive().toString(), 0.1)); // smthn here is causing the x to lose
-                                                                                  // the power
+        /* Math Debugging */
+        TrigTerm term = new TrigTerm(2, new Variable("x", 1), TrigType.COSECANT);
+        display.appendScript(new BlackboardLabel(term.toString() + "=" + Double.toString(term.solve(3)), 0.1));
 
         // PolynomialTerm term = new PolynomialTerm(1, new Variable("x", 2));
         // EQSequence eq = new EQSequence(term, new PolynomialTerm(1));

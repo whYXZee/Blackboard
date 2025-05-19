@@ -86,13 +86,6 @@ public abstract class Term {
     public abstract Term derive();
 
     /**
-     * Integrates the term once.
-     * 
-     * @return
-     */
-    public abstract Term integrate();
-
-    /**
      * Evaluates a function at the limit as the variable approaches infinity.
      */
     public abstract double limInfSolve();

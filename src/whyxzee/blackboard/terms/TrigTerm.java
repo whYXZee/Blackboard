@@ -6,6 +6,15 @@ import whyxzee.blackboard.terms.variables.USubTerm;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 
+/**
+ * A package for trigonometic terms.
+ * 
+ * <p>
+ * The functionality of this class has been checked on {@code 5/19/2025}
+ * <ul>
+ * <li>solve()
+ * <li>derive()
+ */
 public class TrigTerm extends Term {
 
     public enum TrigType {
@@ -43,6 +52,20 @@ public class TrigTerm extends Term {
     @Override
     public String printConsole() {
         return Double.toString(getNum()) + trigString + "(" + getVar().printConsole() + ")";
+    }
+
+    @Override
+    public String toString() {
+        /* Initializing variable */
+        double number = getNum();
+
+        if (number == 0) {
+            return "0";
+        } else if (number == 1) {
+            return trigString + "(" + getVar().toString() + ")";
+        } else {
+            return Double.toString(getNum()) + trigString + "(" + getVar().toString() + ")";
+        }
     }
 
     //
@@ -114,6 +137,7 @@ public class TrigTerm extends Term {
                 trigVal = 1 / Math.tan(innerVal);
                 break;
 
+            // TODO: inverse trig terms need normalization
             case ARC_SINE:
                 trigVal = Math.asin(innerVal);
                 break;
@@ -126,13 +150,26 @@ public class TrigTerm extends Term {
                 trigVal = Math.atan(innerVal);
                 break;
             case ARC_SECANT:
-                trigVal = 1 / Math.asin(innerVal);
+                try {
+                    trigVal = 1 / Math.acos(innerVal);
+                } catch (ArithmeticException e) {
+                    trigVal = Double.NaN;
+                }
                 break;
             case ARC_COSECANT:
+                try {
+                    trigVal = 1 / Math.asin(innerVal);
+                } catch (ArithmeticException e) {
+                    trigVal = Double.NaN;
+                }
                 trigVal = 1 / Math.acos(innerVal);
                 break;
             case ARC_COTANGENT:
-                trigVal = 1 / Math.atan(innerVal);
+                try {
+                    trigVal = 1 / Math.atan(innerVal);
+                } catch (ArithmeticException e) {
+                    trigVal = Double.NaN;
+                }
                 break;
             default:
                 break;
@@ -357,126 +394,15 @@ public class TrigTerm extends Term {
     }
 
     @Override
-    public Term integrate() {
-        /* Initializing variables */
-        double number = getNum();
-        Variable variable = getVar();
-        boolean shouldChainRule = variable.getShouldChainRule();
-
-        /* With chain rule */
-        switch (trigType) {
-            case SINE:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    return new TrigTerm(-number, variable, TrigType.COSINE);
-                }
-            case COSINE:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-
-                } else {
-                    // no chain rule
-                    return new TrigTerm(number, variable, TrigType.SINE);
-                }
-            case TANGENT:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                }
-            case COSECANT:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                }
-            case SECANT:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                }
-            case COTANGENT:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                }
-
-            case ARC_SINE:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                }
-            case ARC_COSINE:
-                // TODO: derivative of arccos unimplemented
-            case ARC_TANGENT:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                }
-            case ARC_COSECANT:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                }
-            case ARC_SECANT:
-                // TODO: derivative of arcsec unimplemented
-            case ARC_COTANGENT:
-                if (shouldChainRule) {
-                    // chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                } else {
-                    // no chain rule
-                    // TODO Auto-generated method stub
-                    throw new UnsupportedOperationException("Unimplemented method 'integrate'");
-                }
-            default:
-                return null;
-        }
-    }
-
-    @Override
     public double limInfSolve() {
-        return Double.NaN;
+        switch (trigType) {
+            case ARC_TANGENT:
+                return Math.PI / 2;
+            case ARC_COTANGENT:
+                return Math.PI / 2;
+            default:
+                return Double.NaN;
+        }
     }
 
 }

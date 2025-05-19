@@ -1,10 +1,6 @@
 package whyxzee.blackboard.terms.variables;
 
-import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.Constants.VariableConstants;
 import whyxzee.blackboard.terms.Term;
-import whyxzee.blackboard.terms.TrigTerm;
-import whyxzee.blackboard.terms.TrigTerm.TrigType;
 
 /**
  * A type of variable where a term is subsituted into the Variable class.
@@ -34,30 +30,6 @@ public class USubTerm extends Variable {
     @Override
     public double solve(double value) {
         return Math.pow(innerTerm.solve(value), (double) getNumeratorPower() / getDenominatorPower());
-    }
-
-    @Override
-    public Term integrate() {
-        /* Initiating Variables */
-        int nPower = getNumeratorPower();
-        int dPower = getDenominatorPower();
-
-        /* Integration Algorithm */
-        if (getShouldChainRule()) {
-
-        } else {
-            // no chain rule
-
-            if (nPower == 2 && dPower == 1 && innerTerm.equals(Constants.TrigConstants.SECANT)) {
-                // (sec(x))^2
-                return new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.TANGENT);
-            } else if (nPower == 2 && dPower == 1
-                    && innerTerm.equals(Constants.TrigConstants.COSECANT)) {
-                return new TrigTerm(-1, VariableConstants.BASE_VAR, TrigType.COTANGENT);
-            }
-        }
-
-        return null;
     }
 
     @Override
