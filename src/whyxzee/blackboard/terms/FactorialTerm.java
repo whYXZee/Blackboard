@@ -20,13 +20,13 @@ public class FactorialTerm extends Term {
     }
 
     @Override
-    public String printConsole() {
-        return Double.toString(getNum()) + "(" + getVar().printConsole() + ")";
+    public String toString() {
+        return Double.toString(getNum()) + "(" + getVar().toString() + ")";
     }
 
     @Override
-    public String toString() {
-        return Double.toString(getNum()) + "(" + getVar().toString() + ")";
+    public String printConsole() {
+        return Double.toString(getNum()) + "(" + getVar().printConsole() + ")";
     }
 
     //
@@ -38,7 +38,7 @@ public class FactorialTerm extends Term {
         /* Declaring variables */
         double innerVal = getVar().solve(value);
 
-        /* Factorial Algorithm */
+        /* Factorial */
         if (ArithmeticUtils.isInteger(innerVal)) {
             return SpecialFunctions.factorial((int) innerVal);
         } else {
@@ -66,6 +66,7 @@ public class FactorialTerm extends Term {
         }
         boolean isNumberNegative = number < 0;
 
+        /* Function */
         return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
     }
 

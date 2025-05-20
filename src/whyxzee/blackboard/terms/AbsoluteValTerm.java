@@ -1,7 +1,6 @@
 package whyxzee.blackboard.terms;
 
 import whyxzee.blackboard.equations.EQMultiplication;
-import whyxzee.blackboard.terms.variables.SignumVar;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 
@@ -56,10 +55,10 @@ public class AbsoluteValTerm extends Term {
         if (variable.needsChainRule()) {
             EQMultiplication eq = new EQMultiplication(
                     variable.derive(),
-                    new PolynomialTerm(1, new SignumVar(variable.getVar())));
+                    new SignumTerm(1, variable));
             return new PolynomialTerm(getNum(), new USub(1, eq));
         } else {
-            return new PolynomialTerm(getNum(), new SignumVar(variable.getVar()));
+            return new SignumTerm(getNum(), variable);
         }
     }
 

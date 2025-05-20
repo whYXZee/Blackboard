@@ -87,6 +87,18 @@ public class USub extends Variable {
         }
     }
 
+    @Override
+    public USub clone() {
+        switch (getVarType()) {
+            case U_SUB_EQ:
+                return new USub(getNumeratorPower(), getDenominatorPower(), innerFunction);
+            case U_SUB_TERM:
+                return new USub(getNumeratorPower(), getDenominatorPower(), innerTerm);
+            default:
+                return null;
+        }
+    }
+
     //
     // Get and Set Methods
     //
@@ -121,22 +133,31 @@ public class USub extends Variable {
         switch (getVarType()) {
             case U_SUB_EQ:
                 /* Chain rule */
-                eq = new EQMultiplication(
-                        // Outer function (u^n)
-                        new PolynomialTerm((double) nPower / dPower, setPower(nPower - dPower, dPower)),
+                if (nPower == 1 && dPower == 1) {
+                    USub uSub = new USub(1, innerFunction.derive());
+                    return new PolynomialTerm(1, uSub);
+                } else {
+                    eq = new EQMultiplication(
+                            // Outer function (u^n)
+                            new PolynomialTerm((double) nPower / dPower, setPower(nPower - dPower, dPower)),
 
-                        // Inner function (u)
-                        new PolynomialTerm(1, new USub(1, innerFunction.derive())));
-                return new PolynomialTerm(1, new USub(1, eq));
+                            // Inner function (u)
+                            new PolynomialTerm(1, new USub(1, innerFunction.derive())));
+                    return new PolynomialTerm(1, new USub(1, eq));
+                }
             case U_SUB_TERM:
                 /* Chain rule */
-                eq = new EQMultiplication(
-                        // Outer function (u^n)
-                        new PolynomialTerm((double) nPower / dPower, setPower(nPower - dPower, dPower)),
+                if (nPower == 1 && dPower == 1) {
+                    return innerTerm.derive();
+                } else {
+                    eq = new EQMultiplication(
+                            // Outer function (u^n)
+                            new PolynomialTerm((double) nPower / dPower, setPower(nPower - dPower, dPower)),
 
-                        // Inner function (u)
-                        new PolynomialTerm(1, new USub(1, innerTerm.derive())));
-                return new PolynomialTerm(1, new USub(1, eq));
+                            // Inner function (u)
+                            new PolynomialTerm(1, new USub(1, innerTerm.derive())));
+                    return new PolynomialTerm(1, new USub(1, eq));
+                }
             default:
                 return null;
         }

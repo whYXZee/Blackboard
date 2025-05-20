@@ -144,18 +144,18 @@ public class ExponentialTerm extends Term {
     @Override
     public double limInfSolve() {
         /* Without respect to the variable */
-        /* Initializing variables */
-        double number = getNum();
 
-        /* Algorithm */
+        /* Number */
+        double number = getNum();
         if (number == 0) {
             return 0;
         }
+        boolean isNumberNegative = number < 0;
 
+        /* Function */
         if (base < 1) {
-            // -1 < b < 1
-            // converging
-            return 0;
+            // -1 < b < 1 so converging
+            return isNumberNegative ? -0 : 0;
         } else if (base == 1) {
             // b = 1
             return number;
@@ -164,29 +164,28 @@ public class ExponentialTerm extends Term {
             // alternating
             return Double.NaN;
         } else {
-            return Double.POSITIVE_INFINITY;
+            return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
         }
     }
 
     public double limNegInfSolve() {
-        /* Initializing variables */
+        /* Number */
         double number = getNum();
-
-        /* Algorithm */
         if (number == 0) {
             return 0;
         }
+        boolean isNumberNegative = number < 0;
 
         if (base < 1) {
             // -1 < b < 1
-            return Double.POSITIVE_INFINITY;
+            return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
         } else if (base == 1) {
             // b = 1
             return number;
         } else if (base > -1) {
             // negative base less than to -1
             // converging alternating
-            return 0;
+            return isNumberNegative ? -0 : 0;
         } else {
             // negative base greater than or equal to -1
             return Double.NaN;

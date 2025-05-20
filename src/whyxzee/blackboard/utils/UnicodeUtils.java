@@ -100,37 +100,84 @@ public class UnicodeUtils {
         for (char i : Integer.toString(input).toCharArray()) {
             switch (i) {
                 case '0':
-                    output += '\u2070';
+                    output += Constants.Unicode.SUBSCRIPT_0;
                     break;
                 case '1':
-                    output += '\u00B9';
+                    output += Constants.Unicode.SUBSCRIPT_1;
                     break;
                 case '2':
-                    output += '\u00B2';
+                    output += Constants.Unicode.SUBSCRIPT_2;
                     break;
                 case '3':
-                    output += '\u00B3';
+                    output += Constants.Unicode.SUBSCRIPT_3;
                     break;
                 case '4':
-                    output += '\u2074';
+                    output += Constants.Unicode.SUBSCRIPT_4;
                     break;
                 case '5':
-                    output += '\u2075';
+                    output += Constants.Unicode.SUBSCRIPT_5;
                     break;
                 case '6':
-                    output += '\u2076';
+                    output += Constants.Unicode.SUBSCRIPT_6;
                     break;
                 case '7':
-                    output += '\u2077';
+                    output += Constants.Unicode.SUBSCRIPT_7;
                     break;
                 case '8':
-                    output += '\u2078';
+                    output += Constants.Unicode.SUBSCRIPT_8;
                     break;
                 case '9':
-                    output += '\u2079';
+                    output += Constants.Unicode.SUBSCRIPT_9;
                     break;
                 case '-':
-                    output += '\u207B';
+                    output += Constants.Unicode.SUBSCRIPT_DASH;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return output;
+    }
+
+    public static String doubleToSubscript(double input) {
+        String output = "";
+        for (char i : Double.toString(input).toCharArray()) {
+            switch (i) {
+                case '0':
+                    output += Constants.Unicode.SUBSCRIPT_0;
+                    break;
+                case '1':
+                    output += Constants.Unicode.SUBSCRIPT_1;
+                    break;
+                case '2':
+                    output += Constants.Unicode.SUBSCRIPT_2;
+                    break;
+                case '3':
+                    output += Constants.Unicode.SUBSCRIPT_3;
+                    break;
+                case '4':
+                    output += Constants.Unicode.SUBSCRIPT_4;
+                    break;
+                case '5':
+                    output += Constants.Unicode.SUBSCRIPT_5;
+                    break;
+                case '6':
+                    output += Constants.Unicode.SUBSCRIPT_6;
+                    break;
+                case '7':
+                    output += Constants.Unicode.SUBSCRIPT_7;
+                    break;
+                case '8':
+                    output += Constants.Unicode.SUBSCRIPT_8;
+                    break;
+                case '9':
+                    output += Constants.Unicode.SUBSCRIPT_9;
+                    break;
+                case '-':
+                    output += Constants.Unicode.SUBSCRIPT_DASH;
+                    break;
+                case '.':
+                    output += Constants.Unicode.SUBSCRIPT_DOT;
                     break;
                 default:
                     break;

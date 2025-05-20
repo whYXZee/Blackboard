@@ -4,6 +4,7 @@ import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.equations.EQSequence;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
+import whyxzee.blackboard.utils.ArithmeticUtils;
 import whyxzee.blackboard.utils.UnicodeUtils;
 
 /**
@@ -14,7 +15,10 @@ import whyxzee.blackboard.utils.UnicodeUtils;
  * The package is constructed as a y=log_b(x) equation.
  * 
  * <p>
- * The methods in this class have not been checked.
+ * The methods in this class has been checked on {@code 5/20/2025} and the
+ * following has changed:
+ * <ul>
+ * <li>derive()
  */
 public class LogarithmicTerm extends Term {
     /* Variables */
@@ -27,23 +31,69 @@ public class LogarithmicTerm extends Term {
 
     @Override
     public String toString() {
+        /* Initializing variables */
+        double number = getNum();
+
         if (base == Math.E) {
             // natural log
-            return Double.toString(getNum()) + "ln(" + getVar().toString() + ")";
+            if (number == 0) {
+                return "0";
+            } else if (number == 1) {
+                return "ln(" + getVar().toString() + ")";
+            } else {
+                return Double.toString(getNum()) + "ln(" + getVar().toString() + ")";
+            }
         } else {
             // base shouldn't be int
-            return Double.toString(getNum()) + "log" + UnicodeUtils.intToSubscript((int) base) + "("
-                    + getVar().toString() + ")";
+            if (number == 0) {
+                return "0";
+            } else if (number == 1) {
+                if (ArithmeticUtils.isInteger(base)) {
+                    // integer base
+                    return "log" + UnicodeUtils.intToSubscript((int) base) + "(" + getVar().toString() + ")";
+                } else {
+                    return "log" + UnicodeUtils.doubleToSubscript(base) + "(" + getVar().toString() + ")";
+                }
+            } else {
+                if (ArithmeticUtils.isInteger(base)) {
+                    // integer base
+                    return Double.toString(getNum()) + "log" + UnicodeUtils.intToSubscript((int) base) + "("
+                            + getVar().toString() + ")";
+                } else {
+                    return Double.toString(getNum()) + "log" + UnicodeUtils.doubleToSubscript(base) + "("
+                            + getVar().toString() + ")";
+                }
+            }
         }
     }
 
     @Override
     public String printConsole() {
+        /* Initializing variables */
+        double number = getNum();
+
         if (base == Math.E) {
             // natural log
-            return Double.toString(getNum()) + "ln(" + getVar().toString() + ")";
+            if (number == 0) {
+                return "0";
+            } else if (number == 1) {
+                return "ln(" + getVar().printConsole() + ")";
+            } else {
+                return Double.toString(getNum()) + "ln(" + getVar().printConsole() + ")";
+            }
         } else {
-            return Double.toString(getNum()) + "log_" + base + "(" + getVar().toString() + ")";
+            if (number == 0) {
+                return "0";
+            } else if (number == 1) {
+                if (ArithmeticUtils.isInteger(base)) {
+                    return "log" + UnicodeUtils.intToSubscript((int) base) + "(" + getVar().printConsole() + ")";
+                } else {
+                    return "log" + UnicodeUtils.doubleToSubscript(base) + "(" + getVar().printConsole() + ")";
+                }
+            } else {
+                return Double.toString(getNum()) + "log_" + Double.toString(base) + "("
+                        + getVar().printConsole() + ")";
+            }
         }
     }
 
@@ -110,13 +160,15 @@ public class LogarithmicTerm extends Term {
 
     @Override
     public double limInfSolve() {
-        if (getNum() > 0) {
-            // positive number
-            return Double.POSITIVE_INFINITY;
-        } else {
-            // negative number
-            return Double.NEGATIVE_INFINITY;
+        /* Number */
+        double number = getNum();
+        if (number == 0) {
+            return 0;
         }
+        boolean isNumberNegative = number < 0;
+
+        /* Function */
+        return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
     }
 
     @Override

@@ -26,6 +26,19 @@ public final class Constants {
         public static final char SUPERSCRIPT_SLASH = '\u2E0D';
 
         /* Subscript */
+        public static final char SUBSCRIPT_X = '\u2093';
+        public static final char SUBSCRIPT_0 = '\u2080';
+        public static final char SUBSCRIPT_1 = '\u2081';
+        public static final char SUBSCRIPT_2 = '\u2082';
+        public static final char SUBSCRIPT_3 = '\u2083';
+        public static final char SUBSCRIPT_4 = '\u2084';
+        public static final char SUBSCRIPT_5 = '\u2085';
+        public static final char SUBSCRIPT_6 = '\u2086';
+        public static final char SUBSCRIPT_7 = '\u2087';
+        public static final char SUBSCRIPT_8 = '\u2088';
+        public static final char SUBSCRIPT_9 = '\u2089';
+        public static final char SUBSCRIPT_DASH = '\u208B';
+        public static final char SUBSCRIPT_DOT = '\u05C5';
         public static final char SUBSCRIPT_SLASH = '\u2E1D';
 
         /* Greek characters */
@@ -33,6 +46,9 @@ public final class Constants {
 
         /* General characters */
         public static final char INFINITY = '\u221E';
+
+        /* Random characters */
+        public static final char STOPWATCH = '\u23F1';
     }
 
     public static final class DisplayConstants {

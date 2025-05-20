@@ -19,7 +19,10 @@ public abstract class Term {
         EXPONENTIAL,
         LOGARITHMIC,
         ABSOLUTE_VALUE,
-        FACTORIAL
+
+        /* Niche */
+        FACTORIAL,
+        SIGNUM
         // DERIVATIVE, // save for multivariate cuz implicit
     }
 

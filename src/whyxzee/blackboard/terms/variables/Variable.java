@@ -32,9 +32,7 @@ public class Variable {
     public enum VarType {
         VARIABLE,
         U_SUB_TERM,
-        U_SUB_EQ,
-
-        SIGNUM
+        U_SUB_EQ
     }
 
     /**
@@ -128,7 +126,7 @@ public class Variable {
 
     @Override
     public Variable clone() {
-        return new Variable(getVar(), getNumeratorPower(), getDenominatorPower());
+        return new Variable(getVar(), getNumeratorPower(), getDenominatorPower(), getVarType());
     }
 
     //

@@ -34,10 +34,21 @@ public class PolynomialTerm extends Term {
     // Object-related Methods
     //
 
+    /**
+     * The constructor class for a polynomial term
+     * 
+     * @param num the coefficient
+     * @param var the variable
+     */
     public PolynomialTerm(double num, Variable var) {
         super(num, var, TermType.POLYNOMIAL);
     }
 
+    /**
+     * The constructor class for a constant.
+     * 
+     * @param num the constant
+     */
     public PolynomialTerm(double num) {
         super(num, Variable.noVar, TermType.POLYNOMIAL);
     }
@@ -63,7 +74,7 @@ public class PolynomialTerm extends Term {
     @Override
     public String printConsole() {
         if (getNum() == 0) {
-            return "";
+            return "0";
         } else if (getVar().getNumeratorPower() == 0) {
             return Double.toString(getNum());
         } else if (getNum() == 1) {
@@ -188,13 +199,18 @@ public class PolynomialTerm extends Term {
         int numPower = variable.getNumeratorPower();
         int denomPower = variable.getDenominatorPower();
 
+        /* Number */
         if (numPower == 0) {
             // Derivative of a constant is 0
             return PolynomialTerm.ZERO_TERM;
         }
 
+        /* Function */
         if (variable.needsChainRule()) {
             // chain rule
+            if (numPower == 1 && denomPower == 1) {
+                return variable.derive();
+            }
             EQMultiplication eq = new EQMultiplication(
                     // outer function (x^n)
                     new PolynomialTerm((double) numPower / denomPower,
@@ -202,11 +218,10 @@ public class PolynomialTerm extends Term {
 
                     // inner function (x)
                     variable.derive());
-
             return new PolynomialTerm(1, new USub(1, eq));
 
         } else {
-            // no chain rule - functional
+            // no chain rule
             number *= (double) numPower / denomPower;
             variable.setPower(numPower - denomPower, denomPower);
             return new PolynomialTerm(number, variable);
