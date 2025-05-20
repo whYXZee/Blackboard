@@ -75,6 +75,10 @@ public class EQSequence extends MathFunction {
         throw new UnsupportedOperationException("Unimplemented method 'simplify'");
     }
 
+    //
+    // Arithmetic Methods
+    //
+
     @Override
     public double solve(double value) {
         double output = 0;

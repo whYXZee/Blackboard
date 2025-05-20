@@ -6,6 +6,16 @@ import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.utils.UnicodeUtils;
 
+/**
+ * The package for a logarithmic term, where the term is constructed as
+ * log_b(variable)
+ * 
+ * <p>
+ * The package is constructed as a y=log_b(x) equation.
+ * 
+ * <p>
+ * The methods in this class have not been checked.
+ */
 public class LogarithmicTerm extends Term {
     /* Variables */
     private double base;
@@ -75,7 +85,7 @@ public class LogarithmicTerm extends Term {
 
         /* Derivative Algorithm */
         if (base == Math.E) {
-            if (variable.getShouldChainRule()) {
+            if (variable.needsChainRule()) {
                 // chain rule
                 EQMultiplication eq = new EQMultiplication(
                         // outer function (log_b (x))
@@ -107,6 +117,11 @@ public class LogarithmicTerm extends Term {
             // negative number
             return Double.NEGATIVE_INFINITY;
         }
+    }
+
+    @Override
+    public double limNegInfSolve() {
+        return Double.NaN;
     }
 
 }

@@ -4,12 +4,7 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 
 import whyxzee.blackboard.display.BlackboardLabel;
-import whyxzee.blackboard.equations.EQSequence;
-import whyxzee.blackboard.terms.PolynomialTerm;
-import whyxzee.blackboard.terms.TrigTerm;
-import whyxzee.blackboard.terms.TrigTerm.TrigType;
-import whyxzee.blackboard.terms.variables.USub;
-import whyxzee.blackboard.terms.variables.USubTerm;
+import whyxzee.blackboard.terms.*;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.display.BlackboardDisplay;
 
@@ -21,15 +16,14 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        TrigTerm term = new TrigTerm(2, new Variable("x", 1), TrigType.COSECANT);
-        display.appendScript(new BlackboardLabel(term.toString() + "=" + Double.toString(term.solve(3)), 0.1));
-
         // PolynomialTerm term = new PolynomialTerm(1, new Variable("x", 2));
-        // EQSequence eq = new EQSequence(term, new PolynomialTerm(1));
-        // display.appendScript(new BlackboardLabel(eq.derive().toString(), 0.1));
-
-        // PolynomialTerm term = new PolynomialTerm(2.5, new Variable("x", -1, 2));
-        // display.appendScript(new BlackboardLabel(term.derive().toString(), 0.1));
+        // EQSequence eq = new EQSequence(
+        // new PolynomialTerm(1, new Variable("x", 2)),
+        // new PolynomialTerm(1));
+        // USub uSub = new USub(3, eq);
+        // display.appendScript(new BlackboardLabel(uSub.derive().toString(), 0.1));
+        AbsoluteValTerm term = new AbsoluteValTerm(2, new Variable("x", 1));
+        display.appendScript(new BlackboardLabel(Double.toString(term.solve(-3)), 0.1));
 
         /* Displaying */
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

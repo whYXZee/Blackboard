@@ -2,7 +2,6 @@ package whyxzee.blackboard.terms;
 
 import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.equations.EQSequence;
-import whyxzee.blackboard.terms.variables.USubTerm;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 
@@ -10,10 +9,8 @@ import whyxzee.blackboard.terms.variables.Variable;
  * A package for trigonometic terms.
  * 
  * <p>
- * The functionality of this class has been checked on {@code 5/19/2025}
- * <ul>
- * <li>solve()
- * <li>derive()
+ * The functionality of this class has been checked on {@code 5/19/2025}, and
+ * nothing has changed since.
  */
 public class TrigTerm extends Term {
 
@@ -113,8 +110,11 @@ public class TrigTerm extends Term {
 
     @Override
     public double solve(double value) {
+        /* Initializing variables */
         double innerVal = getVar().solve(value);
         double trigVal = 0;
+
+        /* Algorithm */
         switch (trigType) {
             case SINE:
                 trigVal = Math.sin(innerVal);
@@ -137,7 +137,6 @@ public class TrigTerm extends Term {
                 trigVal = 1 / Math.tan(innerVal);
                 break;
 
-            // TODO: inverse trig terms need normalization
             case ARC_SINE:
                 trigVal = Math.asin(innerVal);
                 break;
@@ -150,26 +149,13 @@ public class TrigTerm extends Term {
                 trigVal = Math.atan(innerVal);
                 break;
             case ARC_SECANT:
-                try {
-                    trigVal = 1 / Math.acos(innerVal);
-                } catch (ArithmeticException e) {
-                    trigVal = Double.NaN;
-                }
+                trigVal = Math.acos(1 / innerVal);
                 break;
             case ARC_COSECANT:
-                try {
-                    trigVal = 1 / Math.asin(innerVal);
-                } catch (ArithmeticException e) {
-                    trigVal = Double.NaN;
-                }
-                trigVal = 1 / Math.acos(innerVal);
+                trigVal = Math.asin(1 / innerVal);
                 break;
             case ARC_COTANGENT:
-                try {
-                    trigVal = 1 / Math.atan(innerVal);
-                } catch (ArithmeticException e) {
-                    trigVal = Double.NaN;
-                }
+                trigVal = Math.atan(1 / innerVal);
                 break;
             default:
                 break;
@@ -187,8 +173,8 @@ public class TrigTerm extends Term {
     public Term derive() {
         /* Initializing variables */
         double number = getNum();
-        Variable variable = getVar();
-        boolean shouldChainRule = variable.getShouldChainRule();
+        Variable variable = getVar().clone();
+        boolean shouldChainRule = variable.needsChainRule();
 
         /* With chain rule */
         switch (trigType) {
@@ -224,9 +210,10 @@ public class TrigTerm extends Term {
             case TANGENT:
                 if (shouldChainRule) {
                     // chain rule
+                    System.out.println("chain rule");
                     USub uSubEQ = new USub(1, new EQMultiplication(
                             // outer function
-                            new PolynomialTerm(number, new USubTerm(2, new TrigTerm(1, variable,
+                            new PolynomialTerm(1, new USub(2, new TrigTerm(1, variable,
                                     TrigType.SECANT))),
 
                             // inner function
@@ -234,10 +221,10 @@ public class TrigTerm extends Term {
                     return new PolynomialTerm(number, uSubEQ);
                 } else {
                     // no chain rule
-                    USubTerm uSubTerm = new USubTerm(2, new TrigTerm(1, variable, TrigType.SECANT));
-                    return new PolynomialTerm(number, uSubTerm);
+                    USub uSub = new USub(2, new TrigTerm(1, variable, TrigType.SECANT));
+                    return new PolynomialTerm(number, uSub);
                 }
-            case COSECANT:
+            case SECANT:
                 if (shouldChainRule) {
                     // chain rule
                     USub uSubEQ = new USub(1, new EQMultiplication(
@@ -256,7 +243,7 @@ public class TrigTerm extends Term {
                             new TrigTerm(1, variable, TrigType.SECANT)));
                     return new PolynomialTerm(number, uSubEQ);
                 }
-            case SECANT:
+            case COSECANT:
                 if (shouldChainRule) {
                     // chain rule
                     USub uSubEQ = new USub(1, new EQMultiplication(
@@ -280,7 +267,7 @@ public class TrigTerm extends Term {
                     // chain rule
                     USub uSubEQ = new USub(1, new EQMultiplication(
                             // outer function
-                            new PolynomialTerm(number, new USubTerm(2, new TrigTerm(1, variable,
+                            new PolynomialTerm(number, new USub(2, new TrigTerm(1, variable,
                                     TrigType.COSECANT))),
 
                             // inner function
@@ -288,15 +275,15 @@ public class TrigTerm extends Term {
                     return new PolynomialTerm(-number, uSubEQ);
                 } else {
                     // no chain rule
-                    USubTerm uSubTerm = new USubTerm(2, new TrigTerm(1, variable, TrigType.SECANT));
-                    return new PolynomialTerm(-number, uSubTerm);
+                    USub uSub = new USub(2, new TrigTerm(1, variable, TrigType.COSECANT));
+                    return new PolynomialTerm(-number, uSub);
                 }
 
             case ARC_SINE:
                 if (shouldChainRule) {
                     // chain rule
                     EQSequence innerFunction = new EQSequence(
-                            new PolynomialTerm(1, new Variable("x", 0)),
+                            new PolynomialTerm(1),
                             new PolynomialTerm(-1, variable.exponentiate(2)));
 
                     EQMultiplication eq = new EQMultiplication(
@@ -310,19 +297,40 @@ public class TrigTerm extends Term {
                 } else {
                     // no chain rule
                     EQSequence innerFunction = new EQSequence(
-                            new PolynomialTerm(1, new Variable("x", 0)),
-                            new PolynomialTerm(-1, variable));
+                            new PolynomialTerm(1),
+                            new PolynomialTerm(-1, variable.exponentiate(2)));
                     USub uSub = new USub(-1, 2, innerFunction);
                     return new PolynomialTerm(number, uSub);
                 }
             case ARC_COSINE:
-                // TODO: derivative of arccos unimplemented
+                if (shouldChainRule) {
+                    // chain rule
+                    EQSequence innerFunction = new EQSequence(
+                            new PolynomialTerm(1),
+                            new PolynomialTerm(-1, variable.exponentiate(2)));
+
+                    EQMultiplication eq = new EQMultiplication(
+                            // outter function (arcsin)
+                            new PolynomialTerm(1, new USub(-1, 2, innerFunction)),
+
+                            // Inner function (chain rule)
+                            variable.derive());
+
+                    return new PolynomialTerm(-number, new USub(1, eq));
+                } else {
+                    // no chain rule
+                    EQSequence innerFunction = new EQSequence(
+                            new PolynomialTerm(1),
+                            new PolynomialTerm(-1, variable.exponentiate(2)));
+                    USub uSub = new USub(-1, 2, innerFunction);
+                    return new PolynomialTerm(-number, uSub);
+                }
             case ARC_TANGENT:
                 if (shouldChainRule) {
                     // chain rule
                     EQSequence innerFunction = new EQSequence(
                             new PolynomialTerm(1, variable.exponentiate(2)),
-                            new PolynomialTerm(1, new Variable("x", 0)));
+                            new PolynomialTerm(1));
 
                     EQMultiplication eq = new EQMultiplication(
                             // outter function (arcsin)
@@ -336,7 +344,7 @@ public class TrigTerm extends Term {
                     // no chain rule
                     EQSequence innerFunction = new EQSequence(
                             new PolynomialTerm(1, variable.exponentiate(2)),
-                            new PolynomialTerm(1, new Variable("x", 0)));
+                            new PolynomialTerm(1));
                     USub uSub = new USub(-1, innerFunction);
                     return new PolynomialTerm(number, uSub);
                 }
@@ -344,12 +352,13 @@ public class TrigTerm extends Term {
                 if (shouldChainRule) {
                     // chain rule
                     EQSequence innerFunction = new EQSequence(
-                            new PolynomialTerm(1, new Variable("x", 0)),
-                            new PolynomialTerm(-1, variable.exponentiate(2)));
+                            new PolynomialTerm(1, variable.exponentiate(2)),
+                            new PolynomialTerm(-1));
 
                     EQMultiplication eq = new EQMultiplication(
-                            // outter function (arcsin)
-                            new PolynomialTerm(1, new USub(-1, 2, innerFunction)),
+                            // outter function (arccsc)
+                            new AbsoluteValTerm(1, variable),
+                            new PolynomialTerm(1, new USub(-1, innerFunction)),
 
                             // Inner function (chain rule)
                             variable.derive());
@@ -358,19 +367,49 @@ public class TrigTerm extends Term {
                 } else {
                     // no chain rule
                     EQSequence innerFunction = new EQSequence(
-                            new PolynomialTerm(1, new Variable("x", 0)),
-                            new PolynomialTerm(-1, variable));
-                    USub uSub = new USub(-1, 2, innerFunction);
+                            new PolynomialTerm(1, variable.exponentiate(2)),
+                            new PolynomialTerm(-1));
+
+                    EQMultiplication eq = new EQMultiplication(
+                            new AbsoluteValTerm(1, variable),
+                            new PolynomialTerm(1, new USub(1, 2, innerFunction)));
+                    USub uSub = new USub(-1, eq);
                     return new PolynomialTerm(-number, uSub);
                 }
             case ARC_SECANT:
-                // TODO: derivative of arcsec unimplemented
+                if (shouldChainRule) {
+                    // chain rule
+                    EQSequence innerFunction = new EQSequence(
+                            new PolynomialTerm(1, variable.exponentiate(2)),
+                            new PolynomialTerm(-1));
+
+                    EQMultiplication eq = new EQMultiplication(
+                            // outter function (arccsc)
+                            new AbsoluteValTerm(1, variable),
+                            new PolynomialTerm(1, new USub(-1, innerFunction)),
+
+                            // Inner function (chain rule)
+                            variable.derive());
+
+                    return new PolynomialTerm(number, new USub(1, eq));
+                } else {
+                    // no chain rule
+                    EQSequence innerFunction = new EQSequence(
+                            new PolynomialTerm(1, variable.exponentiate(2)),
+                            new PolynomialTerm(-1));
+
+                    EQMultiplication eq = new EQMultiplication(
+                            new AbsoluteValTerm(1, variable),
+                            new PolynomialTerm(1, new USub(1, 2, innerFunction)));
+                    USub uSub = new USub(-1, eq);
+                    return new PolynomialTerm(number, uSub);
+                }
             case ARC_COTANGENT:
                 if (shouldChainRule) {
                     // chain rule
                     EQSequence innerFunction = new EQSequence(
                             new PolynomialTerm(1, variable.exponentiate(2)),
-                            new PolynomialTerm(1, new Variable("x", 0)));
+                            new PolynomialTerm(1));
 
                     EQMultiplication eq = new EQMultiplication(
                             // outter function (arcsin)
@@ -383,8 +422,8 @@ public class TrigTerm extends Term {
                 } else {
                     // no chain rule
                     EQSequence innerFunction = new EQSequence(
-                            new PolynomialTerm(1, new Variable("x", 0)),
-                            new PolynomialTerm(-1, variable));
+                            new PolynomialTerm(1, variable.exponentiate(2)),
+                            new PolynomialTerm(1));
                     USub uSub = new USub(-1, innerFunction);
                     return new PolynomialTerm(-number, uSub);
                 }
@@ -395,14 +434,51 @@ public class TrigTerm extends Term {
 
     @Override
     public double limInfSolve() {
+        /* Initiating variables */
+        double number = getNum();
+
+        /* Algorithm */
+        if (number == 0) {
+            return 0;
+        }
+        boolean isNumberNegative = number < 0;
+
         switch (trigType) {
             case ARC_TANGENT:
-                return Math.PI / 2;
+                return isNumberNegative ? -Math.PI / 2 : Math.PI / 2;
+            case ARC_SECANT:
+                return isNumberNegative ? -Math.PI / 2 : Math.PI / 2;
+            case ARC_COSECANT:
+                return isNumberNegative ? -0 : 0;
             case ARC_COTANGENT:
-                return Math.PI / 2;
+                return isNumberNegative ? -0 : 0;
             default:
                 return Double.NaN;
         }
     }
 
+    @Override
+    public double limNegInfSolve() {
+        /* Initializing variables */
+        double number = getNum();
+
+        /* Algorithm */
+        if (number == 0) {
+            return 0;
+        }
+        boolean isNumberNegative = number < 0;
+
+        switch (trigType) {
+            case ARC_TANGENT:
+                return isNumberNegative ? Math.PI / 2 : -Math.PI / 2;
+            case ARC_SECANT:
+                return isNumberNegative ? -Math.PI / 2 : Math.PI / 2;
+            case ARC_COSECANT:
+                return isNumberNegative ? 0 : -0;
+            case ARC_COTANGENT:
+                return isNumberNegative ? -Math.PI : Math.PI;
+            default:
+                return Double.NaN;
+        }
+    }
 }

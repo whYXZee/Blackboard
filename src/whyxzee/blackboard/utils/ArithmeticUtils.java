@@ -31,4 +31,8 @@ public class ArithmeticUtils {
         return value % num == 0;
     }
 
+    public static boolean isEven(double value) {
+        return isDivisibleBy(value, 2);
+    }
+
 }

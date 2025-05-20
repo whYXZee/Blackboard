@@ -2,13 +2,15 @@ package whyxzee.blackboard.equations;
 
 import java.util.ArrayList;
 
+import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
+import whyxzee.blackboard.terms.variables.USub;
 
 /**
  * A package for an equation based on multiplication
  * 
  * <p>
- * The functionality of this class has not been checked, and it does not work.
+ * The functionality of this class has not been checked.
  */
 public class EQMultiplication extends MathFunction {
 
@@ -45,19 +47,47 @@ public class EQMultiplication extends MathFunction {
 
     @Override
     public void simplify() {
-        // TODO Auto-generated method stub
+        // TODO implement simplify in EQ Muliplication
         throw new UnsupportedOperationException("Unimplemented method 'simplify'");
     }
 
+    //
+    // Arithmetic Methods
+    //
+
     @Override
     public double solve(double value) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'solve'");
+        double output = 1;
+
+        for (Term i : getTermArray()) {
+            output *= i.solve(value);
+        }
+
+        return output;
     }
 
     @Override
     public MathFunction derive() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'derive'");
+        ArrayList<Term> eqSeqTerms = new ArrayList<Term>();
+        Term[] termArray = getTermArray();
+
+        for (int i = 0; i < termArray.length; i++) {
+            // for the derived function
+            EQMultiplication term = new EQMultiplication();
+            term.addTerm(termArray[i].derive());
+            for (int j = 0; j < termArray.length; j++) {
+                // for the non-derived functions
+                if (j != i) {
+                    // whenever not the same term
+                    term.addTerm(termArray[j]);
+                }
+            }
+
+            // so there is no missing data
+            createTermArray();
+            eqSeqTerms.add(new PolynomialTerm(1, new USub(1, term)));
+        }
+
+        return new EQSequence(eqSeqTerms);
     }
 }

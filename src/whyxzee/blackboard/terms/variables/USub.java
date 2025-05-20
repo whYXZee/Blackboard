@@ -15,19 +15,76 @@ import whyxzee.blackboard.terms.Term;
 public class USub extends Variable {
     /* Variables */
     private MathFunction innerFunction;
+    private Term innerTerm;
 
     public USub(int power, MathFunction innerFunction) {
         super("u", power, VarType.U_SUB_EQ);
         this.innerFunction = innerFunction;
-
-        setShouldChainRule(true);
     }
 
     public USub(int numPower, int denomPower, MathFunction innerFunction) {
         super("u", numPower, denomPower, VarType.U_SUB_EQ);
         this.innerFunction = innerFunction;
+    }
 
-        setShouldChainRule(true);
+    public USub(int power, Term innerTerm) {
+        super("u", power, VarType.U_SUB_TERM);
+        this.innerTerm = innerTerm;
+    }
+
+    public USub(int numPower, int denomPower, Term innerTerm) {
+        super("u", numPower, denomPower, VarType.U_SUB_TERM);
+        this.innerTerm = innerTerm;
+    }
+
+    @Override
+    public String printConsole() {
+        switch (getVarType()) {
+            case U_SUB_EQ:
+                if (getNumeratorPower() == 0) {
+                    return "";
+                } else if (getNumeratorPower() == 1 && getDenominatorPower() == 1) {
+                    return innerFunction.printConsole();
+                } else {
+                    return "(" + innerFunction.printConsole() + ")^(" + getNumeratorPower() + "/"
+                            + getDenominatorPower() + ")";
+                }
+            case U_SUB_TERM:
+                if (getNumeratorPower() == 0) {
+                    return "";
+                } else if (getNumeratorPower() == 1 && getDenominatorPower() == 1) {
+                    return innerTerm.printConsole();
+                } else {
+                    return "(" + innerTerm.printConsole() + ")^(" + getNumeratorPower() + "/" + getDenominatorPower()
+                            + ")";
+                }
+            default:
+                return "";
+        }
+    }
+
+    @Override
+    public String toString() {
+        switch (getVarType()) {
+            case U_SUB_EQ:
+                if (getNumeratorPower() == 0) {
+                    return "";
+                } else if (getNumeratorPower() == 1 && getDenominatorPower() == 1) {
+                    return innerFunction.toString();
+                } else {
+                    return "(" + innerFunction.toString() + ")" + getPowerUnicode();
+                }
+            case U_SUB_TERM:
+                if (getNumeratorPower() == 0) {
+                    return "";
+                } else if (getNumeratorPower() == 1 && getDenominatorPower() == 1) {
+                    return innerTerm.toString();
+                } else {
+                    return "(" + innerTerm.toString() + ")" + getPowerUnicode();
+                }
+            default:
+                return "";
+        }
     }
 
     //
@@ -43,7 +100,14 @@ public class USub extends Variable {
     //
     @Override
     public double solve(double value) {
-        return Math.pow(innerFunction.solve(value), (double) getNumeratorPower() / getDenominatorPower());
+        switch (getVarType()) {
+            case U_SUB_EQ:
+                return Math.pow(innerFunction.solve(value), (double) getNumeratorPower() / getDenominatorPower());
+            case U_SUB_TERM:
+                return Math.pow(innerTerm.solve(value), (double) getNumeratorPower() / getDenominatorPower());
+            default:
+                return 0;
+        }
     }
 
     @Override
@@ -53,13 +117,30 @@ public class USub extends Variable {
         int dPower = getDenominatorPower(); // denominator power
 
         /* Chain rule */
-        EQMultiplication eq = new EQMultiplication(
-                // Outer function (u^n) - functional
-                new PolynomialTerm((double) nPower / dPower, setPower(nPower - dPower, dPower)),
+        EQMultiplication eq;
+        switch (getVarType()) {
+            case U_SUB_EQ:
+                /* Chain rule */
+                eq = new EQMultiplication(
+                        // Outer function (u^n)
+                        new PolynomialTerm((double) nPower / dPower, setPower(nPower - dPower, dPower)),
 
-                // Inner function (u)
-                new PolynomialTerm(1, new USub(1, innerFunction.derive())));
-        return new PolynomialTerm(1, new USub(1, eq));
+                        // Inner function (u)
+                        new PolynomialTerm(1, new USub(1, innerFunction.derive())));
+                return new PolynomialTerm(1, new USub(1, eq));
+            case U_SUB_TERM:
+                /* Chain rule */
+                eq = new EQMultiplication(
+                        // Outer function (u^n)
+                        new PolynomialTerm((double) nPower / dPower, setPower(nPower - dPower, dPower)),
+
+                        // Inner function (u)
+                        new PolynomialTerm(1, new USub(1, innerTerm.derive())));
+                return new PolynomialTerm(1, new USub(1, eq));
+            default:
+                return null;
+        }
+
     }
 
     //
@@ -67,13 +148,7 @@ public class USub extends Variable {
     //
 
     @Override
-    public String toString() {
-        if (getNumeratorPower() == 0) {
-            return "";
-        } else if (getNumeratorPower() == 1 && getDenominatorPower() == 1) {
-            return innerFunction.toString();
-        } else {
-            return "(" + innerFunction.toString() + ")" + getPowerUnicode();
-        }
+    public boolean needsChainRule() {
+        return true;
     }
 }

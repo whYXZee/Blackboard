@@ -18,7 +18,8 @@ public abstract class Term {
         TRIGONOMETRIC,
         EXPONENTIAL,
         LOGARITHMIC,
-        INTEGRAL,
+        ABSOLUTE_VALUE,
+        FACTORIAL
         // DERIVATIVE, // save for multivariate cuz implicit
     }
 
@@ -90,8 +91,5 @@ public abstract class Term {
      */
     public abstract double limInfSolve();
 
-    // /**
-    // *
-    // */
-    // public abstract Term limInfTerm();
+    public abstract double limNegInfSolve();
 }

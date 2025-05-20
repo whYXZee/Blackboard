@@ -125,7 +125,7 @@ public class ExponentialTerm extends Term {
         }
 
         /* The variable */
-        if (variable.getShouldChainRule()) {
+        if (variable.needsChainRule()) {
             // chain rule
             EQMultiplication eq = new EQMultiplication(
                     // outer function (b^x)
@@ -144,18 +144,52 @@ public class ExponentialTerm extends Term {
     @Override
     public double limInfSolve() {
         /* Without respect to the variable */
+        /* Initializing variables */
+        double number = getNum();
+
+        /* Algorithm */
+        if (number == 0) {
+            return 0;
+        }
+
         if (base < 1) {
-            // positive base less than 1
+            // -1 < b < 1
+            // converging
             return 0;
         } else if (base == 1) {
-            // base is 1
-            return getNum();
+            // b = 1
+            return number;
         } else if (base >= -1) {
-            // negative base greater than or equal to -1
+            // negative base less than than or equal to -1
             // alternating
             return Double.NaN;
         } else {
             return Double.POSITIVE_INFINITY;
+        }
+    }
+
+    public double limNegInfSolve() {
+        /* Initializing variables */
+        double number = getNum();
+
+        /* Algorithm */
+        if (number == 0) {
+            return 0;
+        }
+
+        if (base < 1) {
+            // -1 < b < 1
+            return Double.POSITIVE_INFINITY;
+        } else if (base == 1) {
+            // b = 1
+            return number;
+        } else if (base > -1) {
+            // negative base less than to -1
+            // converging alternating
+            return 0;
+        } else {
+            // negative base greater than or equal to -1
+            return Double.NaN;
         }
     }
 }

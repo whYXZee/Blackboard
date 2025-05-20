@@ -2,7 +2,6 @@ package whyxzee.blackboard.terms.variables;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.equations.MathFunction;
-import whyxzee.blackboard.terms.LogarithmicTerm;
 import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.utils.UnicodeUtils;
@@ -19,7 +18,7 @@ import whyxzee.blackboard.utils.UnicodeUtils;
  */
 public class Variable {
     /* General Use : static */
-    public static Variable noVar = new Variable("", 0);
+    public static final Variable noVar = new Variable("", 0);
 
     /* General Use */
     private String var;
@@ -28,14 +27,14 @@ public class Variable {
     private String powerUnicode;
 
     /* Variable Identification */
-    private boolean shouldChainRule;
     private VarType varType;
 
     public enum VarType {
         VARIABLE,
         U_SUB_TERM,
         U_SUB_EQ,
-        FACTORIAL
+
+        SIGNUM
     }
 
     /**
@@ -51,7 +50,6 @@ public class Variable {
         setUnicode();
 
         /* Variable identification */
-        shouldChainRule = false;
         varType = VarType.VARIABLE;
     }
 
@@ -68,7 +66,6 @@ public class Variable {
         setUnicode();
 
         /* Variable identification */
-        shouldChainRule = false;
         this.varType = varType;
     }
 
@@ -86,7 +83,6 @@ public class Variable {
         setUnicode();
 
         /* Variable Identification */
-        shouldChainRule = false;
         varType = VarType.VARIABLE;
     }
 
@@ -104,9 +100,40 @@ public class Variable {
         setUnicode();
 
         /* Variable Identification */
-        shouldChainRule = false;
         this.varType = varType;
     }
+
+    @Override
+    public String toString() {
+        if (numPower == 0) {
+            return "1";
+        } else if (numPower == 1 && denomPower == 1) {
+            return var;
+        } else {
+            return var + powerUnicode;
+        }
+    }
+
+    public String printConsole() {
+        if (numPower == 0) {
+            return "1";
+        } else if (numPower == 1) {
+            return var;
+        } else if (denomPower == 1) {
+            return var + "^(" + numPower + ")";
+        } else {
+            return var + "^(" + numPower + "/" + denomPower + ")";
+        }
+    }
+
+    @Override
+    public Variable clone() {
+        return new Variable(getVar(), getNumeratorPower(), getDenominatorPower());
+    }
+
+    //
+    // Arithmetic Methods
+    //
 
     /**
      * Solves the polynomial.
@@ -137,7 +164,8 @@ public class Variable {
             return PolynomialTerm.ZERO_TERM;
         } else {
             // not a constant
-            return new PolynomialTerm((double) numPower / denomPower, setPower(numPower - denomPower, denomPower));
+            return new PolynomialTerm((double) numPower / denomPower,
+                    new Variable(var, numPower - denomPower, denomPower));
         }
     }
 
@@ -166,9 +194,9 @@ public class Variable {
         setUnicode();
     }
 
-    public final Variable setPower(int numPower, int denomPower) {
-        this.numPower = numPower;
-        this.denomPower = denomPower;
+    public final Variable setPower(int nPower, int dPower) {
+        numPower = nPower;
+        denomPower = dPower;
         setUnicode();
 
         return this;
@@ -187,14 +215,6 @@ public class Variable {
         }
     }
 
-    public final void setShouldChainRule(boolean shouldChainRule) {
-        this.shouldChainRule = shouldChainRule;
-    }
-
-    public final boolean getShouldChainRule() {
-        return shouldChainRule;
-    }
-
     public final void setVarType(VarType varType) {
         this.varType = varType;
     }
@@ -208,23 +228,18 @@ public class Variable {
     }
 
     //
-    // Arithmetic
+    // Arithmetic Methods
     //
     /**
      * Applies an exponent to the variable.
      * (x^n)^power
      */
     public final Variable exponentiate(int power) {
-        numPower *= power;
-        setUnicode();
-        return this;
+        return new Variable(var, numPower * power, denomPower);
     }
 
     public final Variable exponentiate(int numPower, int denomPower) {
-        this.numPower *= numPower;
-        this.denomPower *= denomPower;
-        setUnicode();
-        return this;
+        return new Variable(var, this.numPower * numPower, this.denomPower * denomPower);
     }
 
     //
@@ -242,35 +257,11 @@ public class Variable {
         return sameVar && samePower;
     }
 
+    public boolean needsChainRule() {
+        return (numPower != 1 || denomPower != 1) && numPower != 0;
+    }
+
     public boolean varEquals(Variable other) {
         throw new UnsupportedOperationException("Unimplemented method 'varEquals'");
-    }
-
-    @Override
-    public String toString() {
-        if (numPower == 0) {
-            return "1";
-        } else if (numPower == 1 && denomPower == 1) {
-            return var;
-        } else {
-            return var + powerUnicode;
-        }
-    }
-
-    @Override
-    public Variable clone() {
-        return new Variable(getVar(), getNumeratorPower(), getDenominatorPower());
-    }
-
-    public String printConsole() {
-        if (numPower == 0) {
-            return "1";
-        } else if (numPower == 1) {
-            return var;
-        } else if (denomPower == 1) {
-            return var + "^(" + numPower + ")";
-        } else {
-            return var + "^(" + numPower + "/" + denomPower + ")";
-        }
     }
 }

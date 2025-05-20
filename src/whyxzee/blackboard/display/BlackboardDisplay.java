@@ -10,7 +10,6 @@ import java.util.ConcurrentModificationException;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 /**
  * A package for displaying math functions in Swing.

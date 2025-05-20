@@ -3,10 +3,9 @@ package whyxzee.blackboard.terms;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.equations.EQMultiplication;
-import whyxzee.blackboard.terms.TrigTerm.TrigType;
 import whyxzee.blackboard.terms.variables.USub;
-import whyxzee.blackboard.terms.variables.USubTerm;
 import whyxzee.blackboard.terms.variables.Variable;
+import whyxzee.blackboard.utils.ArithmeticUtils;
 
 /**
  * The package for a polynomial term. The term is a*x^n.
@@ -19,13 +18,13 @@ import whyxzee.blackboard.terms.variables.Variable;
  * following has changed since then:
  * <ul>
  * <li>multiply()
+ * <li>solve()
  */
 public class PolynomialTerm extends Term {
     //
     // General use: static
     //
     public static final PolynomialTerm ZERO_TERM = new PolynomialTerm(0);
-    public static final Variable SEC_SQUARED = new USubTerm(2, new TrigTerm(1, new Variable("x", 1), TrigType.SECANT));
 
     //
     // Variables
@@ -168,7 +167,8 @@ public class PolynomialTerm extends Term {
      */
     public double solve(double value) {
         Variable variable = getVar();
-        return getNum() * Math.pow(value, (double) variable.getNumeratorPower() / variable.getDenominatorPower());
+        return getNum() * Math.pow(variable.solve(value),
+                (double) variable.getNumeratorPower() / variable.getDenominatorPower());
     }
 
     public Term negate() {
@@ -193,7 +193,7 @@ public class PolynomialTerm extends Term {
             return PolynomialTerm.ZERO_TERM;
         }
 
-        if (variable.getShouldChainRule()) {
+        if (variable.needsChainRule()) {
             // chain rule
             EQMultiplication eq = new EQMultiplication(
                     // outer function (x^n)
@@ -209,24 +209,69 @@ public class PolynomialTerm extends Term {
             // no chain rule - functional
             number *= (double) numPower / denomPower;
             variable.setPower(numPower - denomPower, denomPower);
+            return new PolynomialTerm(number, variable);
         }
-
-        return new PolynomialTerm(number, variable);
     }
 
     @Override
     public double limInfSolve() {
         /* Without respect to the variable */
+
+        /* Number */
+        double number = getNum();
+        if (number == 0) {
+            return 0;
+        }
+        boolean isNumberNegative = number < 0;
+
+        /* Function */
         double power = getVar().getPower();
         if (power > 0) {
             // if the power is positive (in the numerator)
-            return Double.POSITIVE_INFINITY;
+            return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
         } else if (power < 0) {
             // if the power is negative (in the denominator)
-            return 0;
+            return isNumberNegative ? -0 : 0;
         } else {
             // if the power is 0
-            return getNum();
+            return number;
+        }
+    }
+
+    @Override
+    public double limNegInfSolve() {
+        /* Without respect to the variable */
+
+        /* Number */
+        double number = getNum();
+        if (number == 0) {
+            return 0;
+        }
+        boolean isNumberNegative = number < 0;
+
+        /* Function */
+        double power = getVar().getPower();
+        if (power > 0) {
+            // if the power is positive (in the numerator)
+            if (ArithmeticUtils.isEven(number)) {
+                // even power
+                return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+            } else {
+                // odd power
+                return isNumberNegative ? Double.POSITIVE_INFINITY : Double.NEGATIVE_INFINITY;
+            }
+        } else if (power < 0) {
+            // if the power is negative (in the denominator)
+            if (ArithmeticUtils.isEven(number)) {
+                // even power
+                return isNumberNegative ? -0 : 0;
+            } else {
+                // odd power
+                return isNumberNegative ? 0 : -0;
+            }
+        } else {
+            // if the power is 0
+            return number;
         }
     }
 

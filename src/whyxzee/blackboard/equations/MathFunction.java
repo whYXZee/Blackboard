@@ -5,13 +5,12 @@ import java.util.ArrayList;
 import whyxzee.blackboard.terms.Term;
 
 /**
- * The highest-class for
+ * The highest-class for generic math functions.
  */
 public abstract class MathFunction {
     /* Terms */
     private Term[] termArray;
     private ArrayList<Term> polynomialTerms = new ArrayList<Term>();
-    private ArrayList<Term> integralTerms = new ArrayList<Term>();
     private ArrayList<Term> exponentialTerms = new ArrayList<Term>();
     private ArrayList<Term> logTerms = new ArrayList<Term>();
     private ArrayList<Term> trigTerms = new ArrayList<Term>();
@@ -55,28 +54,15 @@ public abstract class MathFunction {
      * Sorts terms into separate ArrayList<Term> for easier simplification and
      * organization.
      */
-    public void sortTerms() {
+    public final void sortTerms() {
         for (Term term : getTermArray()) {
-            switch (term.getTermType()) {
-                case POLYNOMIAL:
-                    addPolynomialTerm(term);
-                    break;
-                case INTEGRAL:
-                    addIntegralTerm(term);
-                    break;
-                case EXPONENTIAL:
-                    addExponentialTerm(term);
-                    break;
-                case LOGARITHMIC:
-                    addLogTerm(term);
-                    break;
-                case TRIGONOMETRIC:
-                    addTrigTerm(term);
-                    break;
-                default:
-                    break;
-            }
+            addTerm(term);
         }
+    }
+
+    public final void organizeTerms() {
+        // TODO sorting algorithm for terms
+
     }
 
     //
@@ -109,6 +95,31 @@ public abstract class MathFunction {
         sortTerms();
     }
 
+    public final void createTermArray() {
+        int totalSize = polynomialTerms.size() + exponentialTerms.size() + logTerms.size() + trigTerms.size();
+        Term[] array = new Term[totalSize];
+        int index = 0;
+
+        /* Ordering */
+        for (Term i : exponentialTerms) {
+            array[index] = i;
+            index++;
+        }
+        for (Term i : polynomialTerms) {
+            array[index] = i;
+            index++;
+        }
+        for (Term i : logTerms) {
+            array[index] = i;
+            index++;
+        }
+        for (Term i : trigTerms) {
+            array[index] = i;
+            index++;
+        }
+        setTermArray(array);
+    }
+
     public final FunctionType getFunctionType() {
         return functionType;
     }
@@ -120,15 +131,6 @@ public abstract class MathFunction {
      */
     public final void addPolynomialTerm(Term term) {
         polynomialTerms.add(term);
-    }
-
-    /**
-     * Augments the {@code integralTerms} ArrayList.
-     * 
-     * @param term
-     */
-    public final void addIntegralTerm(Term term) {
-        integralTerms.add(term);
     }
 
     /**
@@ -156,6 +158,28 @@ public abstract class MathFunction {
      */
     public final void addTrigTerm(Term term) {
         trigTerms.add(term);
+    }
+
+    /**
+     * Augments the terms, and then sorts them.
+     */
+    public final void addTerm(Term term) {
+        switch (term.getTermType()) {
+            case POLYNOMIAL:
+                addPolynomialTerm(term);
+                break;
+            case EXPONENTIAL:
+                addExponentialTerm(term);
+                break;
+            case LOGARITHMIC:
+                addLogTerm(term);
+                break;
+            case TRIGONOMETRIC:
+                addTrigTerm(term);
+                break;
+            default:
+                break;
+        }
     }
 
     //
