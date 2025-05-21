@@ -1,11 +1,11 @@
 package whyxzee.blackboard.terms;
 
-import java.util.ArrayList;
-
+import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.utils.ArithmeticUtils;
+import whyxzee.blackboard.utils.UnicodeUtils;
 
 /**
  * The package for a polynomial term. The term is a*x^n.
@@ -14,11 +14,8 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
  * The package is contructed as an y=x^n equation.
  * 
  * <p>
- * The functionality of this class was checked on {@code 5/16/2025}, and the
- * following has changed since then:
- * <ul>
- * <li>multiply()
- * <li>solve()
+ * The functionality of this class was checked on {@code 5/20/2025} and nothing
+ * has changed since then.
  */
 public class PolynomialTerm extends Term {
     //
@@ -29,6 +26,10 @@ public class PolynomialTerm extends Term {
     //
     // Variables
     //
+    private int numPower;
+    private int denomPower;
+    private double power;
+    private String powerUnicode;
 
     //
     // Object-related Methods
@@ -37,11 +38,46 @@ public class PolynomialTerm extends Term {
     /**
      * The constructor class for a polynomial term
      * 
-     * @param num the coefficient
-     * @param var the variable
+     * @param coefficient the coefficient
+     * @param var         the variable
      */
-    public PolynomialTerm(double num, Variable var) {
-        super(num, var, TermType.POLYNOMIAL);
+    public PolynomialTerm(double coefficient, Variable var, int power) {
+        /* Term Abstract */
+        super(coefficient, var, TermType.POLYNOMIAL);
+
+        /* Function */
+        numPower = power;
+        denomPower = 1;
+        this.power = (double) numPower / denomPower;
+        setUnicode();
+    }
+
+    public PolynomialTerm(double coefficient, Variable var) {
+        /* Term Abstract */
+        super(coefficient, var, TermType.POLYNOMIAL);
+
+        /* Function */
+        numPower = 1;
+        denomPower = 1;
+        this.power = (double) numPower / denomPower;
+        setUnicode();
+    }
+
+    /**
+     * The constructor class for a polynomial term
+     * 
+     * @param coefficient the coefficient
+     * @param var         the variable
+     */
+    public PolynomialTerm(double coefficient, Variable var, int numPower, int denomPower) {
+        /* Term Abstract */
+        super(coefficient, var, TermType.POLYNOMIAL);
+
+        /* Function */
+        this.numPower = numPower;
+        this.denomPower = denomPower;
+        this.power = (double) numPower / denomPower;
+        setUnicode();
     }
 
     /**
@@ -50,7 +86,14 @@ public class PolynomialTerm extends Term {
      * @param num the constant
      */
     public PolynomialTerm(double num) {
+        /* Term Abstract */
         super(num, Variable.noVar, TermType.POLYNOMIAL);
+
+        /* Function */
+        numPower = 0;
+        denomPower = 1;
+        this.power = (double) numPower / denomPower;
+        setUnicode();
     }
 
     /**
@@ -58,110 +101,93 @@ public class PolynomialTerm extends Term {
      */
     @Override
     public String toString() {
-        if (getNum() == 0) {
-            return "";
-        } else if (getVar().getNumeratorPower() == 0) {
-            return Double.toString(getNum());
+        /* Initializing variables */
+        Variable variable = getVar();
+
+        /* Number */
+        double number = getCoefficient();
+        if (number == 0) {
+            return "0";
+        }
+
+        /* Power */
+        boolean isPowerOne = power == 1;
+        if (numPower == 0) {
+            return Double.toString(number);
         } else {
-            if (getNum() == 1) {
-                return getVar().toString();
+            if (number == 1) {
+                // coefficient of 1
+                if (variable.isUSub()) {
+                    // USub variable
+                    return isPowerOne ? variable.toString() : "(" + variable.toString() + ")" + powerUnicode;
+                } else {
+                    // non-USub variable
+                    return variable.toString() + (isPowerOne ? "" : powerUnicode);
+                }
             } else {
-                return getNum() + getVar().toString();
+                // coefficient that is not 1 nor 0
+                if (variable.isUSub()) {
+                    // USub variable
+                    return number + "(" + variable.toString() + ")" + (isPowerOne ? "" : powerUnicode);
+                } else {
+                    // non-USub variable
+                    return number + variable.toString() + (isPowerOne ? "" : powerUnicode);
+                }
             }
         }
     }
 
     @Override
     public String printConsole() {
-        if (getNum() == 0) {
+        /* Initializing variables */
+        Variable variable = getVar();
+
+        /* Number */
+        double number = getCoefficient();
+        if (number == 0) {
             return "0";
-        } else if (getVar().getNumeratorPower() == 0) {
-            return Double.toString(getNum());
-        } else if (getNum() == 1) {
-            return getVar().printConsole();
-        } else {
-            return getNum() + getVar().printConsole();
         }
-    }
 
-    //
-    // Static Arithmetic
-    //
-
-    /**
-     * Adds n polynomial terms together. The first addened is used for the variable,
-     * so all addends with similar variable and power are added together.
-     * 
-     * <p>
-     * This method can also be used for subtraction.
-     * 
-     * @param addends The terms being added into the first term in the ArrayList.
-     *                The variables need to be equal.
-     * @return
-     */
-    public static PolynomialTerm add(ArrayList<PolynomialTerm> addends) {
-        int numOfAddends = addends.size();
-
-        if (numOfAddends == 1) {
-            return addends.get(0);
+        /* Power */
+        boolean isPowerOne = power == 1;
+        if (numPower == 0) {
+            return Double.toString(number);
         } else {
-            Variable variable = addends.get(0).getVar();
-            double number = 0;
-
-            for (PolynomialTerm addend : addends) {
-                number += addend.getNum();
-            }
-
-            return new PolynomialTerm(number, variable);
-        }
-    }
-
-    /**
-     * Multiplies n polynomial terms together. The variable power does not matter,
-     * while the variable itself does. The variables must be the same. Used for
-     * non-special variables (no u-sub,
-     * factorials, multivariate).
-     * 
-     * <p>
-     * This method can also be used for division.
-     * 
-     * @param varLetter The letter of the variable
-     * @param factors   The terms being multiplied together.
-     * @return
-     */
-    public static PolynomialTerm multiply(String varLetter, ArrayList<PolynomialTerm> factors) {
-        int numOfFactors = factors.size();
-
-        if (numOfFactors == 1) {
-            return factors.get(0);
-        } else {
-            // "Blank" variables to be iterated upon
-            double number = 1;
-            Variable variable = new Variable(varLetter, 0) {
-
-            };
-
-            int numPower = variable.getNumeratorPower();
-            int denomPower = variable.getDenominatorPower();
-
-            /* If the variable is not u-sub / multivariate */
-            for (PolynomialTerm factor : factors) {
-                numPower = variable.getNumeratorPower();
-                denomPower = variable.getDenominatorPower();
-
-                int factorNumPower = factor.getVar().getNumeratorPower();
-                int factorDenomPower = factor.getVar().getDenominatorPower();
-
-                number *= factor.getNum();
-
-                if (denomPower != factorDenomPower) {
-                    // implement later (and check functionality later)
+            if (number == 1) {
+                // coefficient of 1
+                if (variable.isUSub()) {
+                    // USub variable
+                    return isPowerOne ? variable.printConsole()
+                            : "(" + variable.toString() + ")^(" + numPower + "/" + denomPower + ")";
                 } else {
-                    // if denominators are the same
-                    variable.setPower(numPower + factorNumPower, denomPower);
+                    // non-USub variable
+                    return variable.printConsole() + (isPowerOne ? "" : "^(" + numPower + "/" + denomPower + ")");
+                }
+            } else {
+                // coefficient that is not 1 nor 0
+                if (variable.isUSub()) {
+                    // USub variable
+                    return number + "(" + variable.toString() + ")"
+                            + (isPowerOne ? "" : "^(" + numPower + "/" + denomPower + ")");
+                } else {
+                    // non-USub variable
+                    return number + variable.toString() + (isPowerOne ? "" : "^(" + numPower + "/" + denomPower + ")");
                 }
             }
-            return new PolynomialTerm(number, variable);
+        }
+    }
+
+    //
+    // Get & Set Methods
+    //
+
+    public void setUnicode() {
+        if (denomPower == 1) {
+            // denominator not needed
+            powerUnicode = UnicodeUtils.intToSuperscript(numPower);
+        } else {
+            powerUnicode = UnicodeUtils.intToSuperscript(numPower) + Constants.Unicode.SUPERSCRIPT_SLASH
+                    + UnicodeUtils.intToSuperscript(denomPower);
         }
     }
 
@@ -177,13 +203,11 @@ public class PolynomialTerm extends Term {
      * @return
      */
     public double solve(double value) {
-        Variable variable = getVar();
-        return getNum() * Math.pow(variable.solve(value),
-                (double) variable.getNumeratorPower() / variable.getDenominatorPower());
+        return getCoefficient() * Math.pow(getVar().solve(value), power);
     }
 
     public Term negate() {
-        return new PolynomialTerm(-1 * getNum(), getVar());
+        return new PolynomialTerm(-1 * getCoefficient(), getVar(), numPower, denomPower);
     }
 
     /**
@@ -194,10 +218,9 @@ public class PolynomialTerm extends Term {
      */
     @Override
     public Term derive() {
-        double number = getNum();
+        /* Initializing variables */
+        double number = getCoefficient();
         Variable variable = getVar().clone();
-        int numPower = variable.getNumeratorPower();
-        int denomPower = variable.getDenominatorPower();
 
         /* Number */
         if (numPower == 0) {
@@ -206,25 +229,26 @@ public class PolynomialTerm extends Term {
         }
 
         /* Function */
-        if (variable.needsChainRule()) {
+        if (variable.isUSub()) {
             // chain rule
             if (numPower == 1 && denomPower == 1) {
+                System.out.println("deriving with power of 1");
                 return variable.derive();
-            }
-            EQMultiplication eq = new EQMultiplication(
-                    // outer function (x^n)
-                    new PolynomialTerm((double) numPower / denomPower,
-                            variable.setPower(numPower - denomPower, denomPower)),
+            } else {
+                /* Derivative */
+                EQMultiplication eq = new EQMultiplication(
+                        // outer function (x^n)
+                        new PolynomialTerm((double) numPower / denomPower, variable, numPower - denomPower, denomPower),
 
-                    // inner function (x)
-                    variable.derive());
-            return new PolynomialTerm(1, new USub(1, eq));
+                        // inner function (x)
+                        variable.derive());
+                return new PolynomialTerm(number, new USub(eq), 1);
+            }
 
         } else {
             // no chain rule
             number *= (double) numPower / denomPower;
-            variable.setPower(numPower - denomPower, denomPower);
-            return new PolynomialTerm(number, variable);
+            return new PolynomialTerm(number, variable, numPower - denomPower, denomPower);
         }
     }
 
@@ -233,14 +257,14 @@ public class PolynomialTerm extends Term {
         /* Without respect to the variable */
 
         /* Number */
-        double number = getNum();
+        double number = getCoefficient();
         if (number == 0) {
             return 0;
         }
         boolean isNumberNegative = number < 0;
 
         /* Function */
-        double power = getVar().getPower();
+        double power = (double) numPower / denomPower;
         if (power > 0) {
             // if the power is positive (in the numerator)
             return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
@@ -258,14 +282,14 @@ public class PolynomialTerm extends Term {
         /* Without respect to the variable */
 
         /* Number */
-        double number = getNum();
+        double number = getCoefficient();
         if (number == 0) {
             return 0;
         }
         boolean isNumberNegative = number < 0;
 
         /* Function */
-        double power = getVar().getPower();
+        double power = (double) numPower / denomPower;
         if (power > 0) {
             // if the power is positive (in the numerator)
             if (ArithmeticUtils.isEven(number)) {

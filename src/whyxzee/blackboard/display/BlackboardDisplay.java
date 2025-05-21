@@ -103,7 +103,6 @@ public class BlackboardDisplay extends JPanel {
     public void appendScript(BlackboardLabel... labels) {
         for (BlackboardLabel i : labels) {
             scriptLabels.add(i);
-            System.out.println(i.getText());
         }
         updateScriptDisplay();
 

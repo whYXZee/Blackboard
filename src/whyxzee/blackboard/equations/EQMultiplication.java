@@ -85,7 +85,7 @@ public class EQMultiplication extends MathFunction {
 
             // so there is no missing data
             createTermArray();
-            eqSeqTerms.add(new PolynomialTerm(1, new USub(1, term)));
+            eqSeqTerms.add(new PolynomialTerm(1, new USub(term), 1));
         }
 
         return new EQSequence(eqSeqTerms);

@@ -29,30 +29,36 @@ public class SeriesAbstract {
     }
 
     public SeriesAbstract(MathFunction generalFunction, int lowerBound, int upperBound) {
+        /* Series Construction */
         this.generalFunction = generalFunction;
         this.lowerBound = lowerBound;
         this.upperBound = upperBound;
 
+        /* Series Identification */
         seriesType = SeriesType.NONE;
         this.isInfinite = false;
         this.isAlternating = false;
     }
 
     public SeriesAbstract(MathFunction generalFunction, int lowerBound) {
+        /* Series Construction */
         this.generalFunction = generalFunction;
         this.lowerBound = lowerBound;
         this.upperBound = Integer.MAX_VALUE;
 
+        /* Series Identification */
         seriesType = SeriesType.NONE;
         this.isInfinite = true;
         this.isAlternating = false;
     }
 
     public SeriesAbstract(int startIndex, int endIndex, SeriesType seriesType) {
+        /* Series Construction */
         this.generalFunction = null;
         this.lowerBound = startIndex;
         this.upperBound = endIndex;
 
+        /* Series Identification */
         this.seriesType = seriesType;
         this.isInfinite = false;
         this.isAlternating = false;
@@ -87,10 +93,18 @@ public class SeriesAbstract {
     }
 
     //
-    // Arithmetic
+    // Arithmetic Methods
     //
 
+    public final int nInBounds(int n) {
+        if (n > upperBound) {
+            return upperBound;
+        }
+        return n;
+    }
+
     public double aOfN(int n) {
+        n = nInBounds(n);
         return generalFunction.solve(n);
     }
 
@@ -176,7 +190,7 @@ public class SeriesAbstract {
         this.isInfinite = isInfinite;
     }
 
-    public final MathFunction getGeneralFunction() {
+    public MathFunction getGeneralFunction() {
         return generalFunction;
     }
 

@@ -1,10 +1,7 @@
 package whyxzee.blackboard.terms.variables;
 
-import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.equations.MathFunction;
-import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
-import whyxzee.blackboard.utils.UnicodeUtils;
 
 /**
  * The package for a polynomial variable. The variable class is modeled after
@@ -18,15 +15,10 @@ import whyxzee.blackboard.utils.UnicodeUtils;
  */
 public class Variable {
     /* General Use : static */
-    public static final Variable noVar = new Variable("", 0);
-
-    /* General Use */
-    private String var;
-    private int numPower; // numerator. if power is negative, this will be negative
-    private int denomPower; // denominator
-    private String powerUnicode;
+    public static final Variable noVar = new Variable("");
 
     /* Variable Identification */
+    private String var;
     private VarType varType;
 
     public enum VarType {
@@ -41,13 +33,9 @@ public class Variable {
      * @param var
      * @param power
      */
-    public Variable(String var, int power) {
-        this.var = var;
-        numPower = power;
-        denomPower = 1;
-        setUnicode();
-
+    public Variable(String var) {
         /* Variable identification */
+        this.var = var;
         varType = VarType.VARIABLE;
     }
 
@@ -57,76 +45,24 @@ public class Variable {
      * @param var
      * @param power
      */
-    public Variable(String var, int power, VarType varType) {
-        this.var = var;
-        numPower = power;
-        denomPower = 1;
-        setUnicode();
-
+    public Variable(String var, VarType varType) {
         /* Variable identification */
-        this.varType = varType;
-    }
-
-    /**
-     * The constructor class for a variable with a fractional power.
-     * 
-     * @param var
-     * @param numPower
-     * @param denomPower
-     */
-    public Variable(String var, int numPower, int denomPower) {
         this.var = var;
-        this.numPower = numPower;
-        this.denomPower = denomPower;
-        setUnicode();
-
-        /* Variable Identification */
-        varType = VarType.VARIABLE;
-    }
-
-    /**
-     * The constructor class for a specialized variable with a fractional power.
-     * 
-     * @param var
-     * @param numPower
-     * @param denomPower
-     */
-    public Variable(String var, int numPower, int denomPower, VarType varType) {
-        this.var = var;
-        this.numPower = numPower;
-        this.denomPower = denomPower;
-        setUnicode();
-
-        /* Variable Identification */
         this.varType = varType;
     }
 
     @Override
     public String toString() {
-        if (numPower == 0) {
-            return "1";
-        } else if (numPower == 1 && denomPower == 1) {
-            return var;
-        } else {
-            return var + powerUnicode;
-        }
+        return var;
     }
 
     public String printConsole() {
-        if (numPower == 0) {
-            return "1";
-        } else if (numPower == 1) {
-            return var;
-        } else if (denomPower == 1) {
-            return var + "^(" + numPower + ")";
-        } else {
-            return var + "^(" + numPower + "/" + denomPower + ")";
-        }
+        return var;
     }
 
     @Override
     public Variable clone() {
-        return new Variable(getVar(), getNumeratorPower(), getDenominatorPower(), getVarType());
+        return new Variable(getVar(), getVarType());
     }
 
     //
@@ -140,15 +76,7 @@ public class Variable {
      * @return
      */
     public double solve(double value) {
-        return Math.pow(value, (double) numPower / denomPower);
-    }
-
-    /**
-     * Simplifies the power to the smallest fraction.
-     */
-    public void simplifyPower() {
-        throw new UnsupportedOperationException("simplifyPower() method is not supported at this moment");
-        // TODO: Unimplemented method
+        return value;
     }
 
     /**
@@ -157,14 +85,7 @@ public class Variable {
      *         "inner term"
      */
     public Term derive() {
-        if (numPower == 0) {
-            // constant
-            return PolynomialTerm.ZERO_TERM;
-        } else {
-            // not a constant
-            return new PolynomialTerm((double) numPower / denomPower,
-                    new Variable(var, numPower - denomPower, denomPower));
-        }
+        throw new UnsupportedOperationException();
     }
 
     //
@@ -172,45 +93,6 @@ public class Variable {
     //
     public final String getVar() {
         return var;
-    }
-
-    public final int getNumeratorPower() {
-        return numPower;
-    }
-
-    public final int getDenominatorPower() {
-        return denomPower;
-    }
-
-    public final double getPower() {
-        return (double) numPower / denomPower;
-    }
-
-    public final void setPower(int power) {
-        numPower = power;
-        denomPower = 1;
-        setUnicode();
-    }
-
-    public final Variable setPower(int nPower, int dPower) {
-        numPower = nPower;
-        denomPower = dPower;
-        setUnicode();
-
-        return this;
-    }
-
-    public final String getPowerUnicode() {
-        return powerUnicode;
-    }
-
-    private final void setUnicode() {
-        if (denomPower == 1) {
-            powerUnicode = UnicodeUtils.intToSuperscript(numPower);
-        } else {
-            powerUnicode = UnicodeUtils.intToSuperscript(numPower) + Constants.Unicode.SUPERSCRIPT_SLASH
-                    + UnicodeUtils.intToSuperscript(denomPower);
-        }
     }
 
     public final void setVarType(VarType varType) {
@@ -226,37 +108,23 @@ public class Variable {
     }
 
     //
-    // Arithmetic Methods
-    //
-    /**
-     * Applies an exponent to the variable.
-     * (x^n)^power
-     */
-    public final Variable exponentiate(int power) {
-        return new Variable(var, numPower * power, denomPower);
-    }
-
-    public final Variable exponentiate(int numPower, int denomPower) {
-        return new Variable(var, this.numPower * numPower, this.denomPower * denomPower);
-    }
-
-    //
     // Boolean Methods
     //
-    public final boolean hasFractionPower() {
-        return denomPower != 1;
+    public boolean needsChainRule() {
+        return false;
+    }
+
+    public final boolean isUSub() {
+        switch (varType) {
+            case VARIABLE:
+                return false;
+            default:
+                return true;
+        }
     }
 
     public boolean equals(Variable other) {
-        boolean sameVar = var == other.getVar();
-        boolean samePower = getPowerUnicode().equals(other.getPowerUnicode()); // blanket conditional, so there doesn't
-                                                                               // need to be a conditional for int and
-                                                                               // one for fractional
-        return sameVar && samePower;
-    }
-
-    public boolean needsChainRule() {
-        return (numPower != 1 || denomPower != 1) && numPower != 0;
+        return var == other.getVar();
     }
 
     public boolean varEquals(Variable other) {

@@ -8,11 +8,6 @@ public class PowerSeries extends SeriesAbstract {
     public PowerSeries(double power, double a_1, int lowerBound, int upperBound) {
         super(lowerBound, upperBound, SeriesType.P_SERIES);
         this.power = power;
-
-        /* Infinite Series */
-        if (power > 1) {
-            setIsInfinite(true);
-        }
     }
 
     @Override

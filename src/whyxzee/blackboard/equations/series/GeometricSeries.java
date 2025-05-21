@@ -1,5 +1,10 @@
 package whyxzee.blackboard.equations.series;
 
+import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.terms.ExponentialTerm;
+import whyxzee.blackboard.terms.variables.USub;
+
 public class GeometricSeries extends SeriesAbstract {
     /* Equation */
     private double ratio;
@@ -9,15 +14,20 @@ public class GeometricSeries extends SeriesAbstract {
         super(lowerBound, upperBound, SeriesType.GEOMETRIC);
         this.ratio = ratio;
         this.a_1 = a_1;
+
+        setGeneralFunction(new EQMultiplication(
+                new ExponentialTerm(a_1, new USub(Constants.SeriesConstants.N_MINUS_ONE), ratio)));
     }
 
-    @Override
-    public double aOfN(int n) {
-        return Math.pow(ratio, n - 1) * a_1;
-    }
+    // @Override
+    // public double aOfN(int n) {
+    // n = nInBounds(n);
+    // return Math.pow(ratio, n - 1) * a_1;
+    // }
 
     @Override
     public double partialSum(int n) {
+        n = nInBounds(n);
         return a_1 * ((1 - Math.pow(ratio, n)) / (1 - ratio));
     }
 

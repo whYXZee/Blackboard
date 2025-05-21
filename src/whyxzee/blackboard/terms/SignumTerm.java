@@ -21,7 +21,7 @@ public class SignumTerm extends Term {
     @Override
     public String toString() {
         /* Initializing variables */
-        double number = getNum();
+        double number = getCoefficient();
 
         if (number == 0) {
             return "";
@@ -35,7 +35,7 @@ public class SignumTerm extends Term {
     @Override
     public String printConsole() {
         /* Initializing variables */
-        double number = getNum();
+        double number = getCoefficient();
 
         if (number == 0) {
             return "";
@@ -51,12 +51,12 @@ public class SignumTerm extends Term {
     //
     @Override
     public double solve(double value) {
-        return getNum() * Math.signum(getVar().solve(value));
+        return getCoefficient() * Math.signum(getVar().solve(value));
     }
 
     @Override
     public Term negate() {
-        return new SignumTerm(-1 * getNum(), getVar());
+        return new SignumTerm(-1 * getCoefficient(), getVar());
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SignumTerm extends Term {
     @Override
     public double limInfSolve() {
         /* Number */
-        double number = getNum();
+        double number = getCoefficient();
         if (number == 0) {
             return 0;
         }
@@ -80,7 +80,7 @@ public class SignumTerm extends Term {
     public double limNegInfSolve() {
 
         /* Number */
-        double number = getNum();
+        double number = getCoefficient();
         if (number == 0) {
             return 0;
         }

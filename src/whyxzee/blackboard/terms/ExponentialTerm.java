@@ -1,7 +1,5 @@
 package whyxzee.blackboard.terms;
 
-import java.util.ArrayList;
-
 import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
@@ -14,7 +12,8 @@ import whyxzee.blackboard.terms.variables.Variable;
  * The package is constructed as an y=b^x equation.
  * 
  * <p>
- * The methods in this class have not been checked.
+ * The methods in this class have been checked on {@code 5/20/2025} and nothing
+ * has changed.
  */
 public class ExponentialTerm extends Term {
     /* Variables */
@@ -22,23 +21,47 @@ public class ExponentialTerm extends Term {
 
     /**
      * 
-     * @param num  the constant in front of the exponent
-     * @param var  the variable in the exponent
-     * @param base the base of the exponent
+     * @param coefficient the constant in front of the exponent
+     * @param var         the variable in the exponent
+     * @param base        the base of the exponent
      */
-    public ExponentialTerm(double num, Variable var, double base) {
-        super(num, var, TermType.EXPONENTIAL);
+    public ExponentialTerm(double coefficient, Variable var, double base) {
+        super(coefficient, var, TermType.EXPONENTIAL);
         this.base = base;
     }
 
     @Override
     public String toString() {
-        return Double.toString(getNum()) + base + getVar();
+        /* Decision via Coefficient */
+        double coef = getCoefficient();
+        if (coef == 0) {
+            return "0";
+        }
+
+        /* Decision via Function */
+        boolean isBaseE = base == Math.E;
+        if (coef == 1) {
+            return (isBaseE ? "e" : base) + "^(" + getVar().toString() + ")";
+        } else {
+            return Double.toString(coef) + "(" + (isBaseE ? "e" : base) + ")^(" + getVar().toString() + ")";
+        }
     }
 
     @Override
     public String printConsole() {
-        return getNum() + base + "^(" + getVar().printConsole() + ")";
+        /* Decision via Coefficient */
+        double coef = getCoefficient();
+        if (coef == 0) {
+            return "0";
+        }
+
+        /* Decision via Function */
+        boolean isBaseE = base == Math.E;
+        if (coef == 1) {
+            return (isBaseE ? "e" : base) + "^(" + getVar().printConsole() + ")";
+        } else {
+            return Double.toString(coef) + "(" + (isBaseE ? "e" : base) + ")^(" + getVar().printConsole() + ")";
+        }
     }
 
     //
@@ -49,79 +72,27 @@ public class ExponentialTerm extends Term {
     }
 
     //
-    // Static Arithmetic
-    //
-
-    /**
-     * Multiplies n exponential terms together. The variable power does not matter,
-     * while the variable itself does. Used for non-special variables (no u-sub,
-     * factorials, multivariate).
-     * 
-     * <p>
-     * This method can also be used for division.
-     * 
-     * @param varLetter The letter of the variable to use for the output.
-     * @param factors   The terms being multiplied together.
-     * @return
-     */
-    public static ExponentialTerm multiply(String varLetter, ArrayList<ExponentialTerm> factors) {
-        int numOfFactors = factors.size();
-
-        if (numOfFactors == 1) {
-            // if only one factor
-            return factors.get(0);
-        } else {
-            // if n factors
-
-            /* Initializing variables */
-            double number = 1;
-            Variable variable = new Variable(varLetter, 0);
-            int numPower = variable.getNumeratorPower();
-            int denomPower = variable.getDenominatorPower();
-
-            for (ExponentialTerm factor : factors) {
-                /* Factor variable */
-                int factorNumPower = factor.getVar().getNumeratorPower();
-                int factorDenomPower = factor.getVar().getDenominatorPower();
-
-                /* Update the values */
-                number *= factor.getNum();
-                if (denomPower != factorDenomPower) {
-                    // implement later (and check functionality later)
-                } else {
-                    // if denominators are the same
-                    variable.setPower(numPower + factorNumPower, denomPower);
-                }
-                numPower = variable.getNumeratorPower();
-                denomPower = variable.getDenominatorPower();
-            }
-
-            return new ExponentialTerm(number, variable, factors.get(0).getBase());
-        }
-    }
-
-    //
     // Arithmetic Methods
     //
     @Override
     public double solve(double value) {
-        return getNum() * Math.pow(base, getVar().solve(value));
+        return getCoefficient() * Math.pow(base, getVar().solve(value));
     }
 
     @Override
     public Term negate() {
-        return new ExponentialTerm(-1 * getNum(), getVar(), base);
+        return new ExponentialTerm(-1 * getCoefficient(), getVar(), base);
     }
 
     @Override
     public Term derive() {
         /* Initiating variables */
-        double number = getNum();
+        double coef = getCoefficient();
         Variable variable = getVar().clone();
 
         /* The coefficient */
         if (base != Math.E) {
-            number *= Math.log(base); // should I multiply to constant or to an eq?
+            coef *= Math.log(base);
         }
 
         /* The variable */
@@ -134,10 +105,10 @@ public class ExponentialTerm extends Term {
                     // inner function (x)
                     variable.derive());
 
-            return new PolynomialTerm(number, new USub(1, eq));
+            return new PolynomialTerm(coef, new USub(eq), 1);
         } else {
             // no chain rule
-            return new ExponentialTerm(number, variable, base);
+            return new ExponentialTerm(coef, variable, base);
         }
     }
 
@@ -146,11 +117,11 @@ public class ExponentialTerm extends Term {
         /* Without respect to the variable */
 
         /* Number */
-        double number = getNum();
-        if (number == 0) {
+        double coef = getCoefficient();
+        if (coef == 0) {
             return 0;
         }
-        boolean isNumberNegative = number < 0;
+        boolean isNumberNegative = coef < 0;
 
         /* Function */
         if (base < 1) {
@@ -158,7 +129,7 @@ public class ExponentialTerm extends Term {
             return isNumberNegative ? -0 : 0;
         } else if (base == 1) {
             // b = 1
-            return number;
+            return coef;
         } else if (base >= -1) {
             // negative base less than than or equal to -1
             // alternating
@@ -170,18 +141,18 @@ public class ExponentialTerm extends Term {
 
     public double limNegInfSolve() {
         /* Number */
-        double number = getNum();
-        if (number == 0) {
+        double coef = getCoefficient();
+        if (coef == 0) {
             return 0;
         }
-        boolean isNumberNegative = number < 0;
+        boolean isNumberNegative = coef < 0;
 
         if (base < 1) {
             // -1 < b < 1
             return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
         } else if (base == 1) {
             // b = 1
-            return number;
+            return coef;
         } else if (base > -1) {
             // negative base less than to -1
             // converging alternating

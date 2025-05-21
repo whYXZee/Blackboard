@@ -10,7 +10,7 @@ public abstract class Term {
     private TermType termType;
 
     /* Outer Variables */
-    private double num;
+    private double coefficient;
     private Variable var;
 
     public static enum TermType {
@@ -28,13 +28,13 @@ public abstract class Term {
 
     /**
      * 
-     * @param num      The constant outside the polynomial, trig, etc.
-     * @param var      The variable of the term; inside the polynomial, trig
-     *                 function, etc.
+     * @param coefficient The constant outside the polynomial, trig, etc.
+     * @param var         The variable of the term; inside the polynomial, trig
+     *                    function, etc.
      * @param termType
      */
-    public Term(double num, Variable var, TermType termType) {
-        this.num = num;
+    public Term(double coefficient, Variable var, TermType termType) {
+        this.coefficient = coefficient;
         this.var = var;
         this.termType = termType;
     }
@@ -44,8 +44,8 @@ public abstract class Term {
     //
     // Get & Set Methods
     //
-    public double getNum() {
-        return num;
+    public double getCoefficient() {
+        return coefficient;
     }
 
     public TermType getTermType() {
@@ -60,7 +60,7 @@ public abstract class Term {
     // Boolean Methods
     //
     public boolean isNegative() {
-        return 0 > num;
+        return 0 > coefficient;
     }
 
     //

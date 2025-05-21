@@ -11,40 +11,49 @@ import whyxzee.blackboard.terms.variables.Variable;
  * The package is constructed as an y=|x| equation.
  * 
  * <p>
- * The functionality of this class has not been checked.
+ * The functionality of this class has been checked on {@code 5/20/2025} and
+ * nothing has changed since.
  */
 public class AbsoluteValTerm extends Term {
 
-    public AbsoluteValTerm(double num, Variable var) {
-        super(num, var, TermType.ABSOLUTE_VALUE);
+    public AbsoluteValTerm(double coefficient, Variable var) {
+        super(coefficient, var, TermType.ABSOLUTE_VALUE);
     }
 
     @Override
     public String printConsole() {
-        return Double.toString(getNum()) + "|" + getVar().printConsole() + "|";
+        /* Coefficient */
+        double coef = getCoefficient();
+        if (coef == 0) {
+            return "0";
+        } else if (coef == 1) {
+            return "|" + getVar().printConsole() + "|";
+        } else {
+            return Double.toString(getCoefficient()) + "|" + getVar().printConsole() + "|";
+        }
     }
 
     @Override
     public String toString() {
-        /* Initializing variables */
-        double number = getNum();
-        if (number == 0) {
-            return "";
-        } else if (number == 1) {
+        /* Coefficient */
+        double coef = getCoefficient();
+        if (coef == 0) {
+            return "0";
+        } else if (coef == 1) {
             return "|" + getVar().toString() + "|";
         } else {
-            return Double.toString(getNum()) + "|" + getVar().toString() + "|";
+            return Double.toString(getCoefficient()) + "|" + getVar().toString() + "|";
         }
     }
 
     @Override
     public double solve(double value) {
-        return getNum() * Math.abs(getVar().solve(value));
+        return getCoefficient() * Math.abs(getVar().solve(value));
     }
 
     @Override
     public Term negate() {
-        return new AbsoluteValTerm(-1 * getNum(), getVar());
+        return new AbsoluteValTerm(-1 * getCoefficient(), getVar());
     }
 
     @Override
@@ -56,20 +65,20 @@ public class AbsoluteValTerm extends Term {
             EQMultiplication eq = new EQMultiplication(
                     variable.derive(),
                     new SignumTerm(1, variable));
-            return new PolynomialTerm(getNum(), new USub(1, eq));
+            return new PolynomialTerm(getCoefficient(), new USub(eq), 1);
         } else {
-            return new SignumTerm(getNum(), variable);
+            return new SignumTerm(getCoefficient(), variable);
         }
     }
 
     @Override
     public double limInfSolve() {
         /* Number */
-        double number = getNum();
-        if (number == 0) {
+        double coef = getCoefficient();
+        if (coef == 0) {
             return 0;
         }
-        boolean isNumberNegative = number < 0;
+        boolean isNumberNegative = coef < 0;
 
         /* Function */
         return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
@@ -78,7 +87,7 @@ public class AbsoluteValTerm extends Term {
     @Override
     public double limNegInfSolve() {
         /* Number */
-        double number = getNum();
+        double number = getCoefficient();
         if (number == 0) {
             return 0;
         }

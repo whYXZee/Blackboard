@@ -2,9 +2,8 @@ package whyxzee.blackboard;
 
 import java.awt.Font;
 
-import whyxzee.blackboard.equations.EQMultiplication;
-import whyxzee.blackboard.terms.TrigTerm;
-import whyxzee.blackboard.terms.TrigTerm.TrigType;
+import whyxzee.blackboard.equations.EQSequence;
+import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.variables.Variable;
 
 public final class Constants {
@@ -70,24 +69,9 @@ public final class Constants {
         };
     }
 
-    public static final class VariableConstants {
-        public static final Variable BASE_VAR = new Variable("x", 1);
-    }
-
-    public static final class TrigConstants {
-        /* Terms */
-        public static final TrigTerm SECANT = new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.SECANT);
-        public static final TrigTerm COSECANT = new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.COSECANT);
-
-    }
-
-    public static final class EquationConstants {
-        /* Derivatives */
-        public static final EQMultiplication SEC_X_DERIVATIVE = new EQMultiplication(
-                new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.TANGENT),
-                new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.SECANT));
-        public static final EQMultiplication CSC_X_DERIVATIVE = new EQMultiplication(
-                new TrigTerm(-1, VariableConstants.BASE_VAR, TrigType.COTANGENT),
-                new TrigTerm(1, VariableConstants.BASE_VAR, TrigType.COSECANT));
+    public static final class SeriesConstants {
+        public static final EQSequence N_MINUS_ONE = new EQSequence(
+                new PolynomialTerm(1, new Variable("n")),
+                new PolynomialTerm(-1));
     }
 }
