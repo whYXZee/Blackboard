@@ -45,6 +45,7 @@ public final class Constants {
 
         /* General characters */
         public static final char INFINITY = '\u221E';
+        public static final char INTEGRAL = '\u222B';
 
         /* Random characters */
         public static final char STOPWATCH = '\u23F1';

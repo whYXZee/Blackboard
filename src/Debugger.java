@@ -3,12 +3,7 @@ import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
-import whyxzee.blackboard.display.BlackboardLabel;
-import whyxzee.blackboard.equations.EQSequence;
-import whyxzee.blackboard.terms.*;
-import whyxzee.blackboard.terms.TrigTerm.TrigType;
-import whyxzee.blackboard.terms.variables.USub;
-import whyxzee.blackboard.terms.variables.Variable;
+import whyxzee.blackboard.utils.SpecialFunctions;
 import whyxzee.blackboard.display.BlackboardDisplay;
 
 public class Debugger {
@@ -19,14 +14,7 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        EQSequence eq = new EQSequence(
-                new PolynomialTerm(3, new Variable("x"), 3),
-                new PolynomialTerm(5, new Variable("x")),
-                new PolynomialTerm(4),
-                new PolynomialTerm(1, new USub(new TrigTerm(1, new Variable("x"), TrigType.SINE)), 2),
-                new TrigTerm(1, new Variable("x"), TrigType.COTANGENT));
-        PolynomialTerm term = new PolynomialTerm(1, new USub(eq), 35);
-        display.appendScript(new BlackboardLabel(term.derive().toString(), 0.02));
+        System.out.println(SpecialFunctions.gammaFunction(-0.5));
 
         /* Displaying */
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,6 +1,38 @@
 package whyxzee.blackboard.utils;
 
 public class ArithmeticUtils {
+    public static int numOfDigits(double value) {
+        /* Initializing variables */
+        char[] charArray = Double.toString(value).toCharArray();
+        boolean currentlyTrailingZero = false;
+
+        /* Algorithm */
+        int digits = 0;
+        int trailingZeros = 0;
+        for (char i : charArray) {
+            if (currentlyTrailingZero) {
+                if (i != '0') {
+                    currentlyTrailingZero = false;
+                    digits += 1 + trailingZeros;
+                    trailingZeros = 0;
+                } else {
+                    trailingZeros++;
+                }
+            } else {
+                if (i == '0') {
+                    currentlyTrailingZero = true;
+                } else if (i != '.') {
+                    digits++;
+                }
+            }
+        }
+        return digits;
+    }
+
+    public static int doubleToNumerator(double value) {
+        int digits = numOfDigits(value);
+        return (int) (value * Math.pow(10, digits));
+    }
 
     //
     // Boolean methods
@@ -9,7 +41,11 @@ public class ArithmeticUtils {
         return value % 1 == 0;
     }
 
-    public static boolean isDivisibleBy(double value, int num) {
+    public static final boolean isDivisibleBy(double value, int num) {
+        return value % num == 0;
+    }
+
+    public static final boolean isDivisibleBy(double value, double num) {
         return value % num == 0;
     }
 

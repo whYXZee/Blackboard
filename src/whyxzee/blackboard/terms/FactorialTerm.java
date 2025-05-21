@@ -15,8 +15,8 @@ import whyxzee.blackboard.utils.SpecialFunctions;
  */
 public class FactorialTerm extends Term {
 
-    public FactorialTerm(double num, Variable var) {
-        super(num, var, TermType.FACTORIAL);
+    public FactorialTerm(double coefficient, Variable var) {
+        super(coefficient, var, TermType.FACTORIAL);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class FactorialTerm extends Term {
         if (ArithmeticUtils.isInteger(innerVal)) {
             return SpecialFunctions.factorial((int) innerVal);
         } else {
-            return SpecialFunctions.gammaFunction(innerVal);
+            return SpecialFunctions.gammaFunction(innerVal + 1);
         }
     }
 
