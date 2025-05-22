@@ -57,20 +57,21 @@ public class EQMultiplication extends MathFunction {
 
     @Override
     public double solve(double value) {
+        /* Solving */
         double output = 1;
-
         for (Term i : getTermArray()) {
             output *= i.solve(value);
         }
-
         return output;
     }
 
     @Override
     public MathFunction derive() {
+        /* Initializing variables */
         ArrayList<Term> eqSeqTerms = new ArrayList<Term>();
         Term[] termArray = getTermArray();
 
+        /* Derivative process */
         for (int i = 0; i < termArray.length; i++) {
             // for the derived function
             EQMultiplication term = new EQMultiplication();
@@ -83,7 +84,7 @@ public class EQMultiplication extends MathFunction {
                 }
             }
 
-            // so there is no missing data
+            /* Remove missing data */
             createTermArray();
             eqSeqTerms.add(new PolynomialTerm(1, new USub(term), 1));
         }

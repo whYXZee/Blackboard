@@ -38,20 +38,26 @@ public class SpecialFunctions {
             }
         }
 
-        int denomInput = (int) Math.pow(10, ArithmeticUtils.numOfDigits(input));
-        int numInput = (int) (input * denomInput);
-        /* +- p/q */
-        if (Math.abs(input) < 1) {
-            /* Initializing variables */
-        }
+        // no worky :(
+        /* (0, 0.5) U (0.5, 1) */
+        // if (ArithmeticUtils.inOpenRange(input, 0, 0.5)) {
+        // /* (0, 0.5) */
+
+        // } else if (ArithmeticUtils.inOpenRange(input, 0.5, 1)) {
+        // /* (0.5, 1) */
+        // double exponent = Math.log(gammaFunction(1.5)) + ((input - 0.5) *
+        // (-Math.log(gammaFunction(1.5))));
+        // return Math.exp(exponent);
+        // // stops being accurate after 0.7
+        // }
 
         /* n +- p/q */
         if (isInputNegative) {
             /* Initializing variables */
             int intInput = (int) -input + 1; // integer part of the input
             double difference = intInput - input;
-            denomInput = (int) Math.pow(10, ArithmeticUtils.numOfDigits(difference));
-            numInput = (int) (difference * denomInput);
+            int denomInput = (int) Math.pow(10, ArithmeticUtils.numOfDigits(difference));
+            int numInput = (int) (difference * denomInput);
 
             /* Function */
             double piNotation = 1;
@@ -67,8 +73,8 @@ public class SpecialFunctions {
             /* Initializing variables */
             int intInput = (int) input; // integer part of the input
             input -= intInput;
-            denomInput = (int) Math.pow(10, ArithmeticUtils.numOfDigits(input));
-            numInput = (int) (input * denomInput);
+            int denomInput = (int) Math.pow(10, ArithmeticUtils.numOfDigits(input));
+            int numInput = (int) (input * denomInput);
 
             /* Function */
             double piNotation = 1;
@@ -95,12 +101,4 @@ public class SpecialFunctions {
     public static double log_b(double base, double value) {
         return Math.log(value) / Math.log(base);
     }
-
-    //
-    // Boolean Methods
-    //
-    public static final boolean isApproaching(double value, double approaching) {
-        return value < 0.05;
-    }
-
 }

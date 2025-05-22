@@ -53,4 +53,8 @@ public class ArithmeticUtils {
         return isDivisibleBy(value, 2);
     }
 
+    public static boolean inOpenRange(double value, double lowerBound, double upperBound) {
+        return (lowerBound < value) && (value < upperBound);
+    }
+
 }
