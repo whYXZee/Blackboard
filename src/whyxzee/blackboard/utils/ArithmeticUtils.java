@@ -1,5 +1,11 @@
 package whyxzee.blackboard.utils;
 
+import java.util.HashMap;
+
+import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.Term;
+import whyxzee.blackboard.terms.variables.Variable;
+
 public class ArithmeticUtils {
     public static int numOfDigits(double value) {
         /* Initializing variables */

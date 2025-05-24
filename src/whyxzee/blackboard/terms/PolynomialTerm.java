@@ -1,5 +1,8 @@
 package whyxzee.blackboard.terms;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.terms.variables.USub;
@@ -177,11 +180,60 @@ public class PolynomialTerm extends Term {
         }
     }
 
+    public static Term simplifyEQMulti(ArrayList<Term> terms) {
+        /* Initializing terms */
+        HashMap<Variable, PolynomialTerm> polyTerms = new HashMap<Variable, PolynomialTerm>();
+
+        /* Simplifying Algorithm */
+        for (int i = 0; i < terms.size(); i++) {
+            /* Initialing variables */
+            PolynomialTerm term = (PolynomialTerm) terms.get(i);
+            double coef = term.getCoefficient();
+            Variable var = term.getVar();
+            int numPower = term.getNumeratorPower();
+            int denomPower = term.getDenominatorPower();
+
+            if (ArithmeticUtils.inHashMap(polyTerms, var)) {
+                // var in variables
+                PolynomialTerm poly2 = polyTerms.get(var);
+
+                polyTerms.replace(var, new PolynomialTerm(
+                        poly2.getCoefficient() * coef,
+                        var,
+                        (numPower * poly2.getDenominatorPower()) + (denomPower * poly2.getNumeratorPower()),
+                        denomPower * poly2.getDenominatorPower()));
+
+            } else {
+                // var not in variables
+                polyTerms.put(var, new PolynomialTerm(coef, var, numPower, denomPower));
+            }
+
+        }
+
+        System.out.println("size: " + polyTerms.size());
+        if (polyTerms.size() > 1) {
+            EQMultiplication eq = new EQMultiplication(new ArrayList<Term>(polyTerms.values()));
+            return new PolynomialTerm(1, new USub(eq), 1);
+
+        } else if (polyTerms.size() == 1) {
+            return polyTerms.get(polyTerms.keySet().toArray()[0]);
+        } else {
+            return null;
+        }
+    }
+
     //
     // Get & Set Methods
     //
+    public final int getNumeratorPower() {
+        return numPower;
+    }
 
-    public void setUnicode() {
+    public final int getDenominatorPower() {
+        return denomPower;
+    }
+
+    private void setUnicode() {
         if (denomPower == 1) {
             // denominator not needed
             powerUnicode = UnicodeUtils.intToSuperscript(numPower);

@@ -7,7 +7,7 @@ import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.variables.USub;
 
 /**
- * A package for an equation based on multiplication
+ * A package for an equation based on multiplication.
  * 
  * <p>
  * The functionality of this class has not been checked.
@@ -16,7 +16,6 @@ public class EQMultiplication extends MathFunction {
 
     /**
      * 
-     * @param constant the coefficient of the equation.
      * @param terms
      */
     public EQMultiplication(Term... terms) {
@@ -47,8 +46,8 @@ public class EQMultiplication extends MathFunction {
 
     @Override
     public void simplify() {
-        // TODO implement simplify in EQ Muliplication
-        throw new UnsupportedOperationException("Unimplemented method 'simplify'");
+        /* Polynomial */
+        PolynomialTerm.simplifyEQMulti(getPolynomialTerms()).printConsole();
     }
 
     //
@@ -85,7 +84,7 @@ public class EQMultiplication extends MathFunction {
             }
 
             /* Remove missing data */
-            createTermArray();
+            term.createTermArray();
             eqSeqTerms.add(new PolynomialTerm(1, new USub(term), 1));
         }
 

@@ -107,6 +107,10 @@ public class Variable {
         throw new UnsupportedOperationException("'getInnerFunction()' not utilized in Variable.");
     }
 
+    public Term getInnerTerm() {
+        throw new UnsupportedOperationException("'getInnerFunction()' not utilized in Variable.");
+    }
+
     //
     // Boolean Methods
     //
@@ -124,10 +128,6 @@ public class Variable {
     }
 
     public boolean equals(Variable other) {
-        return var == other.getVar();
-    }
-
-    public boolean varEquals(Variable other) {
-        throw new UnsupportedOperationException("Unimplemented method 'varEquals'");
+        return (var == other.getVar()) && (varType == other.getVarType());
     }
 }

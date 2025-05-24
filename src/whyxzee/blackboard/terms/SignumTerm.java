@@ -14,35 +14,35 @@ import whyxzee.blackboard.terms.variables.Variable;
  */
 public class SignumTerm extends Term {
 
-    public SignumTerm(double num, Variable var) {
-        super(num, var, TermType.SIGNUM);
+    public SignumTerm(double coefficient, Variable var) {
+        super(coefficient, var, TermType.SIGNUM);
     }
 
     @Override
     public String toString() {
         /* Initializing variables */
-        double number = getCoefficient();
+        double coef = getCoefficient();
 
-        if (number == 0) {
-            return "";
-        } else if (number == 1) {
+        if (coef == 0) {
+            return "0";
+        } else if (coef == 1) {
             return "sgn(" + getVar().toString() + ")";
         } else {
-            return Double.toString(number) + "sgn(" + getVar().toString() + ")";
+            return Double.toString(coef) + "sgn(" + getVar().toString() + ")";
         }
     }
 
     @Override
     public String printConsole() {
         /* Initializing variables */
-        double number = getCoefficient();
+        double coef = getCoefficient();
 
-        if (number == 0) {
-            return "";
-        } else if (number == 1) {
+        if (coef == 0) {
+            return "0";
+        } else if (coef == 1) {
             return "sgn(" + getVar().printConsole() + ")";
         } else {
-            return Double.toString(number) + "sgn(" + getVar().printConsole() + ")";
+            return Double.toString(coef) + "sgn(" + getVar().printConsole() + ")";
         }
     }
 

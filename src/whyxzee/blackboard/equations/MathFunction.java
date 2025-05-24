@@ -14,6 +14,8 @@ public abstract class MathFunction {
     private ArrayList<Term> exponentialTerms = new ArrayList<Term>();
     private ArrayList<Term> logTerms = new ArrayList<Term>();
     private ArrayList<Term> trigTerms = new ArrayList<Term>();
+    private ArrayList<Term> factorialTerms = new ArrayList<Term>();
+    private ArrayList<Term> signumTerms = new ArrayList<Term>();
 
     /* Function Identification */
     private FunctionType functionType;
@@ -133,6 +135,10 @@ public abstract class MathFunction {
         polynomialTerms.add(term);
     }
 
+    public final ArrayList<Term> getPolynomialTerms() {
+        return polynomialTerms;
+    }
+
     /**
      * Augments the {@code exponentialTerms} ArrayList.
      * 
@@ -161,6 +167,24 @@ public abstract class MathFunction {
     }
 
     /**
+     * Augments the {@code factorialTerms} ArrayList.
+     * 
+     * @param term
+     */
+    public final void addFactorialTerm(Term term) {
+        factorialTerms.add(term);
+    }
+
+    /**
+     * Augments the {@code signumTerms} ArrayList.
+     * 
+     * @param term
+     */
+    public final void addSignumTerms(Term term) {
+        signumTerms.add(term);
+    }
+
+    /**
      * Augments the terms, and then sorts them.
      */
     public final void addTerm(Term term) {
@@ -176,6 +200,14 @@ public abstract class MathFunction {
                 break;
             case TRIGONOMETRIC:
                 addTrigTerm(term);
+                break;
+
+            /* Niche */
+            case FACTORIAL:
+                addFactorialTerm(term);
+                break;
+            case SIGNUM:
+                addSignumTerms(term);
                 break;
             default:
                 break;

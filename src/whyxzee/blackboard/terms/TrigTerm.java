@@ -100,13 +100,9 @@ public class TrigTerm extends Term {
         }
     }
 
-    public String getTrigString() {
-        return trigString;
-    }
-
-    public TrigType getTrigType() {
-        return trigType;
-    }
+    //
+    // Arithmetic Methods
+    //
 
     @Override
     public double solve(double value) {

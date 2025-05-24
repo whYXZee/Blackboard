@@ -1,5 +1,7 @@
 package whyxzee.blackboard.terms;
 
+import java.util.ArrayList;
+
 import whyxzee.blackboard.terms.variables.Variable;
 
 /**
@@ -44,16 +46,28 @@ public abstract class Term {
     //
     // Get & Set Methods
     //
-    public double getCoefficient() {
+    public final double getCoefficient() {
         return coefficient;
     }
 
-    public TermType getTermType() {
-        return termType;
-    };
+    public final void setCoefficient(double coefficient) {
+        this.coefficient = coefficient;
+    }
 
-    public Variable getVar() {
+    public final TermType getTermType() {
+        return termType;
+    }
+
+    public final void setTermType(TermType termType) {
+        this.termType = termType;
+    }
+
+    public final Variable getVar() {
         return var;
+    }
+
+    public final void setVar(Variable var) {
+        this.var = var;
     }
 
     //

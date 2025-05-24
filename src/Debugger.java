@@ -1,10 +1,17 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
 import whyxzee.blackboard.utils.SpecialFunctions;
 import whyxzee.blackboard.display.BlackboardDisplay;
+import whyxzee.blackboard.display.BlackboardLabel;
+import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.terms.LogarithmicTerm;
+import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.Term;
+import whyxzee.blackboard.terms.variables.Variable;
 
 public class Debugger {
     public static void main(String[] args) throws Exception {
@@ -14,7 +21,13 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        System.out.println(SpecialFunctions.gammaFunction(-0.5));
+        System.out.println(PolynomialTerm.simplifyEQMulti(new ArrayList<Term>() {
+            {
+                add(new PolynomialTerm(2, new Variable("x"), 1, 2));
+                add(new PolynomialTerm(2, new Variable("x"), 1));
+                add(new PolynomialTerm(3, new Variable("x"), 3));
+            }
+        }).printConsole());
 
         /* Displaying */
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

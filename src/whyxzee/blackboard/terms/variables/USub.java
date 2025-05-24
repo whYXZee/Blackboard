@@ -65,9 +65,14 @@ public class USub extends Variable {
     //
     // Get and Set Methods
     //
-
+    @Override
     public final MathFunction getInnerFunction() {
         return innerFunction;
+    }
+
+    @Override
+    public final Term getInnerTerm() {
+        return innerTerm;
     }
 
     //
@@ -111,5 +116,14 @@ public class USub extends Variable {
     @Override
     public boolean needsChainRule() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Variable other) {
+        try {
+            return (innerTerm == getInnerTerm()) || (innerFunction == getInnerFunction());
+        } catch (UnsupportedOperationException e) {
+            return false;
+        }
     }
 }

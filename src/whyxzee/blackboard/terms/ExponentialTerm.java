@@ -67,8 +67,14 @@ public class ExponentialTerm extends Term {
     //
     // Get and Set Methods
     //
-    public double getBase() {
+    @Override
+    public final double getBase() {
         return base;
+    }
+
+    @Override
+    public final void setBase(double base) {
+        this.base = base;
     }
 
     //
