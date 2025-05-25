@@ -128,6 +128,19 @@ public class Variable {
     }
 
     public boolean equals(Variable other) {
-        return (var == other.getVar()) && (varType == other.getVarType());
+        if (varType == other.getVarType()) {
+            switch (varType) {
+                case U_SUB_EQ:
+                    return getInnerFunction() == other.getInnerFunction();
+                case U_SUB_TERM:
+                    return getInnerTerm() == other.getInnerTerm();
+                case VARIABLE:
+                    return var == other.getVar();
+                default:
+                    break;
+            }
+        }
+
+        return false;
     }
 }

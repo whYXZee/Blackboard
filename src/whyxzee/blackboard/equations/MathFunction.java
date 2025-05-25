@@ -189,6 +189,10 @@ public abstract class MathFunction {
         signumTerms.add(term);
     }
 
+    public final ArrayList<Term> getSignumTerms() {
+        return signumTerms;
+    }
+
     /**
      * Augments the terms, and then sorts them.
      */

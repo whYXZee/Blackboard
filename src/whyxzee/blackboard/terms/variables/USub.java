@@ -119,13 +119,4 @@ public class USub extends Variable {
     public boolean needsChainRule() {
         return true;
     }
-
-    @Override
-    public boolean equals(Variable other) {
-        try {
-            return (innerTerm == getInnerTerm()) || (innerFunction == getInnerFunction());
-        } catch (UnsupportedOperationException e) {
-            return false;
-        }
-    }
 }

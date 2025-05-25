@@ -2,9 +2,7 @@ package whyxzee.blackboard.equations;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.terms.ExponentialTerm;
-import whyxzee.blackboard.terms.PolynomialTerm;
-import whyxzee.blackboard.terms.Term;
+import whyxzee.blackboard.terms.*;
 
 /**
  * A package for equations that are a sequence, meaning that they are chained
@@ -72,6 +70,7 @@ public class EQSequence extends MathFunction {
 
     @Override
     public void simplify() {
+        /* Initializing variables */
         ArrayList<Term> newTermList = new ArrayList<Term>();
 
         /* Polynomial Term */
@@ -94,6 +93,18 @@ public class EQSequence extends MathFunction {
                     newTermList.addAll(expTerm.getVar().getInnerFunction().getTermArray());
                 default:
                     newTermList.add(expTerm);
+                    break;
+            }
+        }
+
+        /* Signum Term */
+        Term signTerm = SignumTerm.add(getSignumTerms());
+        if (signTerm != null) {
+            switch (signTerm.getVar().getVarType()) {
+                case U_SUB_EQ:
+                    newTermList.addAll(signTerm.getVar().getInnerFunction().getTermArray());
+                default:
+                    newTermList.add(signTerm);
                     break;
             }
         }

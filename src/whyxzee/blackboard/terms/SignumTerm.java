@@ -1,6 +1,10 @@
 package whyxzee.blackboard.terms;
 
-import whyxzee.blackboard.terms.variables.Variable;
+import java.util.ArrayList;
+
+import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.equations.EQSequence;
+import whyxzee.blackboard.terms.variables.*;
 
 /**
  * A package for the signum function, with a*sgn(x).
@@ -49,7 +53,64 @@ public class SignumTerm extends Term {
     }
 
     //
-    // Arithmetic Methods
+    // Arithmetic Methods (Static)
+    //
+    public static Term add(ArrayList<Term> terms) {
+        /* Initializing variables */
+        SignumData signData = new SignumData();
+
+        for (int i = 0; i < terms.size(); i++) {
+            SignumTerm term = (SignumTerm) terms.get(i);
+            double coef = term.getCoefficient();
+
+            if (signData.containsTerm(term)) {
+                SignumTerm oldTerm = signData.getSignTerm(term);
+                signData.update(term, coef + oldTerm.getCoefficient());
+            } else {
+                signData.add(term);
+            }
+        }
+
+        if (signData.size() > 1) {
+            EQSequence eq = new EQSequence(new ArrayList<Term>(signData.getTermArray()));
+            return new PolynomialTerm(1, new USub(eq));
+        } else if (signData.size() == 1) {
+            return signData.getSignumTerm(0);
+        }
+
+        return null;
+    }
+
+    public static Term multiply(ArrayList<Term> terms) {
+        /* Initializing variables */
+        SignumData signData = new SignumData();
+
+        /* Multiplication algorithm */
+        for (int i = 0; i < terms.size(); i++) {
+            SignumTerm term = (SignumTerm) terms.get(i);
+            double coef = term.getCoefficient();
+
+            if (signData.containsTerm(term)) {
+                SignumTerm oldTerm = signData.getSignTerm(term);
+
+                signData.update(oldTerm, coef * oldTerm.getCoefficient(), signData.getSignumPower(term) + 1);
+            } else {
+                signData.add(term, 1);
+            }
+        }
+
+        if (signData.size() > 1) {
+            EQMultiplication eq = new EQMultiplication(new ArrayList<Term>(signData.getTermArray()));
+            return new PolynomialTerm(1, new USub(eq));
+        } else if (signData.size() == 1) {
+            return signData.getSignumTerm(0);
+        }
+
+        return null;
+    }
+
+    //
+    // Arithmetic Methods (Object-related)
     //
     @Override
     public double solve(double value) {
@@ -99,10 +160,87 @@ public class SignumTerm extends Term {
         switch (term.getTermType()) {
             case SIGNUM:
                 SignumTerm signTerm = (SignumTerm) term;
-                return signTerm.getVar().equals(this.getVar());
+                return getVar().equals(signTerm.getVar());
             default:
                 return false;
         }
     }
 
+    static class SignumData {
+        /* Variables */
+        private ArrayList<Integer> numPowers;
+        private ArrayList<SignumTerm> signumTerms;
+
+        public SignumData() {
+            numPowers = new ArrayList<Integer>();
+            signumTerms = new ArrayList<SignumTerm>();
+        }
+
+        //
+        // Get & Set Methods
+        //
+        public void add(SignumTerm term) {
+            signumTerms.add(term);
+        }
+
+        public void add(SignumTerm term, int numPower) {
+            signumTerms.add(term);
+            numPowers.add(numPower);
+        }
+
+        public void update(SignumTerm term, double coefficient, int numPower) {
+            int index = getIndexOf(term);
+            signumTerms.set(index, new SignumTerm(coefficient, term.getVar()));
+            numPowers.set(index, numPower);
+        }
+
+        public void update(SignumTerm term, double coefficient) {
+            signumTerms.set(getIndexOf(term), new SignumTerm(coefficient, term.getVar()));
+        }
+
+        public SignumTerm getSignumTerm(int index) {
+            return signumTerms.get(index);
+        }
+
+        public int getSignumPower(int index) {
+            return numPowers.get(index);
+        }
+
+        public SignumTerm getSignTerm(SignumTerm term) {
+            return getSignumTerm(getIndexOf(term));
+        }
+
+        public int getSignumPower(SignumTerm term) {
+            return getSignumPower(getIndexOf(term));
+        }
+
+        public ArrayList<SignumTerm> getTermArray() {
+            return signumTerms;
+        }
+
+        public int getIndexOf(SignumTerm term) {
+            for (int i = 0; i < signumTerms.size(); i++) {
+                if (signumTerms.get(i).similarTo(term)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        public int size() {
+            return signumTerms.size();
+        }
+
+        //
+        // Boolean Methods
+        //
+        public boolean containsTerm(SignumTerm term) {
+            for (SignumTerm i : signumTerms) {
+                if (i.similarTo(term)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }

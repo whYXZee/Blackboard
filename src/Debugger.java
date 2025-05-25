@@ -12,6 +12,7 @@ import whyxzee.blackboard.equations.EQSequence;
 import whyxzee.blackboard.terms.ExponentialTerm;
 import whyxzee.blackboard.terms.LogarithmicTerm;
 import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.SignumTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
@@ -24,22 +25,12 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        // System.out.println(PolynomialTerm.simplifyEQMulti(new ArrayList<Term>() {
-        // {
-        // add(new PolynomialTerm(2, new Variable("x"), 1, 2));
-        // add(new PolynomialTerm(2, new Variable("x"), 1));
-        // add(new PolynomialTerm(3, new Variable("x"), 3));
-        // add(new PolynomialTerm(1, new Variable("y"), 1));
-        // add(new PolynomialTerm(4, new Variable("y"), 3, 5));
-        // }
-        // }).printConsole());
-
         EQSequence eq = new EQSequence(new PolynomialTerm(2), new PolynomialTerm(1, new Variable("x"), 3));
-        display.appendScript(new BlackboardLabel(ExponentialTerm.add(new ArrayList<Term>() {
+        display.appendScript(new BlackboardLabel(SignumTerm.multiply(new ArrayList<Term>() {
             {
-                add(new ExponentialTerm(4, new Variable("x"), 2));
-                add(new ExponentialTerm(4, new Variable("x"), 2));
-                add(new ExponentialTerm(1, new USub(eq), 2));
+                add(new SignumTerm(2, new USub(eq)));
+                add(new SignumTerm(1, new Variable("x")));
+                add(new SignumTerm(2, new Variable("x")));
 
             }
         }).toString(), 0.1));
