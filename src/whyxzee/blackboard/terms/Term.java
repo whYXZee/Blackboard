@@ -1,7 +1,5 @@
 package whyxzee.blackboard.terms;
 
-import java.util.ArrayList;
-
 import whyxzee.blackboard.terms.variables.Variable;
 
 /**
@@ -109,4 +107,17 @@ public abstract class Term {
     public abstract double limInfSolve();
 
     public abstract double limNegInfSolve();
+
+    //
+    // Boolean Methods
+    //
+    /**
+     * If a term is similar to another term (meaning the two can are like terms and
+     * can be combined)
+     * 
+     * @param term the other term
+     * @return {@code true} if the two terms are alike, {@code false} if otherwise.
+     * 
+     */
+    public abstract boolean similarTo(Term term);
 }

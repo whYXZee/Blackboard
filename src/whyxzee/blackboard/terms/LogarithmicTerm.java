@@ -14,8 +14,10 @@ import whyxzee.blackboard.utils.UnicodeUtils;
  * The package is constructed as a y=log_b(x) equation.
  * 
  * <p>
- * The methods in this class has been checked on {@code 5/20/2025} and nothing
- * has changed
+ * The methods in this class has been checked on {@code 5/20/2025} and the
+ * following has changed:
+ * <ul>
+ * <li>similarTo()
  */
 public class LogarithmicTerm extends Term {
     /* Variables */
@@ -94,12 +96,10 @@ public class LogarithmicTerm extends Term {
     //
     // Get and Set Methods
     //
-    @Override
     public final double getBase() {
         return base;
     }
 
-    @Override
     public final void setBase(double base) {
         this.base = base;
     }
@@ -177,6 +177,21 @@ public class LogarithmicTerm extends Term {
     @Override
     public double limNegInfSolve() {
         return Double.NaN;
+    }
+
+    //
+    // Boolean Methods
+    //
+    @Override
+    public boolean similarTo(Term term) {
+        switch (term.getTermType()) {
+            case LOGARITHMIC:
+                LogarithmicTerm logTerm = (LogarithmicTerm) term;
+                return (logTerm.getBase() == this.base) &&
+                        (logTerm.getVar().equals(this.getVar()));
+            default:
+                return false;
+        }
     }
 
 }

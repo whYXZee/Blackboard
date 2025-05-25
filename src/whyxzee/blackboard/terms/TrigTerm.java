@@ -10,7 +10,9 @@ import whyxzee.blackboard.terms.variables.Variable;
  * 
  * <p>
  * The functionality of this class has been checked on {@code 5/20/2025}, and
- * nothing has changed since.
+ * the following has changed since:
+ * <ul>
+ * <li>similarTo()
  */
 public class TrigTerm extends Term {
 
@@ -98,6 +100,10 @@ public class TrigTerm extends Term {
             default:
                 return "";
         }
+    }
+
+    public TrigType getTrigType() {
+        return trigType;
     }
 
     //
@@ -467,6 +473,21 @@ public class TrigTerm extends Term {
                 return isNumberNegative ? -Math.PI : Math.PI;
             default:
                 return Double.NaN;
+        }
+    }
+
+    //
+    // Boolean Methods
+    //
+    @Override
+    public boolean similarTo(Term term) {
+        switch (term.getTermType()) {
+            case TRIGONOMETRIC:
+                TrigTerm trigTerm = (TrigTerm) term;
+                return (trigTerm.getVar().equals(this.getVar())) &&
+                        (trigTerm.getTrigType() == this.trigType);
+            default:
+                return false;
         }
     }
 }

@@ -76,4 +76,18 @@ public class FactorialTerm extends Term {
         throw new UnsupportedOperationException("Unimplemented method 'limNegInfSolve'");
     }
 
+    //
+    // Boolean Methods
+    //
+    @Override
+    public boolean similarTo(Term term) {
+        switch (term.getTermType()) {
+            case FACTORIAL:
+                FactorialTerm factTerm = (FactorialTerm) term;
+                return factTerm.getVar().equals(getVar());
+            default:
+                return false;
+        }
+    }
+
 }

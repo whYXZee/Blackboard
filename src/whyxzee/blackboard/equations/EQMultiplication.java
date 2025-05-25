@@ -47,7 +47,12 @@ public class EQMultiplication extends MathFunction {
     @Override
     public void simplify() {
         /* Polynomial */
-        PolynomialTerm.simplifyEQMulti(getPolynomialTerms()).printConsole();
+        PolynomialTerm.multiply(getPolynomialTerms()).printConsole();
+    }
+
+    @Override
+    public void merge(MathFunction function) {
+
     }
 
     //
@@ -68,23 +73,22 @@ public class EQMultiplication extends MathFunction {
     public MathFunction derive() {
         /* Initializing variables */
         ArrayList<Term> eqSeqTerms = new ArrayList<Term>();
-        Term[] termArray = getTermArray();
+        ArrayList<Term> termArray = getTermArray();
 
         /* Derivative process */
-        for (int i = 0; i < termArray.length; i++) {
+        for (int i = 0; i < termArray.size(); i++) {
             // for the derived function
             EQMultiplication term = new EQMultiplication();
-            term.addTerm(termArray[i].derive());
-            for (int j = 0; j < termArray.length; j++) {
+            term.addTerm(termArray.get(i).derive());
+            for (int j = 0; j < termArray.size(); j++) {
                 // for the non-derived functions
                 if (j != i) {
                     // whenever not the same term
-                    term.addTerm(termArray[j]);
+                    term.addTerm(termArray.get(j));
                 }
             }
 
             /* Remove missing data */
-            term.createTermArray();
             eqSeqTerms.add(new PolynomialTerm(1, new USub(term), 1));
         }
 

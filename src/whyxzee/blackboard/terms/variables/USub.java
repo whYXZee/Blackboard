@@ -19,11 +19,13 @@ public class USub extends Variable {
     public USub(MathFunction innerFunction) {
         super("u", VarType.U_SUB_EQ);
         this.innerFunction = innerFunction;
+        this.innerTerm = null;
     }
 
     public USub(Term innerTerm) {
         super("u", VarType.U_SUB_TERM);
         this.innerTerm = innerTerm;
+        this.innerFunction = null;
     }
 
     @Override

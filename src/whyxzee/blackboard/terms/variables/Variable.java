@@ -104,11 +104,11 @@ public class Variable {
     }
 
     public MathFunction getInnerFunction() {
-        throw new UnsupportedOperationException("'getInnerFunction()' not utilized in Variable.");
+        return null;
     }
 
     public Term getInnerTerm() {
-        throw new UnsupportedOperationException("'getInnerFunction()' not utilized in Variable.");
+        return null;
     }
 
     //

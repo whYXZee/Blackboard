@@ -12,7 +12,9 @@ import whyxzee.blackboard.terms.variables.Variable;
  * 
  * <p>
  * The functionality of this class has been checked on {@code 5/20/2025} and
- * nothing has changed since.
+ * the following has changed:
+ * <ul>
+ * <li>similarTo()
  */
 public class AbsoluteValTerm extends Term {
 
@@ -95,6 +97,21 @@ public class AbsoluteValTerm extends Term {
 
         /* Function */
         return isNumberNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+    }
+
+    //
+    // Boolean Methods
+    //
+
+    @Override
+    public boolean similarTo(Term term) {
+        switch (term.getTermType()) {
+            case ABSOLUTE_VALUE:
+                AbsoluteValTerm absValTerm = (AbsoluteValTerm) term;
+                return (absValTerm.getVar().equals(getVar()));
+            default:
+                return false;
+        }
     }
 
 }

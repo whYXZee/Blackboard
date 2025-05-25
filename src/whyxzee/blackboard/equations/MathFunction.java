@@ -9,7 +9,8 @@ import whyxzee.blackboard.terms.Term;
  */
 public abstract class MathFunction {
     /* Terms */
-    private Term[] termArray;
+    // private Term[] termArray;
+    private ArrayList<Term> termArray = new ArrayList<Term>();
     private ArrayList<Term> polynomialTerms = new ArrayList<Term>();
     private ArrayList<Term> exponentialTerms = new ArrayList<Term>();
     private ArrayList<Term> logTerms = new ArrayList<Term>();
@@ -26,7 +27,9 @@ public abstract class MathFunction {
     }
 
     public MathFunction(FunctionType functionType, Term... terms) {
-        termArray = terms;
+        for (Term i : terms) {
+            termArray.add(i);
+        }
         sortTerms();
 
         /* Identification */
@@ -35,11 +38,7 @@ public abstract class MathFunction {
 
     public MathFunction(FunctionType functionType, ArrayList<Term> terms) {
         /* Transfer terms from ArrayList to array */
-        Term[] tempTermArray = new Term[terms.size()];
-        for (int i = 0; i < terms.size(); i++) {
-            tempTermArray[i] = terms.get(i);
-        }
-        termArray = tempTermArray;
+        termArray = terms;
         sortTerms();
 
         /* Identification */
@@ -57,15 +56,28 @@ public abstract class MathFunction {
      * organization.
      */
     public final void sortTerms() {
+        polynomialTerms = new ArrayList<Term>();
+        exponentialTerms = new ArrayList<Term>();
+        logTerms = new ArrayList<Term>();
+        trigTerms = new ArrayList<Term>();
+        factorialTerms = new ArrayList<Term>();
+        signumTerms = new ArrayList<Term>();
+
         for (Term term : getTermArray()) {
             addTerm(term);
         }
+
+        organizeTerms();
     }
 
     public final void organizeTerms() {
+        /* Polynomial Term */
+        // sorted by greatest power -> lowest power
         // TODO sorting algorithm for terms
 
     }
+
+    public abstract void merge(MathFunction function);
 
     //
     // Arithmetic Functions
@@ -88,38 +100,27 @@ public abstract class MathFunction {
     //
     // Get & Set Methods
     //
-    public final Term[] getTermArray() {
+    public final ArrayList<Term> getTermArray() {
         return termArray;
     }
 
     public final void setTermArray(Term... terms) {
+        ArrayList<Term> newTermArray = new ArrayList<>();
+        for (Term i : terms) {
+            newTermArray.add(i);
+        }
+        termArray = newTermArray;
+        sortTerms();
+    }
+
+    public final void setTermArray(ArrayList<Term> terms) {
         termArray = terms;
         sortTerms();
     }
 
-    public final void createTermArray() {
-        int totalSize = polynomialTerms.size() + exponentialTerms.size() + logTerms.size() + trigTerms.size();
-        Term[] array = new Term[totalSize];
-        int index = 0;
-
-        /* Ordering */
-        for (Term i : exponentialTerms) {
-            array[index] = i;
-            index++;
-        }
-        for (Term i : polynomialTerms) {
-            array[index] = i;
-            index++;
-        }
-        for (Term i : logTerms) {
-            array[index] = i;
-            index++;
-        }
-        for (Term i : trigTerms) {
-            array[index] = i;
-            index++;
-        }
-        setTermArray(array);
+    public final void addToTermArray(ArrayList<Term> terms) {
+        termArray.addAll(terms);
+        sortTerms();
     }
 
     public final FunctionType getFunctionType() {
@@ -146,6 +147,10 @@ public abstract class MathFunction {
      */
     public final void addExponentialTerm(Term term) {
         exponentialTerms.add(term);
+    }
+
+    public final ArrayList<Term> getExponentialTerms() {
+        return exponentialTerms;
     }
 
     /**

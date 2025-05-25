@@ -9,8 +9,10 @@ import whyxzee.blackboard.terms.variables.Variable;
  * The class is constructed as a y=sgn(x)
  * 
  * <p>
- * The functionality of this class has been checked on {@code 5/20/2025} and
- * nothing has changed since.
+ * The functionality of this class has been checked on {@code 5/20/2025} and the
+ * following has changed since:
+ * <ul>
+ * <li>similarTo()
  */
 public class SignumTerm extends Term {
 
@@ -87,6 +89,20 @@ public class SignumTerm extends Term {
 
         /* Function */
         return -number;
+    }
+
+    //
+    // Boolean Methods
+    //
+    @Override
+    public boolean similarTo(Term term) {
+        switch (term.getTermType()) {
+            case SIGNUM:
+                SignumTerm signTerm = (SignumTerm) term;
+                return signTerm.getVar().equals(this.getVar());
+            default:
+                return false;
+        }
     }
 
 }

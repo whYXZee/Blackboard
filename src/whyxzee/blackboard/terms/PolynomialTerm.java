@@ -1,10 +1,10 @@
 package whyxzee.blackboard.terms;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.equations.EQSequence;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.utils.ArithmeticUtils;
@@ -17,7 +17,7 @@ import whyxzee.blackboard.utils.UnicodeUtils;
  * The package is contructed as an y=x^n equation.
  * 
  * <p>
- * The functionality of this class was checked on {@code 5/20/2025} and nothing
+ * The functionality of this class was checked on {@code 5/24/2025} and nothing
  * has changed since then.
  */
 public class PolynomialTerm extends Term {
@@ -180,9 +180,56 @@ public class PolynomialTerm extends Term {
         }
     }
 
-    public static Term simplifyEQMulti(ArrayList<Term> terms) {
-        /* Initializing terms */
-        HashMap<Variable, PolynomialTerm> polyTerms = new HashMap<Variable, PolynomialTerm>();
+    //
+    // Arithmetic Methods (Static)
+    //
+
+    /**
+     * Adds the PolynomialTerms based on the variable and the power. Can be used to
+     * simplify the PolynomialTerms in sequential equations.
+     * 
+     * @param terms
+     * @return
+     */
+    public static Term add(ArrayList<Term> terms) {
+        /* Initializing variables */
+        PolynomialData polyData = new PolynomialData();
+
+        /* Simplifying Algorithm */
+        for (int i = 0; i < terms.size(); i++) {
+            /* Initializing Variables */
+            PolynomialTerm term = (PolynomialTerm) terms.get(i);
+            double coef = term.getCoefficient();
+
+            if (polyData.contains(term)) {
+                PolynomialTerm poly2 = polyData.get(term);
+
+                polyData.updatePolyTerm(term, poly2.getCoefficient() + coef);
+            } else {
+                polyData.add(term);
+            }
+        }
+
+        if (polyData.size() > 1) {
+            EQSequence eq = new EQSequence(polyData.getTermArrayList());
+            return new PolynomialTerm(1, new USub(eq), 1);
+        } else if (polyData.size() == 1) {
+            return polyData.getPolyTerm(0);
+        }
+
+        return null;
+    }
+
+    /**
+     * Multiplies the terms together based on the variable. Can be used to simplify
+     * PolynomialTerms in a multiplicative equation.
+     * 
+     * @param terms
+     * @return
+     */
+    public static Term multiply(ArrayList<Term> terms) {
+        /* Initializing variable */
+        PolynomialData polyData = new PolynomialData();
 
         /* Simplifying Algorithm */
         for (int i = 0; i < terms.size(); i++) {
@@ -193,30 +240,26 @@ public class PolynomialTerm extends Term {
             int numPower = term.getNumeratorPower();
             int denomPower = term.getDenominatorPower();
 
-            if (ArithmeticUtils.inHashMap(polyTerms, var)) {
-                // var in variables
-                PolynomialTerm poly2 = polyTerms.get(var);
+            if (polyData.contains(var)) {
+                // var in polyData
+                PolynomialTerm poly2 = polyData.get(var);
 
-                polyTerms.replace(var, new PolynomialTerm(
-                        poly2.getCoefficient() * coef,
-                        var,
+                polyData.updatePolyTerm(var, poly2.getCoefficient() * coef,
                         (numPower * poly2.getDenominatorPower()) + (denomPower * poly2.getNumeratorPower()),
-                        denomPower * poly2.getDenominatorPower()));
+                        denomPower * poly2.getDenominatorPower());
 
             } else {
                 // var not in variables
-                polyTerms.put(var, new PolynomialTerm(coef, var, numPower, denomPower));
+                polyData.add(var, new PolynomialTerm(coef, var, numPower, denomPower));
             }
 
         }
 
-        System.out.println("size: " + polyTerms.size());
-        if (polyTerms.size() > 1) {
-            EQMultiplication eq = new EQMultiplication(new ArrayList<Term>(polyTerms.values()));
+        if (polyData.size() > 1) {
+            EQMultiplication eq = new EQMultiplication(polyData.getTermArrayList());
             return new PolynomialTerm(1, new USub(eq), 1);
-
-        } else if (polyTerms.size() == 1) {
-            return polyTerms.get(polyTerms.keySet().toArray()[0]);
+        } else if (polyData.size() == 1) {
+            return polyData.getPolyTerm(0);
         } else {
             return null;
         }
@@ -366,4 +409,130 @@ public class PolynomialTerm extends Term {
         }
     }
 
+    //
+    // Boolean Methods
+    //
+    @Override
+    public boolean similarTo(Term term) {
+        switch (term.getTermType()) {
+            case POLYNOMIAL:
+                PolynomialTerm polyTerm = (PolynomialTerm) term;
+                return (polyTerm.getDenominatorPower() == this.denomPower)
+                        && (polyTerm.getNumeratorPower() == this.numPower)
+                        && (polyTerm.getVar().equals(this.getVar()));
+            default:
+                return false;
+        }
+    }
+
+    static class PolynomialData {
+        private ArrayList<Variable> variables;
+        private ArrayList<PolynomialTerm> polyTerms;
+
+        public PolynomialData() {
+            variables = new ArrayList<Variable>();
+            polyTerms = new ArrayList<PolynomialTerm>();
+        }
+
+        public int size() {
+            return polyTerms.size();
+        }
+
+        public ArrayList<Term> getTermArrayList() {
+            return new ArrayList<Term>(polyTerms);
+        }
+
+        public PolynomialTerm getPolyTerm(int index) {
+            return polyTerms.get(index);
+        }
+
+        public Variable getVar(int index) {
+            return variables.get(index);
+        }
+
+        public boolean contains(Variable var) {
+            for (Variable i : variables) {
+                if (i.equals(var)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public boolean contains(PolynomialTerm term) {
+            for (PolynomialTerm i : polyTerms) {
+                if (i.similarTo(term)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        //
+        // Multiplication Simplification
+        //
+        /* Get & Set Methods */
+        public void add(Variable var, PolynomialTerm term) {
+            variables.add(var);
+            polyTerms.add(term);
+        }
+
+        public void updatePolyTerm(Variable var, double coefficient, int numPower, int denomPower) {
+            polyTerms.set(getIndexOf(var), new PolynomialTerm(coefficient, var, numPower, denomPower));
+        }
+
+        public PolynomialTerm get(Variable var) {
+            return getPolyTerm(getIndexOf(var));
+        }
+
+        /**
+         * Gets the index of the variable, depending if it is the same variable.
+         * 
+         * <p>
+         * for USub, the inner function or inner term is compared.
+         * 
+         * @param var
+         * @return
+         */
+        public int getIndexOf(Variable var) {
+            for (int i = 0; i < size(); i++) {
+                if (variables.get(i).equals(var)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        //
+        // Addition Simplification
+        //
+        public void add(PolynomialTerm term) {
+            polyTerms.add(term);
+        }
+
+        public void updatePolyTerm(PolynomialTerm term, double coefficient) {
+            polyTerms.set(getIndexOf(term), new PolynomialTerm(coefficient, term.getVar(), term.getNumeratorPower(),
+                    term.getDenominatorPower()));
+        }
+
+        public PolynomialTerm get(PolynomialTerm term) {
+            return getPolyTerm(getIndexOf(term));
+        }
+
+        /**
+         * Gets the index of a term based if it is alike to the present term.
+         * 
+         * @param term
+         * @return
+         */
+        public int getIndexOf(PolynomialTerm term) {
+            for (int i = 0; i < size(); i++) {
+                if (polyTerms.get(i).similarTo(term)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+    }
 }

@@ -2,6 +2,7 @@ package whyxzee.blackboard.equations;
 
 import java.util.ArrayList;
 
+import whyxzee.blackboard.terms.ExponentialTerm;
 import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
 
@@ -26,10 +27,10 @@ public class EQSequence extends MathFunction {
     @Override
     public String toString() {
         String output = "";
-        Term[] termArray = getTermArray();
+        ArrayList<Term> termArray = getTermArray();
 
-        for (int i = 0; i < termArray.length; i++) {
-            Term term = termArray[i];
+        for (int i = 0; i < termArray.size(); i++) {
+            Term term = termArray.get(i);
 
             if (i == 0) {
                 output += term;
@@ -49,10 +50,10 @@ public class EQSequence extends MathFunction {
     @Override
     public String printConsole() {
         String output = "";
-        Term[] termArray = getTermArray();
+        ArrayList<Term> termArray = getTermArray();
 
-        for (int i = 0; i < termArray.length; i++) {
-            Term term = termArray[i];
+        for (int i = 0; i < termArray.size(); i++) {
+            Term term = termArray.get(i);
 
             if (i == 0) {
                 output += term.printConsole();
@@ -71,8 +72,41 @@ public class EQSequence extends MathFunction {
 
     @Override
     public void simplify() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'simplify'");
+        ArrayList<Term> newTermList = new ArrayList<Term>();
+
+        /* Polynomial Term */
+        Term polyTerm = PolynomialTerm.add(getPolynomialTerms());
+        if (polyTerm != null) {
+            switch (polyTerm.getVar().getVarType()) {
+                case U_SUB_EQ:
+                    newTermList.addAll(polyTerm.getVar().getInnerFunction().getTermArray());
+                default:
+                    newTermList.add(polyTerm);
+                    break;
+            }
+        }
+
+        /* Exponential Term */
+        Term expTerm = ExponentialTerm.add(getExponentialTerms());
+        if (expTerm != null) {
+            switch (expTerm.getVar().getVarType()) {
+                case U_SUB_EQ:
+                    newTermList.addAll(expTerm.getVar().getInnerFunction().getTermArray());
+                default:
+                    newTermList.add(expTerm);
+                    break;
+            }
+        }
+
+        /* Override */
+        setTermArray(newTermList);
+    }
+
+    @Override
+    public void merge(MathFunction function) {
+        if (function.getFunctionType() == FunctionType.SEQUENCE) {
+            addToTermArray(function.getTermArray());
+        }
     }
 
     //
