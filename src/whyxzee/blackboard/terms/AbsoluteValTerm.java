@@ -15,6 +15,7 @@ import whyxzee.blackboard.terms.variables.Variable;
  * the following has changed:
  * <ul>
  * <li>similarTo()
+ * <li>equals()
  */
 public class AbsoluteValTerm extends Term {
 
@@ -25,37 +26,40 @@ public class AbsoluteValTerm extends Term {
     @Override
     public String printConsole() {
         /* Coefficient */
-        double coef = getCoefficient();
+        double coef = getCoef();
         if (coef == 0) {
             return "0";
         } else if (coef == 1) {
             return "|" + getVar().printConsole() + "|";
         } else {
-            return Double.toString(getCoefficient()) + "|" + getVar().printConsole() + "|";
+            return Double.toString(getCoef()) + "|" + getVar().printConsole() + "|";
         }
     }
 
     @Override
     public String toString() {
         /* Coefficient */
-        double coef = getCoefficient();
+        double coef = getCoef();
         if (coef == 0) {
             return "0";
         } else if (coef == 1) {
             return "|" + getVar().toString() + "|";
         } else {
-            return Double.toString(getCoefficient()) + "|" + getVar().toString() + "|";
+            return Double.toString(getCoef()) + "|" + getVar().toString() + "|";
         }
     }
 
+    //
+    // Arithmetic Methods
+    //
     @Override
     public double solve(double value) {
-        return getCoefficient() * Math.abs(getVar().solve(value));
+        return getCoef() * Math.abs(getVar().solve(value));
     }
 
     @Override
     public Term negate() {
-        return new AbsoluteValTerm(-1 * getCoefficient(), getVar());
+        return new AbsoluteValTerm(-1 * getCoef(), getVar());
     }
 
     @Override
@@ -67,16 +71,16 @@ public class AbsoluteValTerm extends Term {
             EQMultiplication eq = new EQMultiplication(
                     variable.derive(),
                     new SignumTerm(1, variable));
-            return new PolynomialTerm(getCoefficient(), new USub(eq), 1);
+            return new PolynomialTerm(getCoef(), new USub(eq), 1);
         } else {
-            return new SignumTerm(getCoefficient(), variable);
+            return new SignumTerm(getCoef(), variable);
         }
     }
 
     @Override
     public double limInfSolve() {
         /* Number */
-        double coef = getCoefficient();
+        double coef = getCoef();
         if (coef == 0) {
             return 0;
         }
@@ -89,7 +93,7 @@ public class AbsoluteValTerm extends Term {
     @Override
     public double limNegInfSolve() {
         /* Number */
-        double number = getCoefficient();
+        double number = getCoef();
         if (number == 0) {
             return 0;
         }
@@ -102,7 +106,6 @@ public class AbsoluteValTerm extends Term {
     //
     // Boolean Methods
     //
-
     @Override
     public boolean similarTo(Term term) {
         switch (term.getTermType()) {
@@ -112,6 +115,14 @@ public class AbsoluteValTerm extends Term {
             default:
                 return false;
         }
+    }
+
+    @Override
+    public boolean equals(Term other) {
+        if ((other.getTermType() == TermType.ABSOLUTE_VALUE) && (getCoef() == other.getCoef())) {
+            return getVar().equals(other.getVar());
+        }
+        return false;
     }
 
 }

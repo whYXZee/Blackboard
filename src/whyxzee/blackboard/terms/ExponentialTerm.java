@@ -21,6 +21,8 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
  * following has changed:
  * <ul>
  * <li>simplify()
+ * <li>condense()
+ * <li>equals()
  */
 public class ExponentialTerm extends Term {
     /* Variables */
@@ -40,7 +42,7 @@ public class ExponentialTerm extends Term {
     @Override
     public String toString() {
         /* Decision via Coefficient */
-        double coef = getCoefficient();
+        double coef = getCoef();
         if (coef == 0) {
             return "0";
         }
@@ -57,7 +59,7 @@ public class ExponentialTerm extends Term {
     @Override
     public String printConsole() {
         /* Decision via Coefficient */
-        double coef = getCoefficient();
+        double coef = getCoef();
         if (coef == 0) {
             return "0";
         }
@@ -71,15 +73,17 @@ public class ExponentialTerm extends Term {
         }
     }
 
-    public final void simplify() {
+    @Override
+    public final void condense() {
+        /* Condensing variables with like coefs and bases */
         int numOfBase = 0; // n * base = coef
-        while (ArithmeticUtils.isInteger(getCoefficient() / getBase())) {
+        while (ArithmeticUtils.isInteger(getCoef() / getBase())) {
             numOfBase++;
-            setCoefficient(getCoefficient() / getBase());
+            setCoef(getCoef() / getBase());
         }
 
         if (numOfBase > 0) {
-            setCoefficient(1);
+            setCoef(1);
             Variable var = getVar();
 
             /* Changing variable */
@@ -105,6 +109,24 @@ public class ExponentialTerm extends Term {
         }
     }
 
+    // public final Term condense() {
+    // /* Initializing variables */
+    // Variable var = getVar();
+
+    // /* Condensing Algorithm */
+    // switch (var.getVarType()) {
+    // case U_SUB_TERM:
+    // if (var.getInnerTerm().getTermType() == TermType.LOGARITHMIC) {
+    // LogarithmicTerm innerTerm = (LogarithmicTerm) var.getInnerTerm();
+    // if (innerTerm.getBase() == base) {
+    // return new PolynomialTerm(1, innerTerm.getVar());
+    // }
+    // }
+    // default:
+    // return this;
+    // }
+    // }
+
     //
     // Get and Set Methods
     //
@@ -114,43 +136,6 @@ public class ExponentialTerm extends Term {
 
     public final void setBase(double base) {
         this.base = base;
-    }
-
-    //
-    // Arithmetic Methods (Static)
-    //
-
-    public static Term add(ArrayList<Term> terms) {
-        /* Initializing variables */
-        ExponentialData expData = new ExponentialData();
-
-        /* Addition algorithm */
-        for (int i = 0; i < terms.size(); i++) {
-            ExponentialTerm term = (ExponentialTerm) terms.get(i);
-            double coef = term.getCoefficient();
-            Variable var = term.getVar();
-            double base = term.getBase();
-
-            if (expData.containsTerm(term)) {
-                // term in data
-                ExponentialTerm oldTerm = expData.get(term);
-                expData.update(base, coef + oldTerm.getCoefficient(), var);
-            } else {
-                // term not in data
-                expData.add(term);
-            }
-        }
-
-        expData.simplifyTerms();
-
-        if (expData.size() > 1) {
-            EQSequence eq = new EQSequence(expData.getTermArray());
-            return new PolynomialTerm(1, new USub(eq));
-        } else if (expData.size() == 1) {
-            return expData.getExpTerm(0);
-        }
-
-        return null;
     }
 
     /**
@@ -167,7 +152,7 @@ public class ExponentialTerm extends Term {
         /* Simplifying algorithm */
         for (int i = 0; i < terms.size(); i++) {
             ExponentialTerm term = (ExponentialTerm) terms.get(i);
-            double coef = term.getCoefficient();
+            double coef = term.getCoef();
             double base = term.getBase();
             Variable var = term.getVar();
 
@@ -209,7 +194,7 @@ public class ExponentialTerm extends Term {
                     case U_SUB_TERM:
                         if (var.getVarType() == VarType.U_SUB_EQ) {
                             innerEQ = (EQSequence) var.getInnerFunction();
-                            innerEQ.addTerm(oldVar.getInnerTerm());
+                            innerEQ.add(oldVar.getInnerTerm());
                         } else {
                             innerEQ = new EQSequence(
                                     oldVar.getInnerTerm(),
@@ -220,7 +205,7 @@ public class ExponentialTerm extends Term {
                         innerEQ = new EQSequence();
                         break;
                 }
-                expData.update(base, coef * oldTerm.getCoefficient(), new USub(innerEQ));
+                expData.update(base, coef * oldTerm.getCoef(), new USub(innerEQ));
             } else {
                 expData.add(term);
             }
@@ -243,18 +228,18 @@ public class ExponentialTerm extends Term {
     //
     @Override
     public double solve(double value) {
-        return getCoefficient() * Math.pow(base, getVar().solve(value));
+        return getCoef() * Math.pow(base, getVar().solve(value));
     }
 
     @Override
     public Term negate() {
-        return new ExponentialTerm(-1 * getCoefficient(), getVar(), base);
+        return new ExponentialTerm(-1 * getCoef(), getVar(), base);
     }
 
     @Override
     public Term derive() {
         /* Initiating variables */
-        double coef = getCoefficient();
+        double coef = getCoef();
         Variable variable = getVar().clone();
 
         /* The coefficient */
@@ -284,7 +269,7 @@ public class ExponentialTerm extends Term {
         /* Without respect to the variable */
 
         /* Number */
-        double coef = getCoefficient();
+        double coef = getCoef();
         if (coef == 0) {
             return 0;
         }
@@ -308,7 +293,7 @@ public class ExponentialTerm extends Term {
 
     public double limNegInfSolve() {
         /* Number */
-        double coef = getCoefficient();
+        double coef = getCoef();
         if (coef == 0) {
             return 0;
         }
@@ -345,6 +330,20 @@ public class ExponentialTerm extends Term {
         }
     }
 
+    @Override
+    public boolean equals(Term other) {
+        if ((other.getTermType() == TermType.EXPONENTIAL) && (getCoef() == other.getCoef())) {
+            ExponentialTerm expTerm = (ExponentialTerm) other;
+            return (base == expTerm.getBase()) &&
+                    (getVar().equals(expTerm.getVar()));
+        }
+        return false;
+    }
+
+    public final boolean isBaseE() {
+        return base == Math.E;
+    }
+
     static class ExponentialData {
         /* Variables */
         private ArrayList<ExponentialTerm> expTerms;
@@ -353,6 +352,10 @@ public class ExponentialTerm extends Term {
             expTerms = new ArrayList<ExponentialTerm>();
         }
 
+        /**
+         * Simplifies the variable in exponential terms in order to have the simplest
+         * equation.
+         */
         public void simplifyVar() {
             for (ExponentialTerm i : expTerms) {
                 Variable var = i.getVar();
@@ -362,9 +365,13 @@ public class ExponentialTerm extends Term {
             }
         }
 
+        /**
+         * Simplifies terms so that if the following occurs: b(b)^x, then it simplifies
+         * to b^(x+1)
+         */
         public void simplifyTerms() {
             for (ExponentialTerm i : expTerms) {
-                i.simplify();
+                i.condense();
             }
         }
 
@@ -381,6 +388,10 @@ public class ExponentialTerm extends Term {
 
         public void update(double base, double coefficient, Variable var) {
             expTerms.set(getIndexOf(base), new ExponentialTerm(coefficient, var, base));
+        }
+
+        public void update(ExponentialTerm term, double coefficient) {
+            expTerms.set(getIndexOf(term), new ExponentialTerm(coefficient, term.getVar(), term.getBase()));
         }
 
         public ExponentialTerm getExpTerm(int index) {

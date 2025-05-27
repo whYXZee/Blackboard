@@ -10,7 +10,7 @@ public abstract class Term {
     private TermType termType;
 
     /* Outer Variables */
-    private double coefficient;
+    private double coef;
     private Variable var;
 
     public static enum TermType {
@@ -34,22 +34,36 @@ public abstract class Term {
      * @param termType
      */
     public Term(double coefficient, Variable var, TermType termType) {
-        this.coefficient = coefficient;
+        this.coef = coefficient;
         this.var = var;
         this.termType = termType;
     }
 
     public abstract String printConsole();
 
+    /**
+     * Condenses the term.
+     */
+    public void condense() {
+    }
+
     //
     // Get & Set Methods
     //
-    public final double getCoefficient() {
-        return coefficient;
+    public final double getCoef() {
+        return coef;
     }
 
-    public final void setCoefficient(double coefficient) {
-        this.coefficient = coefficient;
+    public final void setCoef(double coefficient) {
+        this.coef = coefficient;
+    }
+
+    /**
+     * 
+     * @param addend the number that should be added to the coefficient
+     */
+    public final void addToCoef(double addend) {
+        coef += addend;
     }
 
     public final TermType getTermType() {
@@ -66,13 +80,6 @@ public abstract class Term {
 
     public final void setVar(Variable var) {
         this.var = var;
-    }
-
-    //
-    // Boolean Methods
-    //
-    public boolean isNegative() {
-        return 0 > coefficient;
     }
 
     //
@@ -120,4 +127,10 @@ public abstract class Term {
      * 
      */
     public abstract boolean similarTo(Term term);
+
+    public abstract boolean equals(Term other);
+
+    public final boolean isNegative() {
+        return 0 > coef;
+    }
 }

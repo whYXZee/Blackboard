@@ -3,6 +3,8 @@ package whyxzee.blackboard.equations;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.terms.*;
+import whyxzee.blackboard.terms.Term.TermType;
+import whyxzee.blackboard.utils.SortingUtils;
 
 /**
  * A package for equations that are a sequence, meaning that they are chained
@@ -13,13 +15,26 @@ import whyxzee.blackboard.terms.*;
  * nothing has changed since.
  */
 public class EQSequence extends MathFunction {
+    private boolean shouldAutoCondense;
+
+    public EQSequence(boolean shouldAutoCondense, Term... terms) {
+        super(FunctionType.SEQUENCE, terms);
+        this.shouldAutoCondense = shouldAutoCondense;
+    }
 
     public EQSequence(Term... terms) {
         super(FunctionType.SEQUENCE, terms);
+        this.shouldAutoCondense = true;
+    }
+
+    public EQSequence(boolean shouldAutoCondense, ArrayList<Term> terms) {
+        super(FunctionType.SEQUENCE, terms);
+        this.shouldAutoCondense = shouldAutoCondense;
     }
 
     public EQSequence(ArrayList<Term> terms) {
         super(FunctionType.SEQUENCE, terms);
+        this.shouldAutoCondense = true;
     }
 
     @Override
@@ -69,48 +84,15 @@ public class EQSequence extends MathFunction {
     }
 
     @Override
-    public void simplify() {
-        /* Initializing variables */
-        ArrayList<Term> newTermList = new ArrayList<Term>();
-
-        /* Polynomial Term */
-        Term polyTerm = PolynomialTerm.add(getPolynomialTerms());
-        if (polyTerm != null) {
-            switch (polyTerm.getVar().getVarType()) {
-                case U_SUB_EQ:
-                    newTermList.addAll(polyTerm.getVar().getInnerFunction().getTermArray());
-                default:
-                    newTermList.add(polyTerm);
-                    break;
-            }
+    public final void simplify() {
+        for (TermType i : Term.TermType.values()) {
+            performAdditionOn(i);
         }
 
-        /* Exponential Term */
-        Term expTerm = ExponentialTerm.add(getExponentialTerms());
-        if (expTerm != null) {
-            switch (expTerm.getVar().getVarType()) {
-                case U_SUB_EQ:
-                    newTermList.addAll(expTerm.getVar().getInnerFunction().getTermArray());
-                default:
-                    newTermList.add(expTerm);
-                    break;
-            }
-        }
-
-        /* Signum Term */
-        Term signTerm = SignumTerm.add(getSignumTerms());
-        if (signTerm != null) {
-            switch (signTerm.getVar().getVarType()) {
-                case U_SUB_EQ:
-                    newTermList.addAll(signTerm.getVar().getInnerFunction().getTermArray());
-                default:
-                    newTermList.add(signTerm);
-                    break;
-            }
-        }
-
-        /* Override */
-        setTermArray(newTermList);
+        // if (shouldAutoCondense) {
+        // /* Condensing Exponentials */
+        // condense(TermType.EXPONENTIAL);
+        // }
     }
 
     @Override

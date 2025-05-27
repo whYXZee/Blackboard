@@ -3,18 +3,21 @@ package whyxzee.blackboard.equations;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.terms.Term;
+import whyxzee.blackboard.terms.Term.TermType;
+import whyxzee.blackboard.terms.arithmetic.AdditionAbstract;
+import whyxzee.blackboard.utils.SortingUtils;
 
 /**
  * The highest-class for generic math functions.
  */
 public abstract class MathFunction {
     /* Terms */
-    // private Term[] termArray;
     private ArrayList<Term> termArray = new ArrayList<Term>();
-    private ArrayList<Term> polynomialTerms = new ArrayList<Term>();
-    private ArrayList<Term> exponentialTerms = new ArrayList<Term>();
+    private ArrayList<Term> polyTerms = new ArrayList<Term>();
+    private ArrayList<Term> expTerms = new ArrayList<Term>();
     private ArrayList<Term> logTerms = new ArrayList<Term>();
     private ArrayList<Term> trigTerms = new ArrayList<Term>();
+    private ArrayList<Term> absValTerms = new ArrayList<Term>();
     private ArrayList<Term> factorialTerms = new ArrayList<Term>();
     private ArrayList<Term> signumTerms = new ArrayList<Term>();
 
@@ -27,19 +30,21 @@ public abstract class MathFunction {
     }
 
     public MathFunction(FunctionType functionType, Term... terms) {
+        /* Transfer terms from ArrayList to array */
         for (Term i : terms) {
-            termArray.add(i);
+            add(i);
         }
-        sortTerms();
+        organizeTerms();
 
         /* Identification */
         this.functionType = functionType;
     }
 
     public MathFunction(FunctionType functionType, ArrayList<Term> terms) {
-        /* Transfer terms from ArrayList to array */
-        termArray = terms;
-        sortTerms();
+        for (Term i : terms) {
+            add(i);
+        }
+        organizeTerms();
 
         /* Identification */
         this.functionType = functionType;
@@ -52,32 +57,87 @@ public abstract class MathFunction {
     public abstract void simplify();
 
     /**
-     * Sorts terms into separate ArrayList<Term> for easier simplification and
-     * organization.
+     * Simplifies then organizes the terms so that they are in the correct order.
      */
-    public final void sortTerms() {
-        polynomialTerms = new ArrayList<Term>();
-        exponentialTerms = new ArrayList<Term>();
-        logTerms = new ArrayList<Term>();
-        trigTerms = new ArrayList<Term>();
-        factorialTerms = new ArrayList<Term>();
-        signumTerms = new ArrayList<Term>();
+    public final void organizeTerms() {
+        simplify();
 
-        for (Term term : getTermArray()) {
-            addTerm(term);
+        for (Term i : polyTerms) {
+            System.out.println(i.printConsole());
         }
 
-        organizeTerms();
-    }
-
-    public final void organizeTerms() {
         /* Polynomial Term */
         // sorted by greatest power -> lowest power
-        // TODO sorting algorithm for terms
+        polyTerms = SortingUtils.sortTerms(polyTerms, TermType.POLYNOMIAL);
+        expTerms = SortingUtils.sortTerms(expTerms, TermType.EXPONENTIAL);
 
+        // TODO sorting algorithm for terms
+        termArray = new ArrayList<Term>() {
+            {
+                addAll(polyTerms);
+                addAll(expTerms);
+                addAll(logTerms);
+                addAll(trigTerms);
+                addAll(absValTerms);
+
+                /* Niche */
+                addAll(factorialTerms);
+                addAll(signumTerms);
+            }
+        };
+    }
+
+    public final void condense(TermType termType) {
+        for (Term i : getTermArray(termType)) {
+            i.condense();
+        }
     }
 
     public abstract void merge(MathFunction function);
+
+    public final void clearTermArrays() {
+        polyTerms.clear();
+        expTerms.clear();
+        logTerms.clear();
+        trigTerms.clear();
+        absValTerms.clear();
+
+        /* Niche Terms */
+        factorialTerms.clear();
+        signumTerms.clear();
+    }
+
+    public final void performAdditionOn(TermType termType) {
+        AdditionAbstract addFunction = new AdditionAbstract();
+        switch (termType) {
+            case POLYNOMIAL:
+                polyTerms = addFunction.performAddition(polyTerms);
+                break;
+            case EXPONENTIAL:
+                expTerms = addFunction.performAddition(expTerms);
+                break;
+            case LOGARITHMIC:
+                logTerms = addFunction.performAddition(logTerms);
+                break;
+            case TRIGONOMETRIC:
+                trigTerms = addFunction.performAddition(trigTerms);
+                break;
+            case ABSOLUTE_VALUE:
+                absValTerms = addFunction.performAddition(absValTerms);
+                break;
+
+            /* Niche */
+            case FACTORIAL:
+                factorialTerms = addFunction.performAddition(factorialTerms);
+                break;
+            case SIGNUM:
+                signumTerms = addFunction.performAddition(signumTerms);
+                break;
+            default:
+                break;
+
+        }
+    }
 
     //
     // Arithmetic Functions
@@ -104,23 +164,77 @@ public abstract class MathFunction {
         return termArray;
     }
 
-    public final void setTermArray(Term... terms) {
-        ArrayList<Term> newTermArray = new ArrayList<>();
-        for (Term i : terms) {
-            newTermArray.add(i);
+    public final ArrayList<Term> getTermArray(TermType termType) {
+        switch (termType) {
+            case POLYNOMIAL:
+                return polyTerms;
+            case EXPONENTIAL:
+                return expTerms;
+            case LOGARITHMIC:
+                return logTerms;
+            case TRIGONOMETRIC:
+                return trigTerms;
+            case ABSOLUTE_VALUE:
+                return absValTerms;
+
+            /* Niche */
+            case FACTORIAL:
+                return factorialTerms;
+            case SIGNUM:
+                return signumTerms;
+            default:
+                return null;
         }
-        termArray = newTermArray;
-        sortTerms();
+    }
+
+    public final void setTermArray(Term... terms) {
+        clearTermArrays();
+        for (Term i : terms) {
+            add(i);
+        }
     }
 
     public final void setTermArray(ArrayList<Term> terms) {
-        termArray = terms;
-        sortTerms();
+        clearTermArrays();
+        for (Term i : terms) {
+            add(i);
+        }
+    }
+
+    public final void setTermArray(TermType termType, ArrayList<Term> terms) {
+        switch (termType) {
+            case POLYNOMIAL:
+                polyTerms = terms;
+                break;
+            case EXPONENTIAL:
+                expTerms = terms;
+                break;
+            case LOGARITHMIC:
+                logTerms = terms;
+                break;
+            case TRIGONOMETRIC:
+                trigTerms = terms;
+                break;
+            case ABSOLUTE_VALUE:
+                absValTerms = terms;
+                break;
+
+            /* Niche */
+            case FACTORIAL:
+                factorialTerms = terms;
+                break;
+            case SIGNUM:
+                signumTerms = terms;
+                break;
+            default:
+                break;
+        }
     }
 
     public final void addToTermArray(ArrayList<Term> terms) {
-        termArray.addAll(terms);
-        sortTerms();
+        for (Term i : terms) {
+            add(i);
+        }
     }
 
     public final FunctionType getFunctionType() {
@@ -133,11 +247,18 @@ public abstract class MathFunction {
      * @param term
      */
     public final void addPolynomialTerm(Term term) {
-        polynomialTerms.add(term);
+        polyTerms.add(term);
     }
 
-    public final ArrayList<Term> getPolynomialTerms() {
-        return polynomialTerms;
+    public final void setPolyTerms(ArrayList<Term> terms) {
+        polyTerms = terms;
+    }
+
+    public final void setPolyTerms(Term... terms) {
+        polyTerms.clear();
+        for (Term i : terms) {
+            addPolynomialTerm(i);
+        }
     }
 
     /**
@@ -146,11 +267,18 @@ public abstract class MathFunction {
      * @param term
      */
     public final void addExponentialTerm(Term term) {
-        exponentialTerms.add(term);
+        expTerms.add(term);
     }
 
-    public final ArrayList<Term> getExponentialTerms() {
-        return exponentialTerms;
+    public final void setExpTerms(ArrayList<Term> terms) {
+        expTerms = terms;
+    }
+
+    public final void setExpTerms(Term... terms) {
+        expTerms.clear();
+        for (Term i : terms) {
+            addExponentialTerm(i);
+        }
     }
 
     /**
@@ -171,6 +299,10 @@ public abstract class MathFunction {
         trigTerms.add(term);
     }
 
+    public final void addAbsValTerm(Term term) {
+        absValTerms.add(term);
+    }
+
     /**
      * Augments the {@code factorialTerms} ArrayList.
      * 
@@ -185,18 +317,25 @@ public abstract class MathFunction {
      * 
      * @param term
      */
-    public final void addSignumTerms(Term term) {
+    public final void addSignumTerm(Term term) {
         signumTerms.add(term);
     }
 
-    public final ArrayList<Term> getSignumTerms() {
-        return signumTerms;
+    public final void setSignTerms(ArrayList<Term> terms) {
+        signumTerms = terms;
+    }
+
+    public final void setSignTerms(Term... terms) {
+        signumTerms.clear();
+        for (Term i : terms) {
+            addSignumTerm(i);
+        }
     }
 
     /**
-     * Augments the terms, and then sorts them.
+     * Augments the respective TermArray.
      */
-    public final void addTerm(Term term) {
+    public final void add(Term term) {
         switch (term.getTermType()) {
             case POLYNOMIAL:
                 addPolynomialTerm(term);
@@ -210,13 +349,16 @@ public abstract class MathFunction {
             case TRIGONOMETRIC:
                 addTrigTerm(term);
                 break;
+            case ABSOLUTE_VALUE:
+                addAbsValTerm(term);
+                break;
 
             /* Niche */
             case FACTORIAL:
                 addFactorialTerm(term);
                 break;
             case SIGNUM:
-                addSignumTerms(term);
+                addSignumTerm(term);
                 break;
             default:
                 break;
@@ -228,8 +370,47 @@ public abstract class MathFunction {
     //
     public final boolean equals(MathFunction other) {
         if (functionType == other.getFunctionType()) {
-            return termArray == other.getTermArray();
+            ArrayList<Term> otherTermArray = other.getTermArray();
+            if (termArray.size() == otherTermArray.size()) {
+                for (int i = 0; i < termArray.size(); i++) {
+                    if (!termArray.get(i).equals(otherTermArray.get(i))) {
+                        // not equal
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
         }
         return false;
+    }
+
+    /**
+     * Gets the boolean if the Term Array with TermType termType is empty.
+     * 
+     * @param termType
+     * @return
+     */
+    public final boolean isTermArrayEmpty(TermType termType) {
+        switch (termType) {
+            case POLYNOMIAL:
+                return polyTerms.size() == 0;
+            case EXPONENTIAL:
+                return expTerms.size() == 0;
+            case LOGARITHMIC:
+                return logTerms.size() == 0;
+            case TRIGONOMETRIC:
+                return trigTerms.size() == 0;
+            case ABSOLUTE_VALUE:
+                return absValTerms.size() == 0;
+
+            /* Niche */
+            case FACTORIAL:
+                return factorialTerms.size() == 0;
+            case SIGNUM:
+                return signumTerms.size() == 0;
+            default:
+                return true;
+        }
     }
 }

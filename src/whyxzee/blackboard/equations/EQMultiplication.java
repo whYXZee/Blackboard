@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
+import whyxzee.blackboard.terms.arithmetic.multiplication.PolynomialMultiplication;
 import whyxzee.blackboard.terms.variables.USub;
 
 /**
@@ -47,7 +48,10 @@ public class EQMultiplication extends MathFunction {
     @Override
     public void simplify() {
         /* Polynomial */
-        PolynomialTerm.multiply(getPolynomialTerms()).printConsole();
+        if (getPolyTerms().size() != 0) {
+            PolynomialMultiplication polyMultiply = new PolynomialMultiplication();
+            setPolyTerms(polyMultiply.performFunction(getPolyTerms()));
+        }
     }
 
     @Override
@@ -79,12 +83,12 @@ public class EQMultiplication extends MathFunction {
         for (int i = 0; i < termArray.size(); i++) {
             // for the derived function
             EQMultiplication term = new EQMultiplication();
-            term.addTerm(termArray.get(i).derive());
+            term.add(termArray.get(i).derive());
             for (int j = 0; j < termArray.size(); j++) {
                 // for the non-derived functions
                 if (j != i) {
                     // whenever not the same term
-                    term.addTerm(termArray.get(j));
+                    term.add(termArray.get(j));
                 }
             }
 

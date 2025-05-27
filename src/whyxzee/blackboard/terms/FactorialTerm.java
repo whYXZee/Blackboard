@@ -21,12 +21,12 @@ public class FactorialTerm extends Term {
 
     @Override
     public String toString() {
-        return Double.toString(getCoefficient()) + "(" + getVar().toString() + ")";
+        return Double.toString(getCoef()) + "(" + getVar().toString() + ")";
     }
 
     @Override
     public String printConsole() {
-        return Double.toString(getCoefficient()) + "(" + getVar().printConsole() + ")";
+        return Double.toString(getCoef()) + "(" + getVar().printConsole() + ")";
     }
 
     //
@@ -48,7 +48,7 @@ public class FactorialTerm extends Term {
 
     @Override
     public Term negate() {
-        return new FactorialTerm(-1 * getCoefficient(), getVar());
+        return new FactorialTerm(-1 * getCoef(), getVar());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class FactorialTerm extends Term {
     @Override
     public double limInfSolve() {
         /* Number */
-        double number = getCoefficient();
+        double number = getCoef();
         if (number == 0) {
             return 0;
         }
@@ -90,4 +90,11 @@ public class FactorialTerm extends Term {
         }
     }
 
+    @Override
+    public boolean equals(Term other) {
+        if ((other.getTermType() == TermType.FACTORIAL) && (getCoef() == other.getCoef())) {
+            return getVar().equals(other.getVar());
+        }
+        return false;
+    }
 }

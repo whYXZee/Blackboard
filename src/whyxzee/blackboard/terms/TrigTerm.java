@@ -13,6 +13,7 @@ import whyxzee.blackboard.terms.variables.Variable;
  * the following has changed since:
  * <ul>
  * <li>similarTo()
+ * <li>equals()
  */
 public class TrigTerm extends Term {
 
@@ -50,13 +51,13 @@ public class TrigTerm extends Term {
 
     @Override
     public String printConsole() {
-        return Double.toString(getCoefficient()) + trigString + "(" + getVar().printConsole() + ")";
+        return Double.toString(getCoef()) + trigString + "(" + getVar().printConsole() + ")";
     }
 
     @Override
     public String toString() {
         /* Initializing variable */
-        double coef = getCoefficient();
+        double coef = getCoef();
 
         if (coef == 0) {
             return "0";
@@ -163,18 +164,18 @@ public class TrigTerm extends Term {
                 break;
         }
 
-        return getCoefficient() * trigVal;
+        return getCoef() * trigVal;
     }
 
     @Override
     public Term negate() {
-        return new TrigTerm(-1 * getCoefficient(), getVar(), trigType);
+        return new TrigTerm(-1 * getCoef(), getVar(), trigType);
     }
 
     @Override
     public Term derive() {
         /* Initializing variables */
-        double coef = getCoefficient();
+        double coef = getCoef();
         Variable variable = getVar().clone();
         boolean shouldChainRule = variable.needsChainRule();
 
@@ -429,7 +430,7 @@ public class TrigTerm extends Term {
     @Override
     public double limInfSolve() {
         /* Initiating variables */
-        double number = getCoefficient();
+        double number = getCoef();
 
         /* Algorithm */
         if (number == 0) {
@@ -454,7 +455,7 @@ public class TrigTerm extends Term {
     @Override
     public double limNegInfSolve() {
         /* Initializing variables */
-        double number = getCoefficient();
+        double number = getCoef();
 
         /* Algorithm */
         if (number == 0) {
@@ -489,5 +490,15 @@ public class TrigTerm extends Term {
             default:
                 return false;
         }
+    }
+
+    @Override
+    public boolean equals(Term other) {
+        if ((other.getTermType() == TermType.TRIGONOMETRIC) && (getCoef() == other.getCoef())) {
+            TrigTerm trigTerm = (TrigTerm) other;
+            return (trigType == trigTerm.getTrigType()) &&
+                    (getVar().equals(trigTerm.getVar()));
+        }
+        return false;
     }
 }

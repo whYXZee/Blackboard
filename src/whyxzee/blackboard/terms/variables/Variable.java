@@ -131,7 +131,7 @@ public class Variable {
         if (varType == other.getVarType()) {
             switch (varType) {
                 case U_SUB_EQ:
-                    return getInnerFunction() == other.getInnerFunction();
+                    return getInnerFunction().equals(other.getInnerFunction());
                 case U_SUB_TERM:
                     return getInnerTerm() == other.getInnerTerm();
                 case VARIABLE:
