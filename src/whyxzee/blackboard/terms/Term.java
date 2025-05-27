@@ -66,6 +66,10 @@ public abstract class Term {
         coef += addend;
     }
 
+    public final void multiplyCoefBy(double factor) {
+        coef *= factor;
+    }
+
     public final TermType getTermType() {
         return termType;
     }

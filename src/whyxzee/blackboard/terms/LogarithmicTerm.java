@@ -3,7 +3,6 @@ package whyxzee.blackboard.terms;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.equations.EQMultiplication;
-import whyxzee.blackboard.equations.EQSequence;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.utils.ArithmeticUtils;
@@ -162,7 +161,7 @@ public class LogarithmicTerm extends Term {
         Variable variable = getVar();
 
         if (getVar().needsChainRule()) {
-            /* Chain rule */
+            // Chain rule
             if (base == Math.E) {
                 EQMultiplication eq = new EQMultiplication(
                         new PolynomialTerm(1, variable, -1),
@@ -173,8 +172,7 @@ public class LogarithmicTerm extends Term {
                 return new LogarithmicTerm(coef / Math.log(base), variable, Math.E).derive();
             }
         } else {
-            /* No Chain rule */
-
+            // No chain rule
             if (base == Math.E) {
                 /* base is e */
                 return new PolynomialTerm(getCoef(), variable, -1);
@@ -225,6 +223,10 @@ public class LogarithmicTerm extends Term {
             return (base == logTerm.getBase()) && (getVar().equals(logTerm.getVar()));
         }
         return false;
+    }
+
+    public final boolean isBaseE() {
+        return base == Math.E;
     }
 
     static class LogMultiplication {

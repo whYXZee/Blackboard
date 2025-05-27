@@ -7,6 +7,10 @@ import whyxzee.blackboard.terms.Term;
 /**
  * A general-use package for adding terms. This package works if the
  * ArrayList<Term> contains varying types of terms.
+ * 
+ * <p>
+ * The functionality of this class has been checked on {@code 5/27/2025} and
+ * nothing has changed since.
  */
 public class AdditionAbstract {
     /* Variables */

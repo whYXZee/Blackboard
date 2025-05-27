@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.Term.TermType;
 import whyxzee.blackboard.terms.arithmetic.AdditionAbstract;
+import whyxzee.blackboard.terms.arithmetic.MultiplicationAbstract;
 import whyxzee.blackboard.utils.SortingUtils;
 
 /**
@@ -62,16 +63,12 @@ public abstract class MathFunction {
     public final void organizeTerms() {
         simplify();
 
-        for (Term i : polyTerms) {
-            System.out.println(i.printConsole());
-        }
-
         /* Polynomial Term */
-        // sorted by greatest power -> lowest power
         polyTerms = SortingUtils.sortTerms(polyTerms, TermType.POLYNOMIAL);
         expTerms = SortingUtils.sortTerms(expTerms, TermType.EXPONENTIAL);
+        logTerms = SortingUtils.sortTerms(logTerms, TermType.LOGARITHMIC);
+        trigTerms = SortingUtils.sortTerms(trigTerms, TermType.TRIGONOMETRIC);
 
-        // TODO sorting algorithm for terms
         termArray = new ArrayList<Term>() {
             {
                 addAll(polyTerms);
@@ -135,7 +132,37 @@ public abstract class MathFunction {
                 break;
             default:
                 break;
+        }
+    }
 
+    public final void performMultiplicationOn(TermType termType) {
+        MultiplicationAbstract multiplyFunction = new MultiplicationAbstract();
+        switch (termType) {
+            case POLYNOMIAL:
+                polyTerms = multiplyFunction.performMultiplication(polyTerms);
+                break;
+            case EXPONENTIAL:
+                expTerms = multiplyFunction.performMultiplication(expTerms);
+                break;
+            case LOGARITHMIC:
+                logTerms = multiplyFunction.performMultiplication(logTerms);
+                break;
+            case TRIGONOMETRIC:
+                trigTerms = multiplyFunction.performMultiplication(trigTerms);
+                break;
+            case ABSOLUTE_VALUE:
+                absValTerms = multiplyFunction.performMultiplication(absValTerms);
+                break;
+
+            /* Niche */
+            case FACTORIAL:
+                factorialTerms = multiplyFunction.performMultiplication(factorialTerms);
+                break;
+            case SIGNUM:
+                signumTerms = multiplyFunction.performMultiplication(signumTerms);
+                break;
+            default:
+                break;
         }
     }
 

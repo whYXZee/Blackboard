@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.terms.PolynomialTerm;
 import whyxzee.blackboard.terms.Term;
-import whyxzee.blackboard.terms.arithmetic.multiplication.PolynomialMultiplication;
+import whyxzee.blackboard.terms.Term.TermType;
 import whyxzee.blackboard.terms.variables.USub;
 
 /**
@@ -47,11 +47,10 @@ public class EQMultiplication extends MathFunction {
 
     @Override
     public void simplify() {
-        /* Polynomial */
-        if (getPolyTerms().size() != 0) {
-            PolynomialMultiplication polyMultiply = new PolynomialMultiplication();
-            setPolyTerms(polyMultiply.performFunction(getPolyTerms()));
+        for (TermType i : TermType.values()) {
+            performMultiplicationOn(i);
         }
+
     }
 
     @Override

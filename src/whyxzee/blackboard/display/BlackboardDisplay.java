@@ -72,10 +72,6 @@ public class BlackboardDisplay extends JPanel {
         int width = (int) dimension.getWidth();
         int height = (int) dimension.getHeight();
 
-        // testLabel.setFont(
-        // new Font(Constants.DisplayConstants.FONT_NAME,
-        // Constants.DisplayConstants.FONT_STYLE, height / 10));
-
         testLabel2.resize(dimension);
 
         /* Script */

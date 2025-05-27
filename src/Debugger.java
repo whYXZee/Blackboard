@@ -19,6 +19,7 @@ import whyxzee.blackboard.terms.TrigTerm;
 import whyxzee.blackboard.terms.Term.TermType;
 import whyxzee.blackboard.terms.TrigTerm.TrigType;
 import whyxzee.blackboard.terms.arithmetic.AdditionAbstract;
+import whyxzee.blackboard.terms.arithmetic.MultiplicationAbstract;
 import whyxzee.blackboard.terms.arithmetic.special.CondenseLog;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
@@ -31,26 +32,22 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        EQSequence eq = new EQSequence(new PolynomialTerm(2), new PolynomialTerm(1,
-                new Variable("x"), 3),
-                new PolynomialTerm(2, new Variable("x"), 3));
-        EQSequence eq2 = new EQSequence(new PolynomialTerm(2), new PolynomialTerm(1,
-                new Variable("x"), 3));
-
-        EQSequence overallEQ = new EQSequence(new ArrayList<Term>() {
+        MultiplicationAbstract multiplyFunction = new MultiplicationAbstract();
+        ArrayList<Term> terms = new ArrayList<Term>() {
             {
-                add(new LogarithmicTerm(1, new Variable("x"), 5));
-                add(new PolynomialTerm(2, new Variable("y"), 2));
-                add(new TrigTerm(1, new Variable("x"), TrigType.SINE));
-                add(new ExponentialTerm(1, new Variable("x"), 2));
-                add(new TrigTerm(1, new Variable("x"), TrigType.SINE));
-                add(new ExponentialTerm(1, new Variable("x"), 2));
-                add(new LogarithmicTerm(2, new Variable("x"), 5));
-                add(new PolynomialTerm(1, new Variable("y"), 3));
+                add(new LogarithmicTerm(1, new Variable("x"), Math.E));
+                add(new LogarithmicTerm(2, new Variable("x"), Math.E));
+                add(new LogarithmicTerm(1, new Variable("x"), 2));
+                add(new LogarithmicTerm(1, new Variable("x"), 10));
+                add(new PolynomialTerm(1, new USub(new LogarithmicTerm(5, new Variable("x"), 2)), 2));
             }
-        });
+        };
 
-        display.appendScript(new BlackboardLabel(overallEQ.toString(), 0.05));
+        display.appendScript(new BlackboardLabel(
+                new EQMultiplication(multiplyFunction.performMultiplication(terms)).toString(), 0.05));
+
+        // display.appendScript(new BlackboardLabel(
+        // new EQMultiplication(addFunction.performAddition(terms)).toString(), 0.05));
 
         // EQSequence eq = new EQSequence(new ArrayList<Term>() {
         // {

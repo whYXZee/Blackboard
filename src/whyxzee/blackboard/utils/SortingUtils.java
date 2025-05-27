@@ -4,27 +4,31 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.terms.*;
 import whyxzee.blackboard.terms.Term.TermType;
+import whyxzee.blackboard.terms.TrigTerm.TrigType;
 
 public class SortingUtils {
+
     public static ArrayList<Term> sortTerms(ArrayList<Term> terms, TermType termType) {
         if (terms.size() == 0) {
-            return new ArrayList<Term>();
+            return terms;
         }
 
         for (int i = 1; i < terms.size(); i++) {
             int currentIndex = i;
             int sortedIndex = i - 1;
 
+            Term currentTerm = terms.get(currentIndex);
+            Term sortedTerm = terms.get(sortedIndex);
+
+            boolean currentIsE, sortedIsE;
+
             switch (termType) {
                 case POLYNOMIAL:
                     // sorted by highest power -> lowest power
-                    PolynomialTerm currentPoly = (PolynomialTerm) terms.get(currentIndex);
-                    PolynomialTerm sortedPoly = (PolynomialTerm) terms.get(sortedIndex);
-
-                    while (currentPoly.getPower() > sortedPoly.getPower()) {
+                    while (comparePolys((PolynomialTerm) currentTerm, (PolynomialTerm) sortedTerm)) {
                         /* Swapping the two */
-                        terms.set(currentIndex, sortedPoly);
-                        terms.set(sortedIndex, currentPoly);
+                        terms.set(currentIndex, sortedTerm);
+                        terms.set(sortedIndex, currentTerm);
 
                         /* Moving back */
                         currentIndex--;
@@ -32,22 +36,20 @@ public class SortingUtils {
                         if (sortedIndex < 0) {
                             break;
                         }
-                        sortedPoly = (PolynomialTerm) terms.get(sortedIndex);
+                        sortedTerm = terms.get(sortedIndex);
                     }
                     break;
+
                 case EXPONENTIAL:
                     // sorted by e -> highest base -> lowest base
-                    ExponentialTerm currentExp = (ExponentialTerm) terms.get(currentIndex);
-                    ExponentialTerm sortedExp = (ExponentialTerm) terms.get(sortedIndex);
-
-                    boolean currentIsE = currentExp.isBaseE();
-                    boolean sortedIsE = sortedExp.isBaseE();
+                    currentIsE = ((ExponentialTerm) currentTerm).isBaseE();
+                    sortedIsE = ((ExponentialTerm) sortedTerm).isBaseE();
 
                     if (currentIsE) {
                         while (!sortedIsE) {
                             /* Swapping the two */
-                            terms.set(currentIndex, sortedExp);
-                            terms.set(sortedIndex, currentExp);
+                            terms.set(currentIndex, sortedTerm);
+                            terms.set(sortedIndex, currentTerm);
 
                             /* Moving back */
                             currentIndex--;
@@ -55,14 +57,14 @@ public class SortingUtils {
                             if (sortedIndex < 0) {
                                 break;
                             }
-                            sortedExp = (ExponentialTerm) terms.get(sortedIndex);
-                            sortedIsE = sortedExp.isBaseE();
+                            sortedTerm = terms.get(sortedIndex);
+                            sortedIsE = ((ExponentialTerm) sortedTerm).isBaseE();
                         }
                     } else {
-                        while (currentExp.getBase() > sortedExp.getBase() && !sortedIsE) {
+                        while (compareExps((ExponentialTerm) currentTerm, (ExponentialTerm) sortedTerm)) {
                             /* Swapping the two */
-                            terms.set(currentIndex, sortedExp);
-                            terms.set(sortedIndex, currentExp);
+                            terms.set(currentIndex, sortedTerm);
+                            terms.set(sortedIndex, currentTerm);
 
                             /* Moving back */
                             currentIndex--;
@@ -70,11 +72,62 @@ public class SortingUtils {
                             if (sortedIndex < 0) {
                                 break;
                             }
-                            sortedExp = (ExponentialTerm) terms.get(sortedIndex);
-                            sortedIsE = sortedExp.isBaseE();
+                            sortedTerm = terms.get(sortedIndex);
                         }
                     }
+                    break;
+                case LOGARITHMIC:
+                    // sorted by e -> highest base -> lowest base
+                    currentIsE = ((LogarithmicTerm) currentTerm).isBaseE();
+                    sortedIsE = ((LogarithmicTerm) sortedTerm).isBaseE();
 
+                    if (currentIsE) {
+                        while (!sortedIsE) {
+                            /* Swapping the two */
+                            terms.set(currentIndex, sortedTerm);
+                            terms.set(sortedIndex, currentTerm);
+
+                            /* Moving back */
+                            currentIndex--;
+                            sortedIndex--;
+                            if (sortedIndex < 0) {
+                                break;
+                            }
+                            sortedTerm = terms.get(sortedIndex);
+                            sortedIsE = ((LogarithmicTerm) sortedTerm).isBaseE();
+                        }
+                    } else {
+                        while (compareLogs((LogarithmicTerm) currentTerm, (LogarithmicTerm) sortedTerm)) {
+                            /* Swapping the two */
+                            terms.set(currentIndex, sortedTerm);
+                            terms.set(sortedIndex, currentTerm);
+
+                            /* Moving back */
+                            currentIndex--;
+                            sortedIndex--;
+                            if (sortedIndex < 0) {
+                                break;
+                            }
+                            sortedTerm = terms.get(sortedIndex);
+                        }
+                    }
+                    break;
+
+                case TRIGONOMETRIC:
+                    // sorted by sin -> cos -> tan -> csc -> sec -> cot -> respective inverses
+                    while (compareTrig((TrigTerm) currentTerm, (TrigTerm) sortedTerm)) {
+                        /* Swapping the two */
+                        terms.set(currentIndex, sortedTerm);
+                        terms.set(sortedIndex, currentTerm);
+
+                        /* Moving back */
+                        currentIndex--;
+                        sortedIndex--;
+                        if (sortedIndex < 0) {
+                            break;
+                        }
+                        sortedTerm = terms.get(sortedIndex);
+                    }
                     break;
 
                 default:
@@ -128,18 +181,51 @@ public class SortingUtils {
     //
     // TermType Specific
     //
-    public static ArrayList<Term> condenseExpTerms(ArrayList<Term> terms) {
-        ArrayList<ExponentialTerm> expTerms = new ArrayList<ExponentialTerm>();
+    public static final boolean comparePolys(PolynomialTerm currentTerm, PolynomialTerm sortedTerm) {
+        return currentTerm.getPower() > sortedTerm.getPower();
+    }
 
-        for (Term i : terms) {
-            ExponentialTerm expTerm = (ExponentialTerm) i;
-            expTerms.add(expTerm);
+    public static final boolean compareExps(ExponentialTerm currentTerm, ExponentialTerm sortedTerm) {
+        return (currentTerm.getBase() > sortedTerm.getBase()) && !sortedTerm.isBaseE();
+    }
+
+    public static final boolean compareLogs(LogarithmicTerm currentTerm, LogarithmicTerm sortedTerm) {
+        return (currentTerm.getBase() > sortedTerm.getBase()) && !sortedTerm.isBaseE();
+    }
+
+    public static boolean compareTrig(TrigTerm currentTerm, TrigTerm sortedTerm) {
+        return trigTypeToInt(currentTerm.getTrigType()) > trigTypeToInt(sortedTerm.getTrigType());
+    }
+
+    public static int trigTypeToInt(TrigType trigType) {
+        switch (trigType) {
+            case SINE:
+                return 11;
+            case COSINE:
+                return 10;
+            case TANGENT:
+                return 9;
+            case COSECANT:
+                return 8;
+            case SECANT:
+                return 7;
+            case COTANGENT:
+                return 6;
+
+            case ARC_SINE:
+                return 5;
+            case ARC_COSINE:
+                return 4;
+            case ARC_TANGENT:
+                return 3;
+            case ARC_COSECANT:
+                return 2;
+            case ARC_SECANT:
+                return 1;
+            case ARC_COTANGENT:
+                return 0;
+            default:
+                return -1;
         }
-
-        for (ExponentialTerm i : expTerms) {
-            i.condense();
-        }
-
-        return new ArrayList<Term>(expTerms);
     }
 }

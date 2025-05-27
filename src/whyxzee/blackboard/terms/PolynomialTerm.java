@@ -186,12 +186,28 @@ public class PolynomialTerm extends Term {
         return numPower;
     }
 
+    public final void setNumeratorPower(int numPower) {
+        this.numPower = numPower;
+        setUnicode();
+    }
+
     public final int getDenominatorPower() {
         return denomPower;
     }
 
+    public final void setDenominatorPower(int denomPower) {
+        this.denomPower = denomPower;
+        setUnicode();
+    }
+
     public final double getPower() {
         return (double) numPower / denomPower;
+    }
+
+    public final void setPower(int numPower, int denomPower) {
+        this.numPower = numPower;
+        this.denomPower = denomPower;
+        setUnicode();
     }
 
     private void setUnicode() {
