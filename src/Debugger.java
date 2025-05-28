@@ -22,18 +22,8 @@ public class Debugger {
         MultiplicationAbstract multiplyFunction = new MultiplicationAbstract();
         ArrayList<Term> terms = new ArrayList<Term>() {
             {
-                add(new PowerTerm(1, new Variable("x")));
-                add(new PowerTerm(1, new Variable("x"), 9));
-                add(new PowerTerm(7, new Variable("x"), 4));
-                add(new PowerTerm(1, new Variable("x"), 13));
-                add(new PowerTerm(1, new Variable("x"), 2));
-                add(new PowerTerm(5, new Variable("y")));
-                // add(new LogarithmicTerm(1, new Variable("x"), Math.E));
-                // add(new LogarithmicTerm(2, new Variable("x"), Math.E));
-                // add(new LogarithmicTerm(1, new Variable("x"), 2));
-                // add(new LogarithmicTerm(1, new Variable("x"), 10));
-                // add(new PowerTerm(1, new USub(new LogarithmicTerm(5, new Variable("x"), 2)),
-                // 2));
+                add(new LogarithmicTerm(1, new Variable("x"), Math.E));
+                add(new PowerTerm(1, new USub(new LogarithmicTerm(1, new Variable("x"), Math.E)), -2));
             }
         };
 

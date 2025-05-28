@@ -262,6 +262,7 @@ public abstract class MathFunction {
         for (Term i : terms) {
             add(i);
         }
+        organizeTerms();
     }
 
     public final FunctionType getFunctionType() {

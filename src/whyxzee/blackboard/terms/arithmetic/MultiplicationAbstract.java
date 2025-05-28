@@ -2,10 +2,14 @@ package whyxzee.blackboard.terms.arithmetic;
 
 import java.util.ArrayList;
 
+import whyxzee.blackboard.equations.EQSequence;
+import whyxzee.blackboard.equations.MathFunction.FunctionType;
+import whyxzee.blackboard.terms.ExponentialTerm;
 import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.Term.TermType;
 import whyxzee.blackboard.terms.variables.USub;
+import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.terms.variables.Variable.VarType;
 
 /**
@@ -22,6 +26,7 @@ public class MultiplicationAbstract {
     private ArrayList<Integer> denomPowers;
     private ArrayList<Term> multipliedTerms;
     private boolean powerMode;
+    private boolean expMode;
 
     public MultiplicationAbstract() {
         numPowers = new ArrayList<Integer>();
@@ -29,7 +34,7 @@ public class MultiplicationAbstract {
         multipliedTerms = new ArrayList<Term>();
     }
 
-    public ArrayList<Term> performMultiplication(ArrayList<Term> terms) {
+    public final ArrayList<Term> performMultiplication(ArrayList<Term> terms) {
         if (terms.size() == 0) {
             return terms;
         }
@@ -42,7 +47,9 @@ public class MultiplicationAbstract {
 
         /* Multiplication Algorithm */
         for (Term i : terms) {
+            System.out.println(multipliedTerms);
             powerMode = false;
+            expMode = false;
 
             double coef = i.getCoef();
             int numPower = 1;
@@ -64,15 +71,21 @@ public class MultiplicationAbstract {
                 denomPower = powerTerm.getDenominatorPower();
                 powerTerm.setPower(1, 1);
                 i = powerTerm;
+            } else if (isExpTerm(i)) {
+                expMode = true;
             }
 
             /* Adding to the ArrayLists */
             int index = getIndexOf(i);
             if (index != -1) {
                 Term term = getTerm(index);
-                update(index, coef * term.getCoef(),
-                        (numPower * getDenomPower(index)) + (denomPower * getNumPower(index)),
-                        denomPower * getDenomPower(index));
+                if (expMode) {
+                    update(index, coef * term.getCoef(), (ExponentialTerm) i);
+                } else {
+                    update(index, coef * term.getCoef(),
+                            (numPower * getDenomPower(index)) + (denomPower * getNumPower(index)),
+                            denomPower * getDenomPower(index));
+                }
             } else {
                 add(i, numPower, denomPower);
             }
@@ -109,11 +122,15 @@ public class MultiplicationAbstract {
     private final int getIndexOf(Term term) {
         for (int i = 0; i < multipliedTerms.size(); i++) {
             Term indexTerm = getTerm(i);
-            if (term.similarTo(indexTerm) && !powerMode) {
+            if (term.similarTo(indexTerm) && !powerMode && !expMode) {
                 return i;
             }
 
             if (powerMode && hasPowerSimilarity(term, indexTerm)) {
+                return i;
+            }
+
+            if (expMode && hasExpSimilarity(term, indexTerm)) {
                 return i;
             }
         }
@@ -137,6 +154,56 @@ public class MultiplicationAbstract {
         numPowers.set(index, numPower);
         denomPowers.set(index, denomPower);
         getTerm(index).setCoef(coef);
+    }
+
+    /**
+     * Special method for updating an exponential term
+     * 
+     * @param index   the index of the term that needs to be updated
+     * @param coef    the new coefficient of the term
+     * @param expTerm the new term
+     */
+    private final void update(int index, double coef, ExponentialTerm expTerm) {
+        Variable var = expTerm.getVar();
+        Variable oldVar = getTerm(index).getVar();
+        VarType varType = var.getVarType();
+        EQSequence outputEQ;
+
+        if (isEQSeq(oldVar) && isEQSeq(var)) {
+            // both are SequentialEQs
+            outputEQ = (EQSequence) oldVar.getInnerFunction();
+            outputEQ.addToTermArray(var.getInnerFunction().getTermArray());
+
+        } else if (isEQSeq(oldVar)) {
+            // oldVar is a SequentialEQ
+            /* Addend Term */
+            Term termToAdd = new PowerTerm(1, var);
+            if (varType == VarType.U_SUB_TERM) {
+                termToAdd = var.getInnerTerm();
+            }
+            System.out.println(termToAdd.printConsole());
+
+            /* Sequence */
+            outputEQ = (EQSequence) oldVar.getInnerFunction();
+            outputEQ.add(termToAdd);
+            outputEQ.organizeTerms();
+
+        } else {
+            // oldVar is a MultiplicativeEQ or a normal variable
+            /* Addend Term */
+            Term termToAdd = new PowerTerm(1, var);
+            if (varType == VarType.U_SUB_TERM) {
+                termToAdd = var.getInnerTerm();
+            }
+
+            /* Sequence */
+            ArrayList<Term> termArray = new ArrayList<Term>();
+            termArray.add(new PowerTerm(1, oldVar));
+            termArray.add(termToAdd);
+            outputEQ = new EQSequence(termArray);
+        }
+
+        multipliedTerms.set(index, new ExponentialTerm(coef, new USub(outputEQ), expTerm.getBase()));
     }
 
     private final Term getTerm(int index) {
@@ -175,6 +242,10 @@ public class MultiplicationAbstract {
         return term.getTermType() == TermType.POWER;
     }
 
+    private final boolean isExpTerm(Term term) {
+        return term.getTermType() == TermType.EXPONENTIAL;
+    }
+
     private final boolean areMultipliedTermsEmpty() {
         return multipliedTerms.size() == 0;
     }
@@ -185,5 +256,23 @@ public class MultiplicationAbstract {
         }
 
         return one.getVar().equals(two.getVar());
+    }
+
+    private final boolean hasExpSimilarity(Term one, Term two) {
+        if (!isExpTerm(one) || !isExpTerm(two)) {
+            return false;
+        }
+
+        ExponentialTerm expOne = (ExponentialTerm) one;
+        ExponentialTerm expTwo = (ExponentialTerm) two;
+        return expOne.getBase() == expTwo.getBase();
+    }
+
+    private final boolean isEQSeq(Variable var) {
+        if (var.getVarType() != VarType.U_SUB_EQ) {
+            return false;
+        }
+
+        return var.getInnerFunction().getFunctionType() == FunctionType.SEQUENCE;
     }
 }
