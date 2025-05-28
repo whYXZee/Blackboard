@@ -4,25 +4,12 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-import whyxzee.blackboard.utils.SortingUtils;
-import whyxzee.blackboard.utils.SpecialFunctions;
-import whyxzee.blackboard.display.BlackboardDisplay;
-import whyxzee.blackboard.display.BlackboardLabel;
-import whyxzee.blackboard.equations.EQMultiplication;
-import whyxzee.blackboard.equations.EQSequence;
-import whyxzee.blackboard.terms.ExponentialTerm;
-import whyxzee.blackboard.terms.LogarithmicTerm;
-import whyxzee.blackboard.terms.PowerTerm;
-import whyxzee.blackboard.terms.SignumTerm;
-import whyxzee.blackboard.terms.Term;
-import whyxzee.blackboard.terms.TrigTerm;
-import whyxzee.blackboard.terms.Term.TermType;
-import whyxzee.blackboard.terms.TrigTerm.TrigType;
-import whyxzee.blackboard.terms.arithmetic.AdditionAbstract;
-import whyxzee.blackboard.terms.arithmetic.MultiplicationAbstract;
-import whyxzee.blackboard.terms.arithmetic.special.CondenseLog;
-import whyxzee.blackboard.terms.variables.USub;
-import whyxzee.blackboard.terms.variables.Variable;
+import whyxzee.blackboard.utils.*;
+import whyxzee.blackboard.display.*;
+import whyxzee.blackboard.equations.*;
+import whyxzee.blackboard.terms.*;
+import whyxzee.blackboard.terms.arithmetic.*;
+import whyxzee.blackboard.terms.variables.*;
 
 public class Debugger {
     public static void main(String[] args) throws Exception {
@@ -35,11 +22,18 @@ public class Debugger {
         MultiplicationAbstract multiplyFunction = new MultiplicationAbstract();
         ArrayList<Term> terms = new ArrayList<Term>() {
             {
-                add(new LogarithmicTerm(1, new Variable("x"), Math.E));
-                add(new LogarithmicTerm(2, new Variable("x"), Math.E));
-                add(new LogarithmicTerm(1, new Variable("x"), 2));
-                add(new LogarithmicTerm(1, new Variable("x"), 10));
-                add(new PowerTerm(1, new USub(new LogarithmicTerm(5, new Variable("x"), 2)), 2));
+                add(new PowerTerm(1, new Variable("x")));
+                add(new PowerTerm(1, new Variable("x"), 9));
+                add(new PowerTerm(7, new Variable("x"), 4));
+                add(new PowerTerm(1, new Variable("x"), 13));
+                add(new PowerTerm(1, new Variable("x"), 2));
+                add(new PowerTerm(5, new Variable("y")));
+                // add(new LogarithmicTerm(1, new Variable("x"), Math.E));
+                // add(new LogarithmicTerm(2, new Variable("x"), Math.E));
+                // add(new LogarithmicTerm(1, new Variable("x"), 2));
+                // add(new LogarithmicTerm(1, new Variable("x"), 10));
+                // add(new PowerTerm(1, new USub(new LogarithmicTerm(5, new Variable("x"), 2)),
+                // 2));
             }
         };
 

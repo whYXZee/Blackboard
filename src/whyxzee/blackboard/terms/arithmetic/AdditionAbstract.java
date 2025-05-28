@@ -46,7 +46,7 @@ public class AdditionAbstract {
     //
     // Get & Set Methods
     //
-    private int getIndexOf(Term term) {
+    private final int getIndexOf(Term term) {
         int index = 0;
 
         for (Term i : addedTerms) {
@@ -58,7 +58,7 @@ public class AdditionAbstract {
         return -1;
     }
 
-    private void add(Term term) {
+    private final void add(Term term) {
         addedTerms.add(term);
     }
 
@@ -68,19 +68,19 @@ public class AdditionAbstract {
      * @param term   the term that should be changed
      * @param addend how much should be added to the coefficient
      */
-    private void update(Term term, double newCoef) {
+    private final void update(Term term, double newCoef) {
         addedTerms.get(getIndexOf(term)).addToCoef(newCoef);
     }
 
     //
     // Boolean Methods
     //
-    private boolean contains(Term term) {
+    private final boolean contains(Term term) {
         return getIndexOf(term) != -1;
         // if the index is -1, then the term doesn't exist
     }
 
-    private boolean areAddedTermsEmpty() {
+    private final boolean areAddedTermsEmpty() {
         return addedTerms.size() == 0;
     }
 }

@@ -187,6 +187,7 @@ public class PowerTerm extends Term {
 
     public final void setNumeratorPower(int numPower) {
         this.numPower = numPower;
+        power = (double) numPower / denomPower;
         setUnicode();
     }
 
@@ -196,6 +197,8 @@ public class PowerTerm extends Term {
 
     public final void setDenominatorPower(int denomPower) {
         this.denomPower = denomPower;
+        power = (double) numPower / denomPower;
+
         setUnicode();
     }
 
@@ -206,10 +209,11 @@ public class PowerTerm extends Term {
     public final void setPower(int numPower, int denomPower) {
         this.numPower = numPower;
         this.denomPower = denomPower;
+        power = (double) numPower / denomPower;
         setUnicode();
     }
 
-    private void setUnicode() {
+    private final void setUnicode() {
         if (denomPower == 1) {
             // denominator not needed
             powerUnicode = UnicodeUtils.intToSuperscript(numPower);

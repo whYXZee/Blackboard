@@ -13,7 +13,7 @@ import whyxzee.blackboard.terms.variables.Variable.VarType;
  * not work for ExponentialTerms and PolynomialTerms.
  * 
  * <p>
- * The functionality of this class has been checked on {@code 5/27/2025} and
+ * The functionality of this class has been checked on {@code 5/28/2025} and
  * nothing has changed since.
  */
 public class MultiplicationAbstract {
@@ -21,6 +21,7 @@ public class MultiplicationAbstract {
     private ArrayList<Integer> numPowers;
     private ArrayList<Integer> denomPowers;
     private ArrayList<Term> multipliedTerms;
+    private boolean powerMode;
 
     public MultiplicationAbstract() {
         numPowers = new ArrayList<Integer>();
@@ -30,22 +31,39 @@ public class MultiplicationAbstract {
 
     public ArrayList<Term> performMultiplication(ArrayList<Term> terms) {
         if (terms.size() == 0) {
-            return null;
+            return terms;
+        }
+
+        if (areMultipliedTermsEmpty()) {
+            numPowers.clear();
+            denomPowers.clear();
+            multipliedTerms.clear();
         }
 
         /* Multiplication Algorithm */
         for (Term i : terms) {
+            powerMode = false;
+
             double coef = i.getCoef();
             int numPower = 1;
             int denomPower = 1;
 
             /* Polynomial clean up */
             if (isUSubTerm(i)) {
-                PowerTerm polyTerm = (PowerTerm) i;
-                numPower = polyTerm.getNumeratorPower();
-                denomPower = polyTerm.getDenominatorPower();
-                i = polyTerm.getVar().getInnerTerm();
-                coef *= Math.pow(i.getCoef(), polyTerm.getPower());
+                PowerTerm powerTerm = (PowerTerm) i;
+                numPower = powerTerm.getNumeratorPower();
+                denomPower = powerTerm.getDenominatorPower();
+                i = powerTerm.getVar().getInnerTerm();
+                coef *= Math.pow(i.getCoef(), powerTerm.getPower());
+            }
+
+            if (isPowerTerm(i)) {
+                powerMode = true;
+                PowerTerm powerTerm = (PowerTerm) i;
+                numPower = powerTerm.getNumeratorPower();
+                denomPower = powerTerm.getDenominatorPower();
+                powerTerm.setPower(1, 1);
+                i = powerTerm;
             }
 
             /* Adding to the ArrayLists */
@@ -66,7 +84,7 @@ public class MultiplicationAbstract {
     //
     // Get & Set Methods
     //
-    private ArrayList<Term> getTermArray() {
+    private final ArrayList<Term> getTermArray() {
         ArrayList<Term> output = new ArrayList<Term>();
 
         for (int i = 0; i < multipliedTerms.size(); i++) {
@@ -75,6 +93,10 @@ public class MultiplicationAbstract {
 
             if (hasPowerOne(i)) {
                 output.add(term);
+            } else if (isPowerTerm(term)) {
+                PowerTerm powTerm = (PowerTerm) term;
+                powTerm.setPower(getNumPower(i), getDenomPower(i));
+                output.add(powTerm);
             } else {
                 term.setCoef(1);
                 output.add(new PowerTerm(coef, new USub(term), getNumPower(i), getDenomPower(i)));
@@ -84,16 +106,21 @@ public class MultiplicationAbstract {
         return output;
     }
 
-    private int getIndexOf(Term term) {
+    private final int getIndexOf(Term term) {
         for (int i = 0; i < multipliedTerms.size(); i++) {
-            if (term.similarTo(getTerm(i))) {
+            Term indexTerm = getTerm(i);
+            if (term.similarTo(indexTerm) && !powerMode) {
+                return i;
+            }
+
+            if (powerMode && hasPowerSimilarity(term, indexTerm)) {
                 return i;
             }
         }
         return -1;
     }
 
-    private void add(Term term, int numPower, int denomPower) {
+    private final void add(Term term, int numPower, int denomPower) {
         numPowers.add(numPower);
         denomPowers.add(denomPower);
         multipliedTerms.add(term);
@@ -106,28 +133,28 @@ public class MultiplicationAbstract {
      * @param numPower   the new numerator power for the term
      * @param denomPower the new denominator power for the term
      */
-    private void update(int index, double coef, int numPower, int denomPower) {
+    private final void update(int index, double coef, int numPower, int denomPower) {
         numPowers.set(index, numPower);
         denomPowers.set(index, denomPower);
         getTerm(index).setCoef(coef);
     }
 
-    private Term getTerm(int index) {
+    private final Term getTerm(int index) {
         return multipliedTerms.get(index);
     }
 
-    private int getNumPower(int index) {
+    private final int getNumPower(int index) {
         return numPowers.get(index);
     }
 
-    private int getDenomPower(int index) {
+    private final int getDenomPower(int index) {
         return denomPowers.get(index);
     }
 
     //
     // Boolean Methods
     //
-    private boolean hasPowerOne(int index) {
+    private final boolean hasPowerOne(int index) {
         return (getNumPower(index) == 1) && (getDenomPower(index) == 1);
     }
 
@@ -137,14 +164,26 @@ public class MultiplicationAbstract {
      * @param term
      * @return
      */
-    private boolean isUSubTerm(Term term) {
+    private final boolean isUSubTerm(Term term) {
         if (!isPowerTerm(term)) {
             return false;
         }
         return term.getVar().getVarType() == VarType.U_SUB_TERM;
     }
 
-    private boolean isPowerTerm(Term term) {
+    private final boolean isPowerTerm(Term term) {
         return term.getTermType() == TermType.POWER;
+    }
+
+    private final boolean areMultipliedTermsEmpty() {
+        return multipliedTerms.size() == 0;
+    }
+
+    private final boolean hasPowerSimilarity(Term one, Term two) {
+        if (!isPowerTerm(one) || !isPowerTerm(two)) {
+            return false;
+        }
+
+        return one.getVar().equals(two.getVar());
     }
 }
