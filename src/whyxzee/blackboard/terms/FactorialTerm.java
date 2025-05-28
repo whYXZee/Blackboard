@@ -21,12 +21,22 @@ public class FactorialTerm extends Term {
 
     @Override
     public String toString() {
-        return Double.toString(getCoef()) + "(" + getVar().toString() + ")";
+        double coef = getCoef();
+        if (coef == 0) {
+            return "";
+        }
+
+        return Double.toString(coef) + "(" + getVar().toString() + ")";
     }
 
     @Override
     public String printConsole() {
-        return Double.toString(getCoef()) + "(" + getVar().printConsole() + ")";
+        double coef = getCoef();
+        if (coef == 0) {
+            return "";
+        }
+
+        return Double.toString(coef) + "(" + getVar().printConsole() + ")";
     }
 
     //

@@ -2,7 +2,7 @@ package whyxzee.blackboard.equations;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.Term.TermType;
 import whyxzee.blackboard.terms.variables.USub;
@@ -92,7 +92,7 @@ public class EQMultiplication extends MathFunction {
             }
 
             /* Remove missing data */
-            eqSeqTerms.add(new PolynomialTerm(1, new USub(term), 1));
+            eqSeqTerms.add(new PowerTerm(1, new USub(term), 1));
         }
 
         return new EQSequence(eqSeqTerms);

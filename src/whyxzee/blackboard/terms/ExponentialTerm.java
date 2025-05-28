@@ -90,18 +90,18 @@ public class ExponentialTerm extends Term {
             switch (var.getVarType()) {
                 case VARIABLE:
                     setVar(new USub(new EQSequence(
-                            new PolynomialTerm(1, var),
-                            new PolynomialTerm(numOfBase))));
+                            new PowerTerm(1, var),
+                            new PowerTerm(numOfBase))));
                     break;
                 case U_SUB_EQ:
                     EQSequence eq = (EQSequence) var.getInnerFunction();
-                    eq.addPolynomialTerm(new PolynomialTerm(numOfBase));
+                    eq.addPowerTerm(new PowerTerm(numOfBase));
                     setVar(new USub(eq));
                     break;
                 case U_SUB_TERM:
                     setVar(new USub(new EQSequence(
                             var.getInnerTerm(),
-                            new PolynomialTerm(numOfBase))));
+                            new PowerTerm(numOfBase))));
                     break;
                 default:
                     break;
@@ -138,91 +138,6 @@ public class ExponentialTerm extends Term {
         this.base = base;
     }
 
-    /**
-     * Multiplies the terms together based on the base. Can be used to simplify
-     * ExponentialTerms in a multiplicative equation.
-     * 
-     * @param terms
-     * @return
-     */
-    public static Term multiply(ArrayList<Term> terms) {
-        /* Initializing variables */
-        ExponentialData expData = new ExponentialData();
-
-        /* Simplifying algorithm */
-        for (int i = 0; i < terms.size(); i++) {
-            ExponentialTerm term = (ExponentialTerm) terms.get(i);
-            double coef = term.getCoef();
-            double base = term.getBase();
-            Variable var = term.getVar();
-
-            if (expData.containsBase(base)) {
-                /* Old Term */
-                ExponentialTerm oldTerm = expData.get(base);
-                Variable oldVar = oldTerm.getVar();
-                VarType oldVarType = oldVar.getVarType();
-
-                /* Added Term */
-                PolynomialTerm newVar = new PolynomialTerm(1, var);
-                if (var.getVarType() == VarType.U_SUB_TERM) {
-                    if (var.getInnerTerm().getTermType() == TermType.POLYNOMIAL) {
-                        newVar = (PolynomialTerm) var.getInnerTerm();
-                    }
-                }
-
-                EQSequence innerEQ;
-                switch (oldVarType) {
-                    case VARIABLE:
-                        if (var.getVarType() == VarType.U_SUB_EQ) {
-                            innerEQ = (EQSequence) var.getInnerFunction();
-                            innerEQ.addPolynomialTerm(new PolynomialTerm(1, oldVar));
-                        } else {
-                            innerEQ = new EQSequence(
-                                    new PolynomialTerm(1, oldVar),
-                                    newVar);
-                        }
-                        break;
-                    case U_SUB_EQ:
-                        if (var.getVarType() == VarType.U_SUB_EQ) {
-                            innerEQ = (EQSequence) oldVar.getInnerFunction();
-                            innerEQ.merge(var.getInnerFunction());
-                        } else {
-                            innerEQ = (EQSequence) oldVar.getInnerFunction();
-                            innerEQ.addPolynomialTerm(newVar);
-                        }
-                        break;
-                    case U_SUB_TERM:
-                        if (var.getVarType() == VarType.U_SUB_EQ) {
-                            innerEQ = (EQSequence) var.getInnerFunction();
-                            innerEQ.add(oldVar.getInnerTerm());
-                        } else {
-                            innerEQ = new EQSequence(
-                                    oldVar.getInnerTerm(),
-                                    newVar);
-                        }
-                        break;
-                    default:
-                        innerEQ = new EQSequence();
-                        break;
-                }
-                expData.update(base, coef * oldTerm.getCoef(), new USub(innerEQ));
-            } else {
-                expData.add(term);
-            }
-        }
-
-        expData.simplifyVar();
-
-        if (expData.size() > 1) {
-            EQMultiplication eq = new EQMultiplication(expData.getTermArray());
-            return new PolynomialTerm(1, new USub(eq));
-        } else if (expData.size() == 1) {
-            return expData.getExpTerm(0);
-        }
-
-        return null;
-    }
-
     //
     // Arithmetic Methods (Object-related)
     //
@@ -257,7 +172,7 @@ public class ExponentialTerm extends Term {
                     // inner function (x)
                     variable.derive());
 
-            return new PolynomialTerm(coef, new USub(eq), 1);
+            return new PowerTerm(coef, new USub(eq), 1);
         } else {
             // no chain rule
             return new ExponentialTerm(coef, variable, base);

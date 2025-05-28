@@ -19,33 +19,26 @@ import whyxzee.blackboard.utils.UnicodeUtils;
  * <ul>
  * <li>equals()
  */
-public class PolynomialTerm extends Term {
-    //
-    // General use: static
-    //
-    public static final PolynomialTerm ZERO_TERM = new PolynomialTerm(0);
+public class PowerTerm extends Term {
+    /* General-use Static */
+    public static final PowerTerm ZERO_TERM = new PowerTerm(0);
 
-    //
-    // Variables
-    //
+    /* Variables */
     private int numPower;
     private int denomPower;
     private double power;
     private String powerUnicode;
 
-    //
-    // Object-related Methods
-    //
-
     /**
-     * The constructor class for a polynomial term
+     * The constructor class for a polynomial term.
      * 
-     * @param coefficient the coefficient
-     * @param var         the variable
+     * @param coef  the coefficient
+     * @param var   the variable
+     * @param power the power
      */
-    public PolynomialTerm(double coefficient, Variable var, int power) {
+    public PowerTerm(double coef, Variable var, int power) {
         /* Term Abstract */
-        super(coefficient, var, TermType.POLYNOMIAL);
+        super(coef, var, TermType.POWER);
 
         /* Function */
         numPower = power;
@@ -54,9 +47,15 @@ public class PolynomialTerm extends Term {
         setUnicode();
     }
 
-    public PolynomialTerm(double coefficient, Variable var) {
+    /**
+     * The constructor class for a PowerTerm with a power of 1.
+     * 
+     * @param coefficient
+     * @param var
+     */
+    public PowerTerm(double coefficient, Variable var) {
         /* Term Abstract */
-        super(coefficient, var, TermType.POLYNOMIAL);
+        super(coefficient, var, TermType.POWER);
 
         /* Function */
         numPower = 1;
@@ -71,9 +70,9 @@ public class PolynomialTerm extends Term {
      * @param coefficient the coefficient
      * @param var         the variable
      */
-    public PolynomialTerm(double coefficient, Variable var, int numPower, int denomPower) {
+    public PowerTerm(double coefficient, Variable var, int numPower, int denomPower) {
         /* Term Abstract */
-        super(coefficient, var, TermType.POLYNOMIAL);
+        super(coefficient, var, TermType.POWER);
 
         /* Function */
         this.numPower = numPower;
@@ -87,9 +86,9 @@ public class PolynomialTerm extends Term {
      * 
      * @param num the constant
      */
-    public PolynomialTerm(double num) {
+    public PowerTerm(double num) {
         /* Term Abstract */
-        super(num, Variable.noVar, TermType.POLYNOMIAL);
+        super(num, Variable.noVar, TermType.POWER);
 
         /* Function */
         numPower = 0;
@@ -221,9 +220,8 @@ public class PolynomialTerm extends Term {
     }
 
     //
-    // Object Arithmetics
-    // As in arithmetics applied to the instance/term itself. Ordered from simple to
-    // complex.
+    // Arithmetic Methods
+    //
 
     /**
      * Inputs a value into the polynomial, as if it was a function.
@@ -231,12 +229,12 @@ public class PolynomialTerm extends Term {
      * @param value the value of the variable
      * @return
      */
-    public double solve(double value) {
+    public final double solve(double value) {
         return getCoef() * Math.pow(getVar().solve(value), power);
     }
 
-    public Term negate() {
-        return new PolynomialTerm(-1 * getCoef(), getVar(), numPower, denomPower);
+    public final Term negate() {
+        return new PowerTerm(-1 * getCoef(), getVar(), numPower, denomPower);
     }
 
     /**
@@ -246,7 +244,7 @@ public class PolynomialTerm extends Term {
      * @return
      */
     @Override
-    public Term derive() {
+    public final Term derive() {
         /* Initializing variables */
         double number = getCoef();
         Variable variable = getVar().clone();
@@ -254,35 +252,34 @@ public class PolynomialTerm extends Term {
         /* Number */
         if (numPower == 0) {
             // Derivative of a constant is 0
-            return PolynomialTerm.ZERO_TERM;
+            return PowerTerm.ZERO_TERM;
         }
 
         /* Function */
         if (variable.isUSub()) {
             // chain rule
             if (numPower == 1 && denomPower == 1) {
-                System.out.println("deriving with power of 1");
                 return variable.derive();
             } else {
                 /* Derivative */
                 EQMultiplication eq = new EQMultiplication(
                         // outer function (x^n)
-                        new PolynomialTerm((double) numPower / denomPower, variable, numPower - denomPower, denomPower),
+                        new PowerTerm((double) numPower / denomPower, variable, numPower - denomPower, denomPower),
 
                         // inner function (x)
                         variable.derive());
-                return new PolynomialTerm(number, new USub(eq), 1);
+                return new PowerTerm(number, new USub(eq), 1);
             }
 
         } else {
             // no chain rule
             number *= (double) numPower / denomPower;
-            return new PolynomialTerm(number, variable, numPower - denomPower, denomPower);
+            return new PowerTerm(number, variable, numPower - denomPower, denomPower);
         }
     }
 
     @Override
-    public double limInfSolve() {
+    public final double limInfSolve() {
         /* Without respect to the variable */
 
         /* Number */
@@ -307,7 +304,7 @@ public class PolynomialTerm extends Term {
     }
 
     @Override
-    public double limNegInfSolve() {
+    public final double limNegInfSolve() {
         /* Without respect to the variable */
 
         /* Number */
@@ -347,10 +344,10 @@ public class PolynomialTerm extends Term {
     // Boolean Methods
     //
     @Override
-    public boolean similarTo(Term term) {
+    public final boolean similarTo(Term term) {
         switch (term.getTermType()) {
-            case POLYNOMIAL:
-                PolynomialTerm polyTerm = (PolynomialTerm) term;
+            case POWER:
+                PowerTerm polyTerm = (PowerTerm) term;
                 return (polyTerm.getDenominatorPower() == this.denomPower)
                         && (polyTerm.getNumeratorPower() == this.numPower)
                         && (polyTerm.getVar().equals(this.getVar()));
@@ -361,8 +358,8 @@ public class PolynomialTerm extends Term {
 
     @Override
     public final boolean equals(Term other) {
-        if ((other.getTermType() == TermType.POLYNOMIAL) && (getCoef() == other.getCoef())) {
-            PolynomialTerm polyTerm = (PolynomialTerm) other;
+        if ((other.getTermType() == TermType.POWER) && (getCoef() == other.getCoef())) {
+            PowerTerm polyTerm = (PowerTerm) other;
             return (power == polyTerm.getPower()) && (getVar().equals(polyTerm.getVar()));
         }
         return false;

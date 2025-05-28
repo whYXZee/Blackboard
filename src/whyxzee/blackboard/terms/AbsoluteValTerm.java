@@ -71,7 +71,7 @@ public class AbsoluteValTerm extends Term {
             EQMultiplication eq = new EQMultiplication(
                     variable.derive(),
                     new SignumTerm(1, variable));
-            return new PolynomialTerm(getCoef(), new USub(eq), 1);
+            return new PowerTerm(getCoef(), new USub(eq), 1);
         } else {
             return new SignumTerm(getCoef(), variable);
         }

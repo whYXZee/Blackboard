@@ -1,7 +1,7 @@
 package whyxzee.blackboard.utils;
 
 public class SpecialFunctions {
-    public static double gammaFunction(double input) {
+    public static final double gammaFunction(double input) {
         /* Input */
         boolean isInputNegative = input < 0;
 
@@ -85,7 +85,7 @@ public class SpecialFunctions {
         }
     }
 
-    public static int factorial(int input) {
+    public static final int factorial(int input) {
         if (input > 20) {
             throw new RuntimeException("Factorial size too large at value " + input);
         }
@@ -98,7 +98,7 @@ public class SpecialFunctions {
         return output;
     }
 
-    public static double log_b(double base, double value) {
+    public static final double log_b(double base, double value) {
         return Math.log(value) / Math.log(base);
     }
 }

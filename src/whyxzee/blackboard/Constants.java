@@ -3,7 +3,7 @@ package whyxzee.blackboard;
 import java.awt.Font;
 
 import whyxzee.blackboard.equations.EQSequence;
-import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.variables.Variable;
 
 public final class Constants {
@@ -72,7 +72,7 @@ public final class Constants {
 
     public static final class SeriesConstants {
         public static final EQSequence N_MINUS_ONE = new EQSequence(
-                new PolynomialTerm(1, new Variable("n")),
-                new PolynomialTerm(-1));
+                new PowerTerm(1, new Variable("n")),
+                new PowerTerm(-1));
     }
 }

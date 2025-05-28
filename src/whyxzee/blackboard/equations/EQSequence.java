@@ -121,7 +121,7 @@ public class EQSequence extends MathFunction {
         ArrayList<Term> outputTerms = new ArrayList<Term>();
         for (Term term : getTermArray()) {
             Term derived = term.derive();
-            if (!derived.equals(PolynomialTerm.ZERO_TERM)) {
+            if (!derived.equals(PowerTerm.ZERO_TERM)) {
                 // if the derivative is not 0 nor DNE
                 outputTerms.add(derived);
             }

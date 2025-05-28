@@ -12,7 +12,7 @@ import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.equations.EQSequence;
 import whyxzee.blackboard.terms.ExponentialTerm;
 import whyxzee.blackboard.terms.LogarithmicTerm;
-import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.SignumTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.TrigTerm;
@@ -39,7 +39,7 @@ public class Debugger {
                 add(new LogarithmicTerm(2, new Variable("x"), Math.E));
                 add(new LogarithmicTerm(1, new Variable("x"), 2));
                 add(new LogarithmicTerm(1, new Variable("x"), 10));
-                add(new PolynomialTerm(1, new USub(new LogarithmicTerm(5, new Variable("x"), 2)), 2));
+                add(new PowerTerm(1, new USub(new LogarithmicTerm(5, new Variable("x"), 2)), 2));
             }
         };
 

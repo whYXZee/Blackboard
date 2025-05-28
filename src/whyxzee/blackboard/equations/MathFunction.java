@@ -14,7 +14,7 @@ import whyxzee.blackboard.utils.SortingUtils;
 public abstract class MathFunction {
     /* Terms */
     private ArrayList<Term> termArray = new ArrayList<Term>();
-    private ArrayList<Term> polyTerms = new ArrayList<Term>();
+    private ArrayList<Term> powerTerms = new ArrayList<Term>();
     private ArrayList<Term> expTerms = new ArrayList<Term>();
     private ArrayList<Term> logTerms = new ArrayList<Term>();
     private ArrayList<Term> trigTerms = new ArrayList<Term>();
@@ -64,14 +64,14 @@ public abstract class MathFunction {
         simplify();
 
         /* Polynomial Term */
-        polyTerms = SortingUtils.sortTerms(polyTerms, TermType.POLYNOMIAL);
+        powerTerms = SortingUtils.sortTerms(powerTerms, TermType.POWER);
         expTerms = SortingUtils.sortTerms(expTerms, TermType.EXPONENTIAL);
         logTerms = SortingUtils.sortTerms(logTerms, TermType.LOGARITHMIC);
         trigTerms = SortingUtils.sortTerms(trigTerms, TermType.TRIGONOMETRIC);
 
         termArray = new ArrayList<Term>() {
             {
-                addAll(polyTerms);
+                addAll(powerTerms);
                 addAll(expTerms);
                 addAll(logTerms);
                 addAll(trigTerms);
@@ -93,7 +93,7 @@ public abstract class MathFunction {
     public abstract void merge(MathFunction function);
 
     public final void clearTermArrays() {
-        polyTerms.clear();
+        powerTerms.clear();
         expTerms.clear();
         logTerms.clear();
         trigTerms.clear();
@@ -107,8 +107,8 @@ public abstract class MathFunction {
     public final void performAdditionOn(TermType termType) {
         AdditionAbstract addFunction = new AdditionAbstract();
         switch (termType) {
-            case POLYNOMIAL:
-                polyTerms = addFunction.performAddition(polyTerms);
+            case POWER:
+                powerTerms = addFunction.performAddition(powerTerms);
                 break;
             case EXPONENTIAL:
                 expTerms = addFunction.performAddition(expTerms);
@@ -138,8 +138,8 @@ public abstract class MathFunction {
     public final void performMultiplicationOn(TermType termType) {
         MultiplicationAbstract multiplyFunction = new MultiplicationAbstract();
         switch (termType) {
-            case POLYNOMIAL:
-                polyTerms = multiplyFunction.performMultiplication(polyTerms);
+            case POWER:
+                powerTerms = multiplyFunction.performMultiplication(powerTerms);
                 break;
             case EXPONENTIAL:
                 expTerms = multiplyFunction.performMultiplication(expTerms);
@@ -193,8 +193,8 @@ public abstract class MathFunction {
 
     public final ArrayList<Term> getTermArray(TermType termType) {
         switch (termType) {
-            case POLYNOMIAL:
-                return polyTerms;
+            case POWER:
+                return powerTerms;
             case EXPONENTIAL:
                 return expTerms;
             case LOGARITHMIC:
@@ -230,8 +230,8 @@ public abstract class MathFunction {
 
     public final void setTermArray(TermType termType, ArrayList<Term> terms) {
         switch (termType) {
-            case POLYNOMIAL:
-                polyTerms = terms;
+            case POWER:
+                powerTerms = terms;
                 break;
             case EXPONENTIAL:
                 expTerms = terms;
@@ -273,18 +273,18 @@ public abstract class MathFunction {
      * 
      * @param term
      */
-    public final void addPolynomialTerm(Term term) {
-        polyTerms.add(term);
+    public final void addPowerTerm(Term term) {
+        powerTerms.add(term);
     }
 
-    public final void setPolyTerms(ArrayList<Term> terms) {
-        polyTerms = terms;
+    public final void setPowerTerms(ArrayList<Term> terms) {
+        powerTerms = terms;
     }
 
-    public final void setPolyTerms(Term... terms) {
-        polyTerms.clear();
+    public final void setPowerTerms(Term... terms) {
+        powerTerms.clear();
         for (Term i : terms) {
-            addPolynomialTerm(i);
+            addPowerTerm(i);
         }
     }
 
@@ -293,7 +293,7 @@ public abstract class MathFunction {
      * 
      * @param term
      */
-    public final void addExponentialTerm(Term term) {
+    public final void addExpTerm(Term term) {
         expTerms.add(term);
     }
 
@@ -304,7 +304,7 @@ public abstract class MathFunction {
     public final void setExpTerms(Term... terms) {
         expTerms.clear();
         for (Term i : terms) {
-            addExponentialTerm(i);
+            addExpTerm(i);
         }
     }
 
@@ -364,11 +364,11 @@ public abstract class MathFunction {
      */
     public final void add(Term term) {
         switch (term.getTermType()) {
-            case POLYNOMIAL:
-                addPolynomialTerm(term);
+            case POWER:
+                addPowerTerm(term);
                 break;
             case EXPONENTIAL:
-                addExponentialTerm(term);
+                addExpTerm(term);
                 break;
             case LOGARITHMIC:
                 addLogTerm(term);
@@ -420,8 +420,8 @@ public abstract class MathFunction {
      */
     public final boolean isTermArrayEmpty(TermType termType) {
         switch (termType) {
-            case POLYNOMIAL:
-                return polyTerms.size() == 0;
+            case POWER:
+                return powerTerms.size() == 0;
             case EXPONENTIAL:
                 return expTerms.size() == 0;
             case LOGARITHMIC:

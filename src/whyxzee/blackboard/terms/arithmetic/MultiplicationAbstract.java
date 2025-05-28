@@ -2,14 +2,15 @@ package whyxzee.blackboard.terms.arithmetic;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.Term.TermType;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable.VarType;
 
 /**
- * A general-use package for multiplying terms.
+ * A general-use package for multiplying terms. At the moment, this package does
+ * not work for ExponentialTerms and PolynomialTerms.
  * 
  * <p>
  * The functionality of this class has been checked on {@code 5/27/2025} and
@@ -40,7 +41,7 @@ public class MultiplicationAbstract {
 
             /* Polynomial clean up */
             if (isUSubTerm(i)) {
-                PolynomialTerm polyTerm = (PolynomialTerm) i;
+                PowerTerm polyTerm = (PowerTerm) i;
                 numPower = polyTerm.getNumeratorPower();
                 denomPower = polyTerm.getDenominatorPower();
                 i = polyTerm.getVar().getInnerTerm();
@@ -76,7 +77,7 @@ public class MultiplicationAbstract {
                 output.add(term);
             } else {
                 term.setCoef(1);
-                output.add(new PolynomialTerm(coef, new USub(term), getNumPower(i), getDenomPower(i)));
+                output.add(new PowerTerm(coef, new USub(term), getNumPower(i), getDenomPower(i)));
             }
         }
 
@@ -137,13 +138,13 @@ public class MultiplicationAbstract {
      * @return
      */
     private boolean isUSubTerm(Term term) {
-        if (!isPolynomial(term)) {
+        if (!isPowerTerm(term)) {
             return false;
         }
         return term.getVar().getVarType() == VarType.U_SUB_TERM;
     }
 
-    private boolean isPolynomial(Term term) {
-        return term.getTermType() == TermType.POLYNOMIAL;
+    private boolean isPowerTerm(Term term) {
+        return term.getTermType() == TermType.POWER;
     }
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.terms.LogarithmicTerm;
-import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.Term.TermType;
 import whyxzee.blackboard.terms.variables.USub;
@@ -43,31 +43,31 @@ public class CondenseLog {
                         /* Initializing variables */
                         Term innerTerm = var.getInnerTerm();
 
-                        if (innerTerm.getTermType() == TermType.POLYNOMIAL) {
+                        if (innerTerm.getTermType() == TermType.POWER) {
                             // as to not create a polynomial in a polynomial, to build off the old
                             // polynmial
-                            PolynomialTerm innerPoly = (PolynomialTerm) innerTerm;
+                            PowerTerm innerPoly = (PowerTerm) innerTerm;
                             int oldNumPower = innerPoly.getNumeratorPower();
                             int oldDenomPower = innerPoly.getDenominatorPower();
-                            insideLog = new PolynomialTerm(1, new USub(innerTerm), numPower * oldNumPower,
+                            insideLog = new PowerTerm(1, new USub(innerTerm), numPower * oldNumPower,
                                     denomPower * oldDenomPower);
                         } else {
-                            insideLog = new PolynomialTerm(1, new USub(innerTerm), numPower, denomPower);
+                            insideLog = new PowerTerm(1, new USub(innerTerm), numPower, denomPower);
                         }
                         break;
                     default:
-                        insideLog = new PolynomialTerm(1, var, numPower, denomPower);
+                        insideLog = new PowerTerm(1, var, numPower, denomPower);
                         break;
                 }
             } else {
                 Variable var = logTerm.getVar();
-                insideLog = new PolynomialTerm(1, var);
+                insideLog = new PowerTerm(1, var);
                 switch (var.getVarType()) {
                     case U_SUB_TERM:
                         insideLog = var.getInnerTerm();
                         break;
                     default:
-                        insideLog = new PolynomialTerm(1, var);
+                        insideLog = new PowerTerm(1, var);
                         break;
 
                 }

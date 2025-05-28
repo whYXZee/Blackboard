@@ -7,7 +7,7 @@ public class UnicodeUtils {
     // Parsing Methods
     //
 
-    public static char superscriptToNum(char input) {
+    public static final char superscriptToNum(char input) {
         switch (input) {
             case '\u2070': // 0
                 return '0';
@@ -36,7 +36,7 @@ public class UnicodeUtils {
         }
     }
 
-    public static String stringToNum(String input) {
+    public static final String stringToNum(String input) {
         String output = "";
         for (char i : input.toCharArray()) {
             output += superscriptToNum(i);
@@ -51,7 +51,7 @@ public class UnicodeUtils {
      * @param input an int value
      * @return
      */
-    public static String intToSuperscript(int input) {
+    public static final String intToSuperscript(int input) {
         String output = "";
         for (char i : Integer.toString(input).toCharArray()) {
             switch (i) {
@@ -95,7 +95,7 @@ public class UnicodeUtils {
         return output;
     }
 
-    public static String intToSubscript(int input) {
+    public static final String intToSubscript(int input) {
         String output = "";
         for (char i : Integer.toString(input).toCharArray()) {
             switch (i) {
@@ -139,7 +139,7 @@ public class UnicodeUtils {
         return output;
     }
 
-    public static String doubleToSubscript(double input) {
+    public static final String doubleToSubscript(double input) {
         String output = "";
         for (char i : Double.toString(input).toCharArray()) {
             switch (i) {

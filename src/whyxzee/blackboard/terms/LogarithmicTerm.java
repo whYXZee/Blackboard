@@ -1,7 +1,5 @@
 package whyxzee.blackboard.terms;
 
-import java.util.ArrayList;
-
 import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
@@ -34,60 +32,57 @@ public class LogarithmicTerm extends Term {
     public String toString() {
         /* Initializing variables */
         double coef = getCoef();
+        if (coef == 0) {
+            return "0";
+        }
 
         if (base == Math.E) {
             // natural log
 
             /* Coefficient */
-            if (coef == 0) {
-                return "0";
-            } else if (coef == 1) {
+            if (coef == 1) {
                 return "ln(" + getVar().toString() + ")";
             } else {
                 return Double.toString(coef) + "ln(" + getVar().toString() + ")";
             }
         } else {
             // base shouldn't be int
-            if (coef == 0) {
-                return "0";
-            }
 
             /* Base */
+            String baseSubscript;
             boolean hasIntegerBase = ArithmeticUtils.isInteger(base);
-            if (coef == 1) {
-                return "log" + (hasIntegerBase ? UnicodeUtils.intToSubscript((int) base)
-                        : UnicodeUtils.doubleToSubscript(base)) + "(" + getVar().toString() + ")";
+            if (hasIntegerBase) {
+                baseSubscript = UnicodeUtils.intToSubscript((int) base);
             } else {
-                return Double.toString(coef) + "log" + (hasIntegerBase ? UnicodeUtils.intToSubscript((int) base)
-                        : UnicodeUtils.doubleToSubscript(base)) + "(" + getVar().toString() + ")";
+                baseSubscript = UnicodeUtils.doubleToSubscript(base);
+            }
+
+            if (coef == 1) {
+                return "log" + baseSubscript + "(" + getVar().toString() + ")";
+            } else {
+                return Double.toString(coef) + "log" + baseSubscript + "(" + getVar().toString() + ")";
             }
         }
     }
 
     @Override
     public String printConsole() {
-        /* Initializing variables */
+        /* Coefficient */
         double coef = getCoef();
+        if (coef == 0) {
+            return "0";
+        }
 
         if (base == Math.E) {
             // natural log
-
-            /* Coefficient */
-            if (coef == 0) {
-                return "0";
-            } else if (coef == 1) {
+            if (coef == 1) {
                 return "ln(" + getVar().toString() + ")";
             } else {
                 return Double.toString(coef) + "ln(" + getVar().toString() + ")";
             }
         } else {
             // numeric base
-
-            /* Coefficient */
-            if (coef == 0) {
-                return "0";
-            } else if (coef == 1) {
-
+            if (coef == 1) {
                 return "log_" + base + "(" + getVar().toString() + ")";
             } else {
                 return Double.toString(coef) + "log_" + base + "(" + getVar().toString() + ")";
@@ -104,28 +99,6 @@ public class LogarithmicTerm extends Term {
 
     public final void setBase(double base) {
         this.base = base;
-    }
-
-    public static Term multiply(ArrayList<Term> terms) {
-        /* Initializing variables */
-        LogMultiplication logMulti = new LogMultiplication();
-
-        /* Addition algorithm */
-        for (int i = 0; i < terms.size(); i++) {
-            LogarithmicTerm term = (LogarithmicTerm) terms.get(i);
-            double coef = term.getCoef();
-
-            if (logMulti.containsTerm(term)) {
-                // term in data
-                LogarithmicTerm oldTerm = logMulti.getLog(term);
-                logMulti.update(term, coef + oldTerm.getCoef(), 1);
-            } else {
-                // term not in data
-                logMulti.add(term, 1);
-            }
-        }
-
-        return logMulti.exportTerm();
     }
 
     //
@@ -164,9 +137,9 @@ public class LogarithmicTerm extends Term {
             // Chain rule
             if (base == Math.E) {
                 EQMultiplication eq = new EQMultiplication(
-                        new PolynomialTerm(1, variable, -1),
+                        new PowerTerm(1, variable, -1),
                         variable.derive());
-                return new PolynomialTerm(coef, new USub(eq), 1);
+                return new PowerTerm(coef, new USub(eq), 1);
             } else {
                 /* base is not e */
                 return new LogarithmicTerm(coef / Math.log(base), variable, Math.E).derive();
@@ -175,7 +148,7 @@ public class LogarithmicTerm extends Term {
             // No chain rule
             if (base == Math.E) {
                 /* base is e */
-                return new PolynomialTerm(getCoef(), variable, -1);
+                return new PowerTerm(getCoef(), variable, -1);
             } else {
                 /* base is not e */
                 return new LogarithmicTerm(coef / Math.log(base), variable, Math.E).derive();
@@ -228,110 +201,4 @@ public class LogarithmicTerm extends Term {
     public final boolean isBaseE() {
         return base == Math.E;
     }
-
-    static class LogMultiplication {
-        /* Variables */
-        private ArrayList<Integer> numPowers;
-        private ArrayList<LogarithmicTerm> logTerms;
-
-        public LogMultiplication() {
-            logTerms = new ArrayList<LogarithmicTerm>();
-            numPowers = new ArrayList<Integer>();
-        }
-
-        public Term exportTerm() {
-            if (logTerms.size() > 1) {
-                EQMultiplication eq = new EQMultiplication(getTermArray());
-                return new PolynomialTerm(1, new USub(eq));
-            } else if (logTerms.size() == 1) {
-                return getLogTermWithPower(0);
-            } else {
-                return null;
-            }
-        }
-
-        //
-        // Get & Set Methods
-        //
-        public ArrayList<Term> getTermArray() {
-            ArrayList<Term> terms = new ArrayList<Term>();
-            double coef = 1;
-
-            for (int i = 0; i < logTerms.size(); i++) {
-                coef *= logTerms.get(i).getCoef();
-                logTerms.get(i).setCoef(1);
-
-                terms.add(getLogTermWithPower(i));
-            }
-            terms.add(new PolynomialTerm(coef));
-
-            return terms;
-        }
-
-        public int getIndexOf(LogarithmicTerm term) {
-            for (int i = 0; i < logTerms.size(); i++) {
-                if (logTerms.get(i).similarTo(term)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        public LogarithmicTerm getLog(int index) {
-            return logTerms.get(index);
-        }
-
-        public LogarithmicTerm getLog(LogarithmicTerm term) {
-            return getLog(getIndexOf(term));
-        }
-
-        public int getPower(int index) {
-            return numPowers.get(index);
-        }
-
-        public int getPower(LogarithmicTerm term) {
-            return getPower(getIndexOf(term));
-        }
-
-        public void add(LogarithmicTerm term, int numPower) {
-            logTerms.add(term);
-            numPowers.add(numPower);
-        }
-
-        /**
-         * Alters a LogarithmicTerm in the logTerms ArrayList. Utilized when multiplying
-         * log terms.
-         * 
-         * @param term        the log term
-         * @param coefficient the new coefficient
-         * @param numPower    how much to add to the numerator power
-         */
-        public void update(LogarithmicTerm term, double coefficient, int numPower) {
-            int index = getIndexOf(term);
-            logTerms.set(index, new LogarithmicTerm(coefficient, term.getVar(), term.getBase()));
-            numPowers.set(index, getPower(index) + numPower);
-        }
-
-        public Term getLogTermWithPower(int index) {
-            int numPower = getPower(index);
-            LogarithmicTerm term = getLog(index);
-
-            return (numPower == 1) ? term
-                    : new PolynomialTerm(term.getCoef(),
-                            new USub(new LogarithmicTerm(1, term.getVar(), term.getBase())), numPower);
-        }
-
-        //
-        // Boolean Methods
-        //
-        public boolean containsTerm(LogarithmicTerm term) {
-            for (LogarithmicTerm i : logTerms) {
-                if (i.similarTo(term)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
 }

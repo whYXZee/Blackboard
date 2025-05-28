@@ -14,7 +14,7 @@ public abstract class Term {
     private Variable var;
 
     public static enum TermType {
-        POLYNOMIAL,
+        POWER,
         TRIGONOMETRIC,
         EXPONENTIAL,
         LOGARITHMIC,

@@ -1,7 +1,7 @@
 package whyxzee.blackboard.terms.variables;
 
 import whyxzee.blackboard.equations.MathFunction;
-import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.Term;
 
 /**
@@ -101,10 +101,10 @@ public class USub extends Variable {
         switch (getVarType()) {
             case U_SUB_EQ:
                 /* Chain rule */
-                return new PolynomialTerm(1, new USub(innerFunction.derive()), 1);
+                return new PowerTerm(1, new USub(innerFunction.derive()), 1);
             case U_SUB_TERM:
                 /* Chain rule */
-                return new PolynomialTerm(1, new USub(innerTerm.derive()), 1);
+                return new PowerTerm(1, new USub(innerTerm.derive()), 1);
             default:
                 return null;
         }

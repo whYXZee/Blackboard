@@ -2,25 +2,25 @@ package whyxzee.blackboard.terms.arithmetic.multiplication;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.Term;
 import whyxzee.blackboard.terms.variables.Variable;
 
 public class PolynomialMultiplication {
     /* Variables */
     private ArrayList<Variable> variables;
-    private ArrayList<PolynomialTerm> polyTerms;
+    private ArrayList<PowerTerm> polyTerms;
 
     public PolynomialMultiplication() {
         variables = new ArrayList<Variable>();
-        polyTerms = new ArrayList<PolynomialTerm>();
+        polyTerms = new ArrayList<PowerTerm>();
     }
 
     public ArrayList<Term> performFunction(ArrayList<Term> terms) {
         /* Simplifying Algorithm */
         for (int i = 0; i < terms.size(); i++) {
             /* Initialing variables */
-            PolynomialTerm term = (PolynomialTerm) terms.get(i);
+            PowerTerm term = (PowerTerm) terms.get(i);
             double coef = term.getCoef();
             Variable var = term.getVar();
             int numPower = term.getNumeratorPower();
@@ -28,7 +28,7 @@ public class PolynomialMultiplication {
 
             if (contains(var)) {
                 // var in polyData
-                PolynomialTerm poly2 = get(var);
+                PowerTerm poly2 = get(var);
 
                 update(var, poly2.getCoef() * coef,
                         (numPower * poly2.getDenominatorPower()) + (denomPower * poly2.getNumeratorPower()),
@@ -64,20 +64,20 @@ public class PolynomialMultiplication {
         return -1;
     }
 
-    private PolynomialTerm get(int index) {
+    private PowerTerm get(int index) {
         return polyTerms.get(index);
     }
 
-    private PolynomialTerm get(Variable var) {
+    private PowerTerm get(Variable var) {
         return get(getIndexOf(var));
     }
 
-    private void add(Variable var, PolynomialTerm term) {
+    private void add(Variable var, PowerTerm term) {
         polyTerms.add(term);
     }
 
     private void update(Variable var, double coefficient, int numPower, int denomPower) {
-        polyTerms.set(getIndexOf(var), new PolynomialTerm(coefficient, var, numPower, denomPower));
+        polyTerms.set(getIndexOf(var), new PowerTerm(coefficient, var, numPower, denomPower));
     }
 
     //

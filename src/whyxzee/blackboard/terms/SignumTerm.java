@@ -1,8 +1,5 @@
 package whyxzee.blackboard.terms;
 
-import java.util.ArrayList;
-
-import whyxzee.blackboard.equations.EQMultiplication;
 import whyxzee.blackboard.terms.variables.*;
 
 /**
@@ -24,7 +21,7 @@ public class SignumTerm extends Term {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         /* Initializing variables */
         double coef = getCoef();
 
@@ -38,7 +35,7 @@ public class SignumTerm extends Term {
     }
 
     @Override
-    public String printConsole() {
+    public final String printConsole() {
         /* Initializing variables */
         double coef = getCoef();
 
@@ -51,54 +48,26 @@ public class SignumTerm extends Term {
         }
     }
 
-    public static Term multiply(ArrayList<Term> terms) {
-        /* Initializing variables */
-        SignumData signData = new SignumData();
-
-        /* Multiplication algorithm */
-        for (int i = 0; i < terms.size(); i++) {
-            SignumTerm term = (SignumTerm) terms.get(i);
-            double coef = term.getCoef();
-
-            if (signData.containsTerm(term)) {
-                SignumTerm oldTerm = signData.getSignTerm(term);
-
-                signData.update(oldTerm, coef * oldTerm.getCoef(), signData.getSignumPower(term) + 1);
-            } else {
-                signData.add(term, 1);
-            }
-        }
-
-        if (signData.size() > 1) {
-            EQMultiplication eq = new EQMultiplication(new ArrayList<Term>(signData.getTermArrayMultiply()));
-            return new PolynomialTerm(1, new USub(eq));
-        } else if (signData.size() == 1) {
-            return signData.getSignumTermWithPower(0);
-        }
-
-        return null;
-    }
-
     //
     // Arithmetic Methods (Object-related)
     //
     @Override
-    public double solve(double value) {
+    public final double solve(double value) {
         return getCoef() * Math.signum(getVar().solve(value));
     }
 
     @Override
-    public Term negate() {
+    public final Term negate() {
         return new SignumTerm(-1 * getCoef(), getVar());
     }
 
     @Override
-    public Term derive() {
-        return PolynomialTerm.ZERO_TERM;
+    public final Term derive() {
+        return PowerTerm.ZERO_TERM;
     }
 
     @Override
-    public double limInfSolve() {
+    public final double limInfSolve() {
         /* Number */
         double number = getCoef();
         if (number == 0) {
@@ -110,7 +79,7 @@ public class SignumTerm extends Term {
     }
 
     @Override
-    public double limNegInfSolve() {
+    public final double limNegInfSolve() {
 
         /* Number */
         double number = getCoef();
@@ -126,7 +95,7 @@ public class SignumTerm extends Term {
     // Boolean Methods
     //
     @Override
-    public boolean similarTo(Term term) {
+    public final boolean similarTo(Term term) {
         switch (term.getTermType()) {
             case SIGNUM:
                 SignumTerm signTerm = (SignumTerm) term;
@@ -137,113 +106,11 @@ public class SignumTerm extends Term {
     }
 
     @Override
-    public boolean equals(Term other) {
+    public final boolean equals(Term other) {
         if ((other.getTermType() == TermType.SIGNUM) && (getCoef() == other.getCoef())) {
             SignumTerm signTerm = (SignumTerm) other;
             return getVar().equals(signTerm.getVar());
         }
         return false;
-    }
-
-    static class SignumData {
-        /* Variables */
-        private ArrayList<Integer> numPowers;
-        private ArrayList<SignumTerm> signumTerms;
-
-        public SignumData() {
-            numPowers = new ArrayList<Integer>();
-            signumTerms = new ArrayList<SignumTerm>();
-        }
-
-        //
-        // Get & Set Methods
-        //
-        public void add(SignumTerm term) {
-            signumTerms.add(term);
-        }
-
-        public void add(SignumTerm term, int numPower) {
-            signumTerms.add(term);
-            numPowers.add(numPower);
-        }
-
-        public void update(SignumTerm term, double coefficient, int numPower) {
-            int index = getIndexOf(term);
-            signumTerms.set(index, new SignumTerm(coefficient, term.getVar()));
-            numPowers.set(index, numPower);
-        }
-
-        public void update(SignumTerm term, double coefficient) {
-            signumTerms.set(getIndexOf(term), new SignumTerm(coefficient, term.getVar()));
-        }
-
-        public SignumTerm getSignumTerm(int index) {
-            return signumTerms.get(index);
-        }
-
-        public int getSignumPower(int index) {
-            return numPowers.get(index);
-        }
-
-        public SignumTerm getSignTerm(SignumTerm term) {
-            return getSignumTerm(getIndexOf(term));
-        }
-
-        public int getSignumPower(SignumTerm term) {
-            return getSignumPower(getIndexOf(term));
-        }
-
-        public Term getSignumTermWithPower(int index) {
-            int numPower = getSignumPower(index);
-            SignumTerm term = getSignumTerm(index);
-
-            return (numPower == 1) ? term
-                    : new PolynomialTerm(term.getCoef(), new USub(new SignumTerm(1, term.getVar())), numPower);
-        }
-
-        public ArrayList<SignumTerm> getTermArray() {
-            return signumTerms;
-        }
-
-        public ArrayList<Term> getTermArrayMultiply() {
-            ArrayList<Term> terms = new ArrayList<Term>();
-
-            for (int i = 0; i < signumTerms.size(); i++) {
-                if (numPowers.get(i) != 1) {
-                    SignumTerm term = signumTerms.get(i);
-                    terms.add(new PolynomialTerm(term.getCoef(),
-                            new USub(new SignumTerm(1, term.getVar())), numPowers.get(i)));
-                } else {
-                    terms.add(signumTerms.get(i));
-                }
-            }
-
-            return terms;
-        }
-
-        public int getIndexOf(SignumTerm term) {
-            for (int i = 0; i < signumTerms.size(); i++) {
-                if (signumTerms.get(i).similarTo(term)) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        public int size() {
-            return signumTerms.size();
-        }
-
-        //
-        // Boolean Methods
-        //
-        public boolean containsTerm(SignumTerm term) {
-            for (SignumTerm i : signumTerms) {
-                if (i.similarTo(term)) {
-                    return true;
-                }
-            }
-            return false;
-        }
     }
 }

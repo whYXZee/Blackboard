@@ -2,7 +2,7 @@ package whyxzee.blackboard.equations.series;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.equations.EQSequence;
-import whyxzee.blackboard.terms.PolynomialTerm;
+import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.variables.USub;
 
 public class ArithmeticSeries extends SeriesAbstract {
@@ -18,8 +18,8 @@ public class ArithmeticSeries extends SeriesAbstract {
         this.a_1 = a_1;
 
         setGeneralFunction(new EQSequence(
-                new PolynomialTerm(difference, new USub(Constants.SeriesConstants.N_MINUS_ONE)),
-                new PolynomialTerm(a_1)));
+                new PowerTerm(difference, new USub(Constants.SeriesConstants.N_MINUS_ONE)),
+                new PowerTerm(a_1)));
     }
 
     //

@@ -23,9 +23,9 @@ public class SortingUtils {
             boolean currentIsE, sortedIsE;
 
             switch (termType) {
-                case POLYNOMIAL:
+                case POWER:
                     // sorted by highest power -> lowest power
-                    while (comparePolys((PolynomialTerm) currentTerm, (PolynomialTerm) sortedTerm)) {
+                    while (comparePolys((PowerTerm) currentTerm, (PowerTerm) sortedTerm)) {
                         /* Swapping the two */
                         terms.set(currentIndex, sortedTerm);
                         terms.set(sortedIndex, currentTerm);
@@ -156,8 +156,8 @@ public class SortingUtils {
             int sortedIndex = i - 1;
 
             // sorted by highest power -> lowest power
-            PolynomialTerm currentPoly = (PolynomialTerm) terms.get(currentIndex);
-            PolynomialTerm sortedPoly = (PolynomialTerm) terms.get(sortedIndex);
+            PowerTerm currentPoly = (PowerTerm) terms.get(currentIndex);
+            PowerTerm sortedPoly = (PowerTerm) terms.get(sortedIndex);
 
             while (currentPoly.getPower() > sortedPoly.getPower()) {
                 /* Swapping the two */
@@ -170,7 +170,7 @@ public class SortingUtils {
                 if (sortedIndex < 0) {
                     break;
                 }
-                sortedPoly = (PolynomialTerm) terms.get(sortedIndex);
+                sortedPoly = (PowerTerm) terms.get(sortedIndex);
             }
 
         }
@@ -181,7 +181,7 @@ public class SortingUtils {
     //
     // TermType Specific
     //
-    public static final boolean comparePolys(PolynomialTerm currentTerm, PolynomialTerm sortedTerm) {
+    public static final boolean comparePolys(PowerTerm currentTerm, PowerTerm sortedTerm) {
         return currentTerm.getPower() > sortedTerm.getPower();
     }
 
