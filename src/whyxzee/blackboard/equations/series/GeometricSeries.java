@@ -1,7 +1,7 @@
 package whyxzee.blackboard.equations.series;
 
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.equations.MultiplicativeEQ;
 import whyxzee.blackboard.terms.ExponentialTerm;
 import whyxzee.blackboard.terms.variables.USub;
 
@@ -15,7 +15,7 @@ public class GeometricSeries extends SeriesAbstract {
         this.ratio = ratio;
         this.a_1 = a_1;
 
-        setGeneralFunction(new EQMultiplication(
+        setGeneralFunction(new MultiplicativeEQ(
                 new ExponentialTerm(a_1, new USub(Constants.SeriesConstants.N_MINUS_ONE), ratio)));
     }
 

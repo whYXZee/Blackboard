@@ -1,6 +1,6 @@
 package whyxzee.blackboard.terms;
 
-import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.equations.MultiplicativeEQ;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.utils.ArithmeticUtils;
@@ -136,7 +136,7 @@ public class LogarithmicTerm extends Term {
         if (getVar().needsChainRule()) {
             // Chain rule
             if (base == Math.E) {
-                EQMultiplication eq = new EQMultiplication(
+                MultiplicativeEQ eq = new MultiplicativeEQ(
                         new PowerTerm(1, variable, -1),
                         variable.derive());
                 return new PowerTerm(coef, new USub(eq), 1);

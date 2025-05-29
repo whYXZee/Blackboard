@@ -2,7 +2,7 @@ package whyxzee.blackboard;
 
 import java.awt.Font;
 
-import whyxzee.blackboard.equations.EQSequence;
+import whyxzee.blackboard.equations.SequentialEQ;
 import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.variables.Variable;
 
@@ -71,7 +71,7 @@ public final class Constants {
     }
 
     public static final class SeriesConstants {
-        public static final EQSequence N_MINUS_ONE = new EQSequence(
+        public static final SequentialEQ N_MINUS_ONE = new SequentialEQ(
                 new PowerTerm(1, new Variable("n")),
                 new PowerTerm(-1));
     }

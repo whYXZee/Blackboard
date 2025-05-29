@@ -1,7 +1,7 @@
 package whyxzee.blackboard.terms;
 
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.equations.MultiplicativeEQ;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.utils.ArithmeticUtils;
@@ -266,7 +266,7 @@ public class PowerTerm extends Term {
                 return variable.derive();
             } else {
                 /* Derivative */
-                EQMultiplication eq = new EQMultiplication(
+                MultiplicativeEQ eq = new MultiplicativeEQ(
                         // outer function (x^n)
                         new PowerTerm((double) numPower / denomPower, variable, numPower - denomPower, denomPower),
 
@@ -351,10 +351,10 @@ public class PowerTerm extends Term {
     public final boolean similarTo(Term term) {
         switch (term.getTermType()) {
             case POWER:
-                PowerTerm polyTerm = (PowerTerm) term;
-                return (polyTerm.getDenominatorPower() == this.denomPower)
-                        && (polyTerm.getNumeratorPower() == this.numPower)
-                        && (polyTerm.getVar().equals(this.getVar()));
+                PowerTerm powerTerm = (PowerTerm) term;
+                return (powerTerm.getDenominatorPower() == this.denomPower)
+                        && (powerTerm.getNumeratorPower() == this.numPower)
+                        && (powerTerm.getVar().equals(this.getVar()));
             default:
                 return false;
         }

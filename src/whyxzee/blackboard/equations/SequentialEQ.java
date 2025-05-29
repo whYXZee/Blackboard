@@ -11,27 +11,30 @@ import whyxzee.blackboard.terms.Term.TermType;
  * 
  * <p>
  * The functionality of this class has been checked on {@code 5/16/2025}, and
- * nothing has changed since.
+ * the following has changed since:
+ * <ul>
+ * <li>negate()
  */
-public class EQSequence extends MathFunction {
+public class SequentialEQ extends MathFunction {
+    /* Variables */
     private boolean shouldAutoCondense;
 
-    public EQSequence(boolean shouldAutoCondense, Term... terms) {
+    public SequentialEQ(boolean shouldAutoCondense, Term... terms) {
         super(FunctionType.SEQUENCE, terms);
         this.shouldAutoCondense = shouldAutoCondense;
     }
 
-    public EQSequence(Term... terms) {
+    public SequentialEQ(Term... terms) {
         super(FunctionType.SEQUENCE, terms);
         this.shouldAutoCondense = true;
     }
 
-    public EQSequence(boolean shouldAutoCondense, ArrayList<Term> terms) {
+    public SequentialEQ(boolean shouldAutoCondense, ArrayList<Term> terms) {
         super(FunctionType.SEQUENCE, terms);
         this.shouldAutoCondense = shouldAutoCondense;
     }
 
-    public EQSequence(ArrayList<Term> terms) {
+    public SequentialEQ(ArrayList<Term> terms) {
         super(FunctionType.SEQUENCE, terms);
         this.shouldAutoCondense = true;
     }
@@ -117,6 +120,17 @@ public class EQSequence extends MathFunction {
     }
 
     @Override
+    public MathFunction negate() {
+        ArrayList<Term> output = new ArrayList<Term>();
+        for (Term i : getTermArray()) {
+            output.add(i.negate());
+        }
+
+        setTermArray(output);
+        return this;
+    }
+
+    @Override
     public MathFunction derive() {
         ArrayList<Term> outputTerms = new ArrayList<Term>();
         for (Term term : getTermArray()) {
@@ -127,6 +141,6 @@ public class EQSequence extends MathFunction {
             }
         }
 
-        return new EQSequence(outputTerms);
+        return new SequentialEQ(outputTerms);
     }
 }

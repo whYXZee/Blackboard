@@ -13,17 +13,16 @@ import whyxzee.blackboard.terms.variables.USub;
  * <p>
  * The functionality of this class has not been checked.
  */
-public class EQMultiplication extends MathFunction {
-
+public class MultiplicativeEQ extends MathFunction {
     /**
      * 
      * @param terms
      */
-    public EQMultiplication(Term... terms) {
+    public MultiplicativeEQ(Term... terms) {
         super(FunctionType.MULTIPLICATION, terms);
     }
 
-    public EQMultiplication(ArrayList<Term> terms) {
+    public MultiplicativeEQ(ArrayList<Term> terms) {
         super(FunctionType.MULTIPLICATION, terms);
     }
 
@@ -73,6 +72,13 @@ public class EQMultiplication extends MathFunction {
     }
 
     @Override
+    public final MathFunction negate() {
+        add(new PowerTerm(-1));
+        organizeTerms();
+        return this;
+    }
+
+    @Override
     public MathFunction derive() {
         /* Initializing variables */
         ArrayList<Term> eqSeqTerms = new ArrayList<Term>();
@@ -81,7 +87,7 @@ public class EQMultiplication extends MathFunction {
         /* Derivative process */
         for (int i = 0; i < termArray.size(); i++) {
             // for the derived function
-            EQMultiplication term = new EQMultiplication();
+            MultiplicativeEQ term = new MultiplicativeEQ();
             term.add(termArray.get(i).derive());
             for (int j = 0; j < termArray.size(); j++) {
                 // for the non-derived functions
@@ -95,6 +101,6 @@ public class EQMultiplication extends MathFunction {
             eqSeqTerms.add(new PowerTerm(1, new USub(term), 1));
         }
 
-        return new EQSequence(eqSeqTerms);
+        return new SequentialEQ(eqSeqTerms);
     }
 }

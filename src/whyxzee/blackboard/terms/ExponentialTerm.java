@@ -2,8 +2,8 @@ package whyxzee.blackboard.terms;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.equations.EQMultiplication;
-import whyxzee.blackboard.equations.EQSequence;
+import whyxzee.blackboard.equations.MultiplicativeEQ;
+import whyxzee.blackboard.equations.SequentialEQ;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 import whyxzee.blackboard.terms.variables.Variable.VarType;
@@ -89,17 +89,17 @@ public class ExponentialTerm extends Term {
             /* Changing variable */
             switch (var.getVarType()) {
                 case VARIABLE:
-                    setVar(new USub(new EQSequence(
+                    setVar(new USub(new SequentialEQ(
                             new PowerTerm(1, var),
                             new PowerTerm(numOfBase))));
                     break;
                 case U_SUB_EQ:
-                    EQSequence eq = (EQSequence) var.getInnerFunction();
+                    SequentialEQ eq = (SequentialEQ) var.getInnerFunction();
                     eq.addPowerTerm(new PowerTerm(numOfBase));
                     setVar(new USub(eq));
                     break;
                 case U_SUB_TERM:
-                    setVar(new USub(new EQSequence(
+                    setVar(new USub(new SequentialEQ(
                             var.getInnerTerm(),
                             new PowerTerm(numOfBase))));
                     break;
@@ -165,7 +165,7 @@ public class ExponentialTerm extends Term {
         /* The variable */
         if (variable.needsChainRule()) {
             // chain rule
-            EQMultiplication eq = new EQMultiplication(
+            MultiplicativeEQ eq = new MultiplicativeEQ(
                     // outer function (b^x)
                     new ExponentialTerm(1, variable, base),
 

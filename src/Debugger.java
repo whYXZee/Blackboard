@@ -22,13 +22,13 @@ public class Debugger {
         MultiplicationAbstract multiplyFunction = new MultiplicationAbstract();
         ArrayList<Term> terms = new ArrayList<Term>() {
             {
-                add(new LogarithmicTerm(1, new Variable("x"), Math.E));
-                add(new PowerTerm(1, new USub(new LogarithmicTerm(1, new Variable("x"), Math.E)), -2));
+                add(new PowerTerm(1, new Variable("x")));
+                add(new PowerTerm(1, new Variable("x"), -2));
             }
         };
 
         display.appendScript(new BlackboardLabel(
-                new EQMultiplication(multiplyFunction.performMultiplication(terms)).toString(), 0.05));
+                new SequentialEQ(multiplyFunction.performMultiplication(terms)).toString(), 0.05));
 
         // display.appendScript(new BlackboardLabel(
         // new EQMultiplication(addFunction.performAddition(terms)).toString(), 0.05));

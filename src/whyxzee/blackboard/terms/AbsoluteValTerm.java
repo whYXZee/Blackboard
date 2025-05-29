@@ -1,6 +1,6 @@
 package whyxzee.blackboard.terms;
 
-import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.equations.MultiplicativeEQ;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 
@@ -68,7 +68,7 @@ public class AbsoluteValTerm extends Term {
         Variable variable = getVar().clone();
 
         if (variable.needsChainRule()) {
-            EQMultiplication eq = new EQMultiplication(
+            MultiplicativeEQ eq = new MultiplicativeEQ(
                     variable.derive(),
                     new SignumTerm(1, variable));
             return new PowerTerm(getCoef(), new USub(eq), 1);

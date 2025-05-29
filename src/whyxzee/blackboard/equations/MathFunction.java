@@ -178,6 +178,8 @@ public abstract class MathFunction {
      */
     public abstract double solve(double value);
 
+    public abstract MathFunction negate();
+
     /**
      * 
      * @return

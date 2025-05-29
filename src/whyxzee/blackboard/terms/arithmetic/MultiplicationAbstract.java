@@ -2,7 +2,7 @@ package whyxzee.blackboard.terms.arithmetic;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.equations.EQSequence;
+import whyxzee.blackboard.equations.SequentialEQ;
 import whyxzee.blackboard.equations.MathFunction.FunctionType;
 import whyxzee.blackboard.terms.ExponentialTerm;
 import whyxzee.blackboard.terms.PowerTerm;
@@ -17,7 +17,7 @@ import whyxzee.blackboard.terms.variables.Variable.VarType;
  * not work for ExponentialTerms and PolynomialTerms.
  * 
  * <p>
- * The functionality of this class has been checked on {@code 5/28/2025} and
+ * The functionality of this class has been checked on {@code 5/29/2025} and
  * nothing has changed since.
  */
 public class MultiplicationAbstract {
@@ -97,6 +97,9 @@ public class MultiplicationAbstract {
     //
     // Get & Set Methods
     //
+    /**
+     * @return A termArray that can be used for MathFunctions.
+     */
     private final ArrayList<Term> getTermArray() {
         ArrayList<Term> output = new ArrayList<Term>();
 
@@ -119,6 +122,12 @@ public class MultiplicationAbstract {
         return output;
     }
 
+    /**
+     * Returns the index of a Term in the multipliedTerms ArrayList.
+     * 
+     * @param term
+     * @return
+     */
     private final int getIndexOf(Term term) {
         for (int i = 0; i < multipliedTerms.size(); i++) {
             Term indexTerm = getTerm(i);
@@ -137,6 +146,13 @@ public class MultiplicationAbstract {
         return -1;
     }
 
+    /**
+     * Adds a new and unique term into the multipliedTerms ArrayList.
+     * 
+     * @param term
+     * @param numPower
+     * @param denomPower
+     */
     private final void add(Term term, int numPower, int denomPower) {
         numPowers.add(numPower);
         denomPowers.add(denomPower);
@@ -144,6 +160,7 @@ public class MultiplicationAbstract {
     }
 
     /**
+     * General method for updating all TermTypes.
      * 
      * @param index      the index of the term that needs to be updated
      * @param coef       the new coefficient of the term
@@ -157,7 +174,7 @@ public class MultiplicationAbstract {
     }
 
     /**
-     * Special method for updating an exponential term
+     * Special method for updating an ExponentialTerm.
      * 
      * @param index   the index of the term that needs to be updated
      * @param coef    the new coefficient of the term
@@ -167,11 +184,11 @@ public class MultiplicationAbstract {
         Variable var = expTerm.getVar();
         Variable oldVar = getTerm(index).getVar();
         VarType varType = var.getVarType();
-        EQSequence outputEQ;
+        SequentialEQ outputEQ;
 
         if (isEQSeq(oldVar) && isEQSeq(var)) {
             // both are SequentialEQs
-            outputEQ = (EQSequence) oldVar.getInnerFunction();
+            outputEQ = (SequentialEQ) oldVar.getInnerFunction();
             outputEQ.addToTermArray(var.getInnerFunction().getTermArray());
 
         } else if (isEQSeq(oldVar)) {
@@ -181,10 +198,9 @@ public class MultiplicationAbstract {
             if (varType == VarType.U_SUB_TERM) {
                 termToAdd = var.getInnerTerm();
             }
-            System.out.println(termToAdd.printConsole());
 
             /* Sequence */
-            outputEQ = (EQSequence) oldVar.getInnerFunction();
+            outputEQ = (SequentialEQ) oldVar.getInnerFunction();
             outputEQ.add(termToAdd);
             outputEQ.organizeTerms();
 
@@ -200,7 +216,7 @@ public class MultiplicationAbstract {
             ArrayList<Term> termArray = new ArrayList<Term>();
             termArray.add(new PowerTerm(1, oldVar));
             termArray.add(termToAdd);
-            outputEQ = new EQSequence(termArray);
+            outputEQ = new SequentialEQ(termArray);
         }
 
         multipliedTerms.set(index, new ExponentialTerm(coef, new USub(outputEQ), expTerm.getBase()));
@@ -226,7 +242,7 @@ public class MultiplicationAbstract {
     }
 
     /**
-     * Checks if the inputted term is a Polynomial with a USubbed term.
+     * Checks if the inputted term is a PowerTerm with a USubbed term.
      * 
      * @param term
      * @return
@@ -238,18 +254,45 @@ public class MultiplicationAbstract {
         return term.getVar().getVarType() == VarType.U_SUB_TERM;
     }
 
+    /**
+     * Checks if the inputted term is a PowerTerm.
+     * 
+     * @param term any type of Term
+     * @return {@code true} if <b>term</b> is a PowerTerm, {@code false} if
+     *         otherwise.
+     */
     private final boolean isPowerTerm(Term term) {
         return term.getTermType() == TermType.POWER;
     }
 
+    /**
+     * Checks if the inputted term is an ExponentialTerm.
+     * 
+     * @param term any type of Term
+     * @return {@code true} if <b>term</b> is an ExponentialTerm, {@code false} if
+     *         otherwise.
+     */
     private final boolean isExpTerm(Term term) {
         return term.getTermType() == TermType.EXPONENTIAL;
     }
 
+    /**
+     * Checks if the multiplied terms ArrayList is empty.
+     * 
+     * @return {@code true} if empty, {@code false} if otherwise.
+     */
     private final boolean areMultipliedTermsEmpty() {
         return multipliedTerms.size() == 0;
     }
 
+    /**
+     * Checks if the two terms meet the criteria for Power multiplication. This
+     * criteria is that both terms are PowerTerms and both have equal variables.
+     * 
+     * @param one the first term
+     * @param two the second term
+     * @return
+     */
     private final boolean hasPowerSimilarity(Term one, Term two) {
         if (!isPowerTerm(one) || !isPowerTerm(two)) {
             return false;
@@ -258,6 +301,15 @@ public class MultiplicationAbstract {
         return one.getVar().equals(two.getVar());
     }
 
+    /**
+     * Checks if the two terms meet the criteria for Exponential multiplication.
+     * This critieris it that both terms are ExponentialTerms and both have equal
+     * bases.
+     * 
+     * @param one the first term
+     * @param two the second term
+     * @return
+     */
     private final boolean hasExpSimilarity(Term one, Term two) {
         if (!isExpTerm(one) || !isExpTerm(two)) {
             return false;
@@ -268,6 +320,14 @@ public class MultiplicationAbstract {
         return expOne.getBase() == expTwo.getBase();
     }
 
+    /**
+     * Checks if the given variable has a SequentialEQ that is USubbed.
+     * 
+     * @param var
+     * @return {@code true} if <b>var</b> is a VarType.U_SUB_EQ and has an inner
+     *         function of FunctionType.SEQUENCE, {@code false} if any of the above
+     *         are false.
+     */
     private final boolean isEQSeq(Variable var) {
         if (var.getVarType() != VarType.U_SUB_EQ) {
             return false;

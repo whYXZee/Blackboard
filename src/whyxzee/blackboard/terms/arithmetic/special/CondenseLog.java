@@ -2,7 +2,7 @@ package whyxzee.blackboard.terms.arithmetic.special;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.equations.EQMultiplication;
+import whyxzee.blackboard.equations.MultiplicativeEQ;
 import whyxzee.blackboard.terms.LogarithmicTerm;
 import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.Term;
@@ -20,11 +20,11 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
 public class CondenseLog {
     /* Variables */
     private ArrayList<Double> bases;
-    private ArrayList<EQMultiplication> eqs;
+    private ArrayList<MultiplicativeEQ> eqs;
 
     public CondenseLog() {
         bases = new ArrayList<Double>();
-        eqs = new ArrayList<EQMultiplication>();
+        eqs = new ArrayList<MultiplicativeEQ>();
     }
 
     public ArrayList<Term> performFunction(ArrayList<Term> terms) {
@@ -112,7 +112,7 @@ public class CondenseLog {
 
     private void add(double base, Term term) {
         bases.add(base);
-        eqs.add(new EQMultiplication(term));
+        eqs.add(new MultiplicativeEQ(term));
     }
 
     private void update(double base, Term term) {

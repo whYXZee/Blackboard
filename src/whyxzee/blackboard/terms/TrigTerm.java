@@ -1,7 +1,7 @@
 package whyxzee.blackboard.terms;
 
-import whyxzee.blackboard.equations.EQMultiplication;
-import whyxzee.blackboard.equations.EQSequence;
+import whyxzee.blackboard.equations.MultiplicativeEQ;
+import whyxzee.blackboard.equations.SequentialEQ;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
 
@@ -188,7 +188,7 @@ public class TrigTerm extends Term {
             case SINE:
                 if (shouldChainRule) {
                     // chain rule
-                    USub uSubEQ = new USub(new EQMultiplication(
+                    USub uSubEQ = new USub(new MultiplicativeEQ(
                             // outer function
                             new TrigTerm(1, variable, TrigType.COSINE),
 
@@ -202,7 +202,7 @@ public class TrigTerm extends Term {
             case COSINE:
                 if (shouldChainRule) {
                     // chain rule
-                    USub uSubEQ = new USub(new EQMultiplication(
+                    USub uSubEQ = new USub(new MultiplicativeEQ(
                             // outer function
                             new TrigTerm(1, variable, TrigType.SINE),
 
@@ -217,7 +217,7 @@ public class TrigTerm extends Term {
             case TANGENT:
                 if (shouldChainRule) {
                     // chain rule
-                    USub uSubEQ = new USub(new EQMultiplication(
+                    USub uSubEQ = new USub(new MultiplicativeEQ(
                             // outer function
                             new PowerTerm(1, new USub(new TrigTerm(1, variable, TrigType.SECANT)), 2),
 
@@ -232,9 +232,9 @@ public class TrigTerm extends Term {
             case SECANT:
                 if (shouldChainRule) {
                     // chain rule
-                    USub uSubEQ = new USub(new EQMultiplication(
+                    USub uSubEQ = new USub(new MultiplicativeEQ(
                             // outer function
-                            new PowerTerm(coef, new USub(new EQMultiplication(
+                            new PowerTerm(coef, new USub(new MultiplicativeEQ(
                                     new TrigTerm(1, variable, TrigType.TANGENT),
                                     new TrigTerm(1, variable, TrigType.SECANT))), 1),
 
@@ -243,7 +243,7 @@ public class TrigTerm extends Term {
                     return new PowerTerm(coef, uSubEQ, 1);
                 } else {
                     // no chain rule
-                    USub uSubEQ = new USub(new EQMultiplication(
+                    USub uSubEQ = new USub(new MultiplicativeEQ(
                             new TrigTerm(1, variable, TrigType.TANGENT),
                             new TrigTerm(1, variable, TrigType.SECANT)));
                     return new PowerTerm(coef, uSubEQ, 1);
@@ -251,9 +251,9 @@ public class TrigTerm extends Term {
             case COSECANT:
                 if (shouldChainRule) {
                     // chain rule
-                    USub uSubEQ = new USub(new EQMultiplication(
+                    USub uSubEQ = new USub(new MultiplicativeEQ(
                             // outer function
-                            new PowerTerm(coef, new USub(new EQMultiplication(
+                            new PowerTerm(coef, new USub(new MultiplicativeEQ(
                                     new TrigTerm(1, variable, TrigType.COTANGENT),
                                     new TrigTerm(1, variable, TrigType.COSECANT))), 1),
 
@@ -262,7 +262,7 @@ public class TrigTerm extends Term {
                     return new PowerTerm(-coef, uSubEQ, 1);
                 } else {
                     // no chain rule
-                    USub uSubEQ = new USub(new EQMultiplication(
+                    USub uSubEQ = new USub(new MultiplicativeEQ(
                             new TrigTerm(1, variable, TrigType.COTANGENT),
                             new TrigTerm(1, variable, TrigType.COSECANT)));
                     return new PowerTerm(-coef, uSubEQ, 1);
@@ -270,7 +270,7 @@ public class TrigTerm extends Term {
             case COTANGENT:
                 if (shouldChainRule) {
                     // chain rule
-                    USub uSubEQ = new USub(new EQMultiplication(
+                    USub uSubEQ = new USub(new MultiplicativeEQ(
                             // outer function
                             new PowerTerm(coef, new USub(new TrigTerm(1, variable,
                                     TrigType.COSECANT)), 2),
@@ -287,11 +287,11 @@ public class TrigTerm extends Term {
             case ARC_SINE:
                 if (shouldChainRule) {
                     // chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1),
                             new PowerTerm(-1, variable, 2));
 
-                    EQMultiplication eq = new EQMultiplication(
+                    MultiplicativeEQ eq = new MultiplicativeEQ(
                             // outter function (arcsin)
                             new PowerTerm(1, new USub(innerFunction), -1, 2),
 
@@ -301,7 +301,7 @@ public class TrigTerm extends Term {
                     return new PowerTerm(coef, new USub(eq), 1);
                 } else {
                     // no chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1),
                             new PowerTerm(-1, variable, 2));
                     return new PowerTerm(coef, new USub(innerFunction), -1, 2);
@@ -309,11 +309,11 @@ public class TrigTerm extends Term {
             case ARC_COSINE:
                 if (shouldChainRule) {
                     // chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1),
                             new PowerTerm(-1, variable, 2));
 
-                    EQMultiplication eq = new EQMultiplication(
+                    MultiplicativeEQ eq = new MultiplicativeEQ(
                             // outter function (arcsin)
                             new PowerTerm(1, new USub(innerFunction), -1, 2),
 
@@ -323,7 +323,7 @@ public class TrigTerm extends Term {
                     return new PowerTerm(-coef, new USub(eq), 1);
                 } else {
                     // no chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1),
                             new PowerTerm(-1, variable, 2));
                     return new PowerTerm(-coef, new USub(innerFunction), -1, 2);
@@ -331,11 +331,11 @@ public class TrigTerm extends Term {
             case ARC_TANGENT:
                 if (shouldChainRule) {
                     // chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1, variable, 2),
                             new PowerTerm(1));
 
-                    EQMultiplication eq = new EQMultiplication(
+                    MultiplicativeEQ eq = new MultiplicativeEQ(
                             // outter function (arcsin)
                             new PowerTerm(1, new USub(innerFunction), -1),
 
@@ -345,7 +345,7 @@ public class TrigTerm extends Term {
                     return new PowerTerm(coef, new USub(eq), 1);
                 } else {
                     // no chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1, variable, 2),
                             new PowerTerm(1));
                     return new PowerTerm(coef, new USub(innerFunction), -1);
@@ -353,11 +353,11 @@ public class TrigTerm extends Term {
             case ARC_COSECANT:
                 if (shouldChainRule) {
                     // chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1, variable, 2),
                             new PowerTerm(-1));
 
-                    EQMultiplication eq = new EQMultiplication(
+                    MultiplicativeEQ eq = new MultiplicativeEQ(
                             // outter function (arccsc)
                             new AbsoluteValTerm(1, variable),
                             new PowerTerm(1, new USub(innerFunction), -1),
@@ -368,11 +368,11 @@ public class TrigTerm extends Term {
                     return new PowerTerm(-coef, new USub(eq), 1);
                 } else {
                     // no chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1, variable, 2),
                             new PowerTerm(-1));
 
-                    EQMultiplication eq = new EQMultiplication(
+                    MultiplicativeEQ eq = new MultiplicativeEQ(
                             new AbsoluteValTerm(1, variable),
                             new PowerTerm(1, new USub(innerFunction), 1, 2));
                     return new PowerTerm(-coef, new USub(eq), -1);
@@ -380,11 +380,11 @@ public class TrigTerm extends Term {
             case ARC_SECANT:
                 if (shouldChainRule) {
                     // chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1, variable, 2),
                             new PowerTerm(-1));
 
-                    EQMultiplication eq = new EQMultiplication(
+                    MultiplicativeEQ eq = new MultiplicativeEQ(
                             // outter function (arccsc)
                             new AbsoluteValTerm(1, variable),
                             new PowerTerm(1, new USub(innerFunction), -1),
@@ -395,11 +395,11 @@ public class TrigTerm extends Term {
                     return new PowerTerm(coef, new USub(eq), 1);
                 } else {
                     // no chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1, variable, 2),
                             new PowerTerm(-1));
 
-                    EQMultiplication eq = new EQMultiplication(
+                    MultiplicativeEQ eq = new MultiplicativeEQ(
                             new AbsoluteValTerm(1, variable),
                             new PowerTerm(1, new USub(innerFunction), 1, 2));
                     return new PowerTerm(coef, new USub(eq), -1);
@@ -407,11 +407,11 @@ public class TrigTerm extends Term {
             case ARC_COTANGENT:
                 if (shouldChainRule) {
                     // chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1, variable, 2),
                             new PowerTerm(1));
 
-                    EQMultiplication eq = new EQMultiplication(
+                    MultiplicativeEQ eq = new MultiplicativeEQ(
                             // outter function (arcsin)
                             new PowerTerm(1, new USub(innerFunction), -1),
 
@@ -421,7 +421,7 @@ public class TrigTerm extends Term {
                     return new PowerTerm(-coef, new USub(eq), 1);
                 } else {
                     // no chain rule
-                    EQSequence innerFunction = new EQSequence(
+                    SequentialEQ innerFunction = new SequentialEQ(
                             new PowerTerm(1, variable, 2),
                             new PowerTerm(1));
                     return new PowerTerm(-coef, new USub(innerFunction), -1);
