@@ -9,6 +9,7 @@ import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.equations.*;
 import whyxzee.blackboard.terms.*;
 import whyxzee.blackboard.terms.arithmetic.*;
+import whyxzee.blackboard.terms.arithmetic.special.CondenseLog;
 import whyxzee.blackboard.terms.variables.*;
 
 public class Debugger {
@@ -18,17 +19,21 @@ public class Debugger {
         BlackboardDisplay display = new BlackboardDisplay(frame);
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
+        System.out.println(0.75 * Math.pow(10, ArithmeticUtils.numOfDigits(0.75)));
+
         /* Math Debugging */
-        MultiplicationAbstract multiplyFunction = new MultiplicationAbstract();
+        CondenseLog logCondense = new CondenseLog();
         ArrayList<Term> terms = new ArrayList<Term>() {
             {
-                add(new PowerTerm(1, new Variable("x")));
-                add(new PowerTerm(1, new Variable("x"), -2));
+                add(new LogarithmicTerm(1, new Variable("x"), Math.E));
+                add(new LogarithmicTerm(-2, new Variable("x"), Math.E));
+                add(new LogarithmicTerm(1, new Variable("y"), Math.E));
+                add(new LogarithmicTerm(1, new Variable("y"), 2));
             }
         };
 
         display.appendScript(new BlackboardLabel(
-                new SequentialEQ(multiplyFunction.performMultiplication(terms)).toString(), 0.05));
+                new SequentialEQ(logCondense.performFunction(terms)).toString(), 0.05));
 
         // display.appendScript(new BlackboardLabel(
         // new EQMultiplication(addFunction.performAddition(terms)).toString(), 0.05));

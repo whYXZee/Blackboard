@@ -90,6 +90,21 @@ public class LogarithmicTerm extends Term {
         }
     }
 
+    @Override
+    public final void condense() {
+        double coef = getCoef();
+        if (coef != 1) {
+            int denomPower = 1;
+            if (!ArithmeticUtils.isInteger(coef)) {
+                denomPower = (int) Math.pow(10, ArithmeticUtils.numOfDigits(coef));
+            }
+            int numPower = (int) (coef * denomPower);
+
+            PowerTerm powerTerm = new PowerTerm(1, getVar(), numPower, denomPower);
+            setVar(new USub(powerTerm));
+        }
+    }
+
     //
     // Get and Set Methods
     //

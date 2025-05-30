@@ -11,7 +11,9 @@ public class ArithmeticUtils {
         int trailingZeros = 0;
         for (char i : charArray) {
             if (currentlyTrailingZero) {
-                if (i != '0') {
+                if (i == '.') {
+
+                } else if (i != '0') {
                     currentlyTrailingZero = false;
                     digits += 1 + trailingZeros;
                     trailingZeros = 0;
@@ -21,6 +23,7 @@ public class ArithmeticUtils {
             } else {
                 if (i == '0') {
                     currentlyTrailingZero = true;
+                    trailingZeros++;
                 } else if (i != '.') {
                     digits++;
                 }

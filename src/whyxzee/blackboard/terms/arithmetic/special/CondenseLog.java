@@ -6,16 +6,15 @@ import whyxzee.blackboard.equations.MultiplicativeEQ;
 import whyxzee.blackboard.terms.LogarithmicTerm;
 import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.Term;
-import whyxzee.blackboard.terms.Term.TermType;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
-import whyxzee.blackboard.utils.ArithmeticUtils;
 
 /**
  * A package which is used to condense logarithmic terms.
  * 
  * <p>
- * The methods in this class have not been checked.
+ * The methods in this class have been checked on {@code 5/30/2025}, and nothing
+ * has changed since.
  */
 public class CondenseLog {
     /* Variables */
@@ -28,49 +27,26 @@ public class CondenseLog {
     }
 
     public ArrayList<Term> performFunction(ArrayList<Term> terms) {
+        if (terms.size() == 0) {
+            return terms;
+        }
+
         for (int i = 0; i < terms.size(); i++) {
             /* Turning terms into -> log_b(x^n) form */
             LogarithmicTerm logTerm = (LogarithmicTerm) terms.get(i);
+            logTerm.condense();
             double base = logTerm.getBase();
+            Variable var = logTerm.getVar();
+
+            /* Variable inside the Logarithmic */
             Term insideLog;
-            if (logTerm.getCoef() != 1) {
-                Variable var = logTerm.getVar();
-                double coef = logTerm.getCoef();
-                int denomPower = ArithmeticUtils.numOfDigits(coef);
-                int numPower = (int) (coef * Math.pow(10, denomPower));
-                switch (var.getVarType()) {
-                    case U_SUB_TERM:
-                        /* Initializing variables */
-                        Term innerTerm = var.getInnerTerm();
-
-                        if (innerTerm.getTermType() == TermType.POWER) {
-                            // as to not create a polynomial in a polynomial, to build off the old
-                            // polynmial
-                            PowerTerm innerPoly = (PowerTerm) innerTerm;
-                            int oldNumPower = innerPoly.getNumeratorPower();
-                            int oldDenomPower = innerPoly.getDenominatorPower();
-                            insideLog = new PowerTerm(1, new USub(innerTerm), numPower * oldNumPower,
-                                    denomPower * oldDenomPower);
-                        } else {
-                            insideLog = new PowerTerm(1, new USub(innerTerm), numPower, denomPower);
-                        }
-                        break;
-                    default:
-                        insideLog = new PowerTerm(1, var, numPower, denomPower);
-                        break;
-                }
-            } else {
-                Variable var = logTerm.getVar();
-                insideLog = new PowerTerm(1, var);
-                switch (var.getVarType()) {
-                    case U_SUB_TERM:
-                        insideLog = var.getInnerTerm();
-                        break;
-                    default:
-                        insideLog = new PowerTerm(1, var);
-                        break;
-
-                }
+            switch (var.getVarType()) {
+                case U_SUB_TERM:
+                    insideLog = var.getInnerTerm();
+                    break;
+                default:
+                    insideLog = new PowerTerm(1, var);
+                    break;
             }
 
             /* Condensing */
@@ -82,13 +58,17 @@ public class CondenseLog {
         }
 
         /* Output */
-        return (eqs.size() > 0) ? getTermArray() : null;
+        return getTermArray();
 
     }
 
     //
     // Get & Set Methods
     //
+    /**
+     * 
+     * @return a term array with logarithmic terms.
+     */
     private ArrayList<Term> getTermArray() {
         /* Initializing variables */
         ArrayList<Term> output = new ArrayList<Term>();
@@ -101,6 +81,11 @@ public class CondenseLog {
         return output;
     }
 
+    /**
+     * 
+     * @param base
+     * @return the index of the base in the bases ArrayList.
+     */
     private int getIndexOf(double base) {
         for (int i = 0; i < bases.size(); i++) {
             if (bases.get(i) == base) {
@@ -116,6 +101,8 @@ public class CondenseLog {
     }
 
     private void update(double base, Term term) {
-        eqs.get(getIndexOf(base)).add(term);
+        MultiplicativeEQ eq = eqs.get(getIndexOf(base));
+        eq.add(term);
+        eq.organizeTerms();
     }
 }
