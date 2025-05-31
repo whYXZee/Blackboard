@@ -26,6 +26,11 @@ public class CondenseLog {
         eqs = new ArrayList<MultiplicativeEQ>();
     }
 
+    /**
+     * 
+     * @param terms a termArray of LogarithmicTerms
+     * @return
+     */
     public ArrayList<Term> performFunction(ArrayList<Term> terms) {
         if (terms.size() == 0) {
             return terms;

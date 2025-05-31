@@ -352,9 +352,7 @@ public class PowerTerm extends Term {
         switch (term.getTermType()) {
             case POWER:
                 PowerTerm powerTerm = (PowerTerm) term;
-                return (powerTerm.getDenominatorPower() == this.denomPower)
-                        && (powerTerm.getNumeratorPower() == this.numPower)
-                        && (powerTerm.getVar().equals(this.getVar()));
+                return (power == powerTerm.getPower()) && (powerTerm.getVar().equals(this.getVar()));
             default:
                 return false;
         }

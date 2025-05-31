@@ -130,6 +130,10 @@ public abstract class Term {
      * @return {@code true} if the two terms are alike, {@code false} if otherwise.
      * 
      */
+    public final boolean isTermType(TermType termType) {
+        return this.termType == termType;
+    }
+
     public abstract boolean similarTo(Term term);
 
     public abstract boolean equals(Term other);

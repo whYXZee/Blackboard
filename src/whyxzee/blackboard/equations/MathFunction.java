@@ -193,6 +193,11 @@ public abstract class MathFunction {
         return termArray;
     }
 
+    /**
+     * 
+     * @param termType the desired type of Terms
+     * @return the given termArray with TermType {@code termType}
+     */
     public final ArrayList<Term> getTermArray(TermType termType) {
         switch (termType) {
             case POWER:
@@ -272,7 +277,7 @@ public abstract class MathFunction {
     }
 
     /**
-     * Augments the {@code polynomialTerms} ArrayList.
+     * Augments the <b>polynomialTerms</b> ArrayList.
      * 
      * @param term
      */
@@ -292,7 +297,7 @@ public abstract class MathFunction {
     }
 
     /**
-     * Augments the {@code exponentialTerms} ArrayList.
+     * Augments the <b>exponentialTerms</b> ArrayList.
      * 
      * @param term
      */
@@ -312,7 +317,7 @@ public abstract class MathFunction {
     }
 
     /**
-     * Augments the {@code logTerms} ArrayList.
+     * Augments the <b>logTerms</b> ArrayList.
      * 
      * @param term
      */
@@ -320,8 +325,19 @@ public abstract class MathFunction {
         logTerms.add(term);
     }
 
+    public final void setLogTerms(Term... terms) {
+        logTerms.clear();
+        for (Term i : terms) {
+            addLogTerm(i);
+        }
+    }
+
+    public final void setLogTerms(ArrayList<Term> terms) {
+        logTerms = terms;
+    }
+
     /**
-     * Augments the {@code trigTerms} ArrayList.
+     * Augments the <b>trigTerms</b> ArrayList.
      * 
      * @param term
      */
@@ -329,12 +345,39 @@ public abstract class MathFunction {
         trigTerms.add(term);
     }
 
+    public final void setTrigTerms(ArrayList<Term> terms) {
+        trigTerms = terms;
+    }
+
+    public final void setTrigTerms(Term... terms) {
+        trigTerms.clear();
+        for (Term i : terms) {
+            addTrigTerm(i);
+        }
+    }
+
+    /**
+     * Augments the <b>absValTerms</b> ArrayList.
+     * 
+     * @param term
+     */
     public final void addAbsValTerm(Term term) {
         absValTerms.add(term);
     }
 
+    public final void setAbsValTerms(ArrayList<Term> terms) {
+        absValTerms = terms;
+    }
+
+    public final void setAbsValTerms(Term... terms) {
+        absValTerms.clear();
+        for (Term i : terms) {
+            addAbsValTerm(i);
+        }
+    }
+
     /**
-     * Augments the {@code factorialTerms} ArrayList.
+     * Augments the <b>factorialTerms</b> ArrayList.
      * 
      * @param term
      */
@@ -342,8 +385,19 @@ public abstract class MathFunction {
         factorialTerms.add(term);
     }
 
+    public final void setFactorialTerms(ArrayList<Term> terms) {
+        factorialTerms = terms;
+    }
+
+    public final void setFactorialTerms(Term... terms) {
+        factorialTerms.clear();
+        for (Term i : terms) {
+            addFactorialTerm(i);
+        }
+    }
+
     /**
-     * Augments the {@code signumTerms} ArrayList.
+     * Augments the <b>signumTerms</b> ArrayList.
      * 
      * @param term
      */
@@ -398,21 +452,28 @@ public abstract class MathFunction {
     //
     // Boolean Methods
     //
+    public final boolean isFunctionType(FunctionType functionType) {
+        return this.functionType == functionType;
+    }
+
     public final boolean equals(MathFunction other) {
-        if (functionType == other.getFunctionType()) {
-            ArrayList<Term> otherTermArray = other.getTermArray();
-            if (termArray.size() == otherTermArray.size()) {
-                for (int i = 0; i < termArray.size(); i++) {
-                    if (!termArray.get(i).equals(otherTermArray.get(i))) {
-                        // not equal
-                        return false;
-                    }
-                }
-                return true;
-            }
+        if (functionType != other.getFunctionType()) {
             return false;
         }
-        return false;
+
+        ArrayList<Term> otherTermArray = other.getTermArray();
+        if (termArray.size() != otherTermArray.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < termArray.size(); i++) {
+            if (!termArray.get(i).equals(otherTermArray.get(i))) {
+                // not equal
+                return false;
+            }
+        }
+        // all terms are the same at this point
+        return true;
     }
 
     /**
