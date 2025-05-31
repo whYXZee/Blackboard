@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.terms.*;
 import whyxzee.blackboard.terms.Term.TermType;
-import whyxzee.blackboard.terms.arithmetic.special.CondenseLog;
+import whyxzee.blackboard.terms.arithmetic.logarithmic.CondenseLog;
 
 /**
  * A package for equations that are a sequence, meaning that they are chained

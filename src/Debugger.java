@@ -9,6 +9,7 @@ import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.equations.*;
 import whyxzee.blackboard.terms.*;
 import whyxzee.blackboard.terms.arithmetic.*;
+import whyxzee.blackboard.terms.arithmetic.logarithmic.ExpandLog;
 import whyxzee.blackboard.terms.arithmetic.special.*;
 import whyxzee.blackboard.terms.variables.*;
 
@@ -20,6 +21,8 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
+        System.out.println(SpecialFunctions.factorial(5));
+
         ExpandLog logExpand = new ExpandLog();
         ArrayList<Term> termsOne = new ArrayList<Term>() {
             {

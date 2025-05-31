@@ -1,4 +1,4 @@
-package whyxzee.blackboard.terms.arithmetic.special;
+package whyxzee.blackboard.terms.arithmetic.logarithmic;
 
 import java.util.ArrayList;
 

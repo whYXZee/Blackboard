@@ -88,14 +88,49 @@ public class SpecialFunctions {
     public static final int factorial(int input) {
         if (input > 20) {
             throw new RuntimeException("Factorial size too large at value " + input);
+        } else if (input == 1 || input == 0) {
+            return 1;
+        } else if (input < 0) {
+            return 0;
+        }
+
+        return input * factorial(input - 1);
+    }
+
+    public static final int permutation(int n, int r) {
+        if (n > 20) {
+            throw new RuntimeException("Permutation size too large at value " + n);
+        }
+
+        if (r > n) {
+            // because there is no way to sort r objects into n slots
+            return 0;
+        } else if (r == 1) {
+            // there are only n ways to sort 1 object into n slots
+            return n;
+        } else if (n == r) {
+            return factorial(n);
         }
 
         int output = 1;
-        for (int i = input; i > 1; i--) {
-            output *= i;
+        for (int i = 0; i < r; i++) {
+            output *= n - i;
+        }
+        return output;
+    }
+
+    public static final int combination(int n, int r) {
+        if (n > 20) {
+            throw new RuntimeException("Permutation size too large at value " + n);
         }
 
-        return output;
+        if (r > n) {
+            return 0;
+        } else if (n == r || r == 1) {
+            return 1;
+        }
+
+        return permutation(n, r) / factorial(r);
     }
 
     public static final double log_b(double base, double value) {

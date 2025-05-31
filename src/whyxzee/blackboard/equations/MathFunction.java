@@ -221,6 +221,10 @@ public abstract class MathFunction {
         }
     }
 
+    public final int termArraySize() {
+        return termArray.size();
+    }
+
     public final void setTermArray(Term... terms) {
         clearTermArrays();
         for (Term i : terms) {

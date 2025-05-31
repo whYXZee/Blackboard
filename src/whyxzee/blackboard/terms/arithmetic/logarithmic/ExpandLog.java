@@ -1,4 +1,4 @@
-package whyxzee.blackboard.terms.arithmetic.special;
+package whyxzee.blackboard.terms.arithmetic.logarithmic;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,8 @@ import whyxzee.blackboard.utils.SpecialFunctions;
  * A package which is used to expand logarithmic terms in a Sequential Equation.
  * 
  * <p>
- * The methods in this class have not been checked.
+ * The methods in this class have been checked on {@code 5/30/2025} and nothing
+ * has changed since.
  */
 public class ExpandLog {
     /* Variables */

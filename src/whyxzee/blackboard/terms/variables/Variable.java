@@ -118,6 +118,10 @@ public class Variable {
         return false;
     }
 
+    public final boolean isVarType(VarType varType) {
+        return this.varType == varType;
+    }
+
     public final boolean isUSub() {
         switch (varType) {
             case VARIABLE:
