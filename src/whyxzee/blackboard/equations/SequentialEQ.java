@@ -57,7 +57,6 @@ public class SequentialEQ extends MathFunction {
                     output += " + " + term;
                 }
             }
-
         }
 
         return output;
@@ -80,7 +79,6 @@ public class SequentialEQ extends MathFunction {
                     output += " + " + term.printConsole();
                 }
             }
-
         }
 
         return output;

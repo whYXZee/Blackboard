@@ -21,25 +21,8 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        System.out.println(SpecialFunctions.factorial(5));
-
-        ExpandLog logExpand = new ExpandLog();
-        ArrayList<Term> termsOne = new ArrayList<Term>() {
-            {
-                add(new PowerTerm(1, new Variable("x"), 2));
-                add(new PowerTerm(2, new Variable("y"), -2));
-            }
-        };
-
-        ArrayList<Term> terms = new ArrayList<Term>() {
-            {
-                add(new LogarithmicTerm(1, new USub(new MultiplicativeEQ(termsOne)), Math.E));
-                add(new LogarithmicTerm(1, new Variable("x"), 2));
-            }
-        };
-
-        display.appendScript(new BlackboardLabel(
-                new SequentialEQ(logExpand.performExpansion(terms)).toString(), 0.05));
+        PowerTerm powTerm = new PowerTerm(-1, new Variable("x"), 4, 3);
+        display.appendScript(new BlackboardLabel(powTerm.derive().toString(), 0.05));
 
         /* Displaying */
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

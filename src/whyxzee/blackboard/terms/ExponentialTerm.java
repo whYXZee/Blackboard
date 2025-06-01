@@ -39,18 +39,14 @@ public class ExponentialTerm extends Term {
     @Override
     public final String toString() {
         /* Decision via Coefficient */
-        double coef = getCoef();
-        if (coef == 0) {
+        double coefValue = getCoef();
+        if (coefValue == 0) {
             return "0";
         }
 
         /* Decision via Function */
-        boolean isBaseE = base == Math.E;
-        if (coef == 1) {
-            return (isBaseE ? "e" : base) + "^(" + getVar().toString() + ")";
-        } else {
-            return Double.toString(coef) + "(" + (isBaseE ? "e" : base) + ")^(" + getVar().toString() + ")";
-        }
+        String coef = ArithmeticUtils.valueToString(coefValue);
+        return coef + "(" + (isBaseE() ? "e" : base) + ")^(" + getVar().toString() + ")";
     }
 
     @Override

@@ -1,6 +1,7 @@
 package whyxzee.blackboard.terms;
 
 import whyxzee.blackboard.terms.variables.*;
+import whyxzee.blackboard.utils.ArithmeticUtils;
 
 /**
  * A package for the signum function, with a*sgn(x).
@@ -23,15 +24,12 @@ public class SignumTerm extends Term {
     @Override
     public final String toString() {
         /* Initializing variables */
-        double coef = getCoef();
-
-        if (coef == 0) {
+        double coefValue = getCoef();
+        if (coefValue == 0) {
             return "0";
-        } else if (coef == 1) {
-            return "sgn(" + getVar().toString() + ")";
-        } else {
-            return Double.toString(coef) + "sgn(" + getVar().toString() + ")";
         }
+        String coef = ArithmeticUtils.valueToString(coefValue);
+        return coef + "sgn(" + getVar().toString() + ")";
     }
 
     @Override

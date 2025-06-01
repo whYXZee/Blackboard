@@ -4,6 +4,7 @@ import whyxzee.blackboard.equations.MultiplicativeEQ;
 import whyxzee.blackboard.equations.SequentialEQ;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
+import whyxzee.blackboard.utils.ArithmeticUtils;
 
 /**
  * A package for trigonometic terms.
@@ -50,14 +51,12 @@ public class TrigTerm extends Term {
 
     @Override
     public final String toString() {
-        double coef = getCoef();
-        if (coef == 0) {
+        double coefValue = getCoef();
+        if (coefValue == 0) {
             return "0";
-        } else if (coef == 1) {
-            return trigString + "(" + getVar().toString() + ")";
-        } else {
-            return Double.toString(coef) + trigString + "(" + getVar().toString() + ")";
         }
+        String coef = ArithmeticUtils.valueToString(coefValue);
+        return coef + trigString + "(" + getVar().toString() + ")";
     }
 
     @Override

@@ -105,36 +105,22 @@ public class PowerTerm extends Term {
         /* Initializing variables */
         Variable variable = getVar();
 
-        /* Number */
-        double number = getCoef();
-        if (number == 0) {
+        /* Coefficient */
+        double coefValue = getCoef();
+        if (coefValue == 0) {
             return "0";
         }
+        String coef = ArithmeticUtils.valueToString(coefValue);
 
         /* Power */
         boolean isPowerOne = power == 1;
         if (numPower == 0) {
-            return Double.toString(number);
+            return Double.toString(coefValue);
         } else {
-            if (number == 1) {
-                // coefficient of 1
-                if (variable.isUSub()) {
-                    // USub variable
-                    return isPowerOne ? variable.toString() : "(" + variable.toString() + ")" + powerUnicode;
-                } else {
-                    // non-USub variable
-                    return variable.toString() + (isPowerOne ? "" : powerUnicode);
-                }
-            } else {
-                // coefficient that is not 1 nor 0
-                if (variable.isUSub()) {
-                    // USub variable
-                    return number + "(" + variable.toString() + ")" + (isPowerOne ? "" : powerUnicode);
-                } else {
-                    // non-USub variable
-                    return number + variable.toString() + (isPowerOne ? "" : powerUnicode);
-                }
+            if (variable.isUSub()) {
+                return coef + "(" + variable.toString() + ")" + (isPowerOne ? "" : powerUnicode);
             }
+            return coef + variable.toString() + (isPowerOne ? "" : powerUnicode);
         }
     }
 

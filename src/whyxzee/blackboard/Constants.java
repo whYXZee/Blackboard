@@ -44,6 +44,7 @@ public final class Constants {
         public static final char UPPERCASE_SIGMA = '\u03A3';
 
         /* General characters */
+        public static final char FRACTION_SLASH = '\u2044';
         public static final char INFINITY = '\u221E';
         public static final char INTEGRAL = '\u222B';
 
@@ -68,6 +69,8 @@ public final class Constants {
         public static final int[] PRIME_NUMBERS = {
                 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31
         };
+        public static final int MAX_PRIME_NUMBER = 17;
+        public static final int SIG_FIGS = 4;
     }
 
     public static final class SeriesConstants {

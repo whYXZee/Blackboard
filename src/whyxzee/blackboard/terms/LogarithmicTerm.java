@@ -31,20 +31,16 @@ public class LogarithmicTerm extends Term {
     @Override
     public String toString() {
         /* Initializing variables */
-        double coef = getCoef();
-        if (coef == 0) {
+        double coefValue = getCoef();
+        if (coefValue == 0) {
             return "0";
         }
+        String coef = ArithmeticUtils.valueToString(coefValue);
 
         if (base == Math.E) {
             // natural log
+            return coef + "ln(" + getVar().toString() + ")";
 
-            /* Coefficient */
-            if (coef == 1) {
-                return "ln(" + getVar().toString() + ")";
-            } else {
-                return Double.toString(coef) + "ln(" + getVar().toString() + ")";
-            }
         } else {
             // base shouldn't be int
 
@@ -57,11 +53,7 @@ public class LogarithmicTerm extends Term {
                 baseSubscript = UnicodeUtils.doubleToSubscript(base);
             }
 
-            if (coef == 1) {
-                return "log" + baseSubscript + "(" + getVar().toString() + ")";
-            } else {
-                return Double.toString(coef) + "log" + baseSubscript + "(" + getVar().toString() + ")";
-            }
+            return coef + "log" + baseSubscript + "(" + getVar().toString() + ")";
         }
     }
 

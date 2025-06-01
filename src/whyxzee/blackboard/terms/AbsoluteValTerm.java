@@ -3,6 +3,7 @@ package whyxzee.blackboard.terms;
 import whyxzee.blackboard.equations.MultiplicativeEQ;
 import whyxzee.blackboard.terms.variables.USub;
 import whyxzee.blackboard.terms.variables.Variable;
+import whyxzee.blackboard.utils.ArithmeticUtils;
 
 /**
  * The package for an absolute value term. The term is a*|x|.
@@ -24,28 +25,27 @@ public class AbsoluteValTerm extends Term {
     }
 
     @Override
-    public String printConsole() {
+    public String toString() {
         /* Coefficient */
-        double coef = getCoef();
-        if (coef == 0) {
+        double coefValue = getCoef();
+        if (coefValue == 0) {
             return "0";
-        } else if (coef == 1) {
-            return "|" + getVar().printConsole() + "|";
-        } else {
-            return Double.toString(getCoef()) + "|" + getVar().printConsole() + "|";
         }
+
+        String coef = ArithmeticUtils.valueToString(coefValue);
+        return coef + "|" + getVar().toString() + "|";
     }
 
     @Override
-    public String toString() {
+    public String printConsole() {
         /* Coefficient */
-        double coef = getCoef();
-        if (coef == 0) {
+        double coefValue = getCoef();
+        if (coefValue == 0) {
             return "0";
-        } else if (coef == 1) {
-            return "|" + getVar().toString() + "|";
+        } else if (coefValue == 1) {
+            return "|" + getVar().printConsole() + "|";
         } else {
-            return Double.toString(getCoef()) + "|" + getVar().toString() + "|";
+            return Double.toString(getCoef()) + "|" + getVar().printConsole() + "|";
         }
     }
 
