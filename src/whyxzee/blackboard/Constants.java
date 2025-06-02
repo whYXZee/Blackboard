@@ -40,11 +40,30 @@ public final class Constants {
         public static final char SUBSCRIPT_DOT = '\u05C5';
         public static final char SUBSCRIPT_SLASH = '\u2E1D';
 
+        /* Set Theory Characters */
+        public static final char ELEMENT_OF = '\u2208';
+        public static final char UNION = '\u222A';
+        public static final char SET_SUCH_THAT = '|';
+        public static final char NULL_SET = '\u2205';
+        public static final String NATURAL_SET = "\u2115";
+        public static final String INTEGER_SET = "\u2124";
+        public static final String RATIONAL_SET = "\u211A";
+        public static final String REAL_SET = "\u211D";
+        public static final char IMAGINARY_SET = '\u2148';
+        public static final char COMPLEX_SET = '\u2102';
+
+        /* Inequality Characters */
+        public static final char LESS_THAN = '<';
+        public static final char LESS_THAN_EQUAL = '\u2264';
+        public static final char GREATER_THAN = '>';
+        public static final char GREATER_THAN_EQUAL = '\u2265';
+
         /* Greek characters */
         public static final char UPPERCASE_SIGMA = '\u03A3';
 
         /* General characters */
         public static final char FRACTION_SLASH = '\u2044';
+        public static final char IMAGINARY_NUMBER = 'i';
         public static final char INFINITY = '\u221E';
         public static final char INTEGRAL = '\u222B';
 

@@ -7,9 +7,18 @@ import javax.swing.JFrame;
 import whyxzee.blackboard.utils.*;
 import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.equations.*;
+import whyxzee.blackboard.settheory.SetAbstract;
+import whyxzee.blackboard.settheory.SetBuilder;
+import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
+import whyxzee.blackboard.settheory.predicates.SetEvenOdd;
+import whyxzee.blackboard.settheory.predicates.SetInequality;
+import whyxzee.blackboard.settheory.predicates.SetRange;
+import whyxzee.blackboard.settheory.predicates.SetInequality.InequalityType;
+import whyxzee.blackboard.settheory.sets.IntegerSet;
+import whyxzee.blackboard.settheory.sets.NaturalSet;
+import whyxzee.blackboard.settheory.sets.RationalSet;
 import whyxzee.blackboard.terms.*;
 import whyxzee.blackboard.terms.arithmetic.*;
-import whyxzee.blackboard.terms.arithmetic.logarithmic.ExpandLog;
 import whyxzee.blackboard.terms.arithmetic.special.*;
 import whyxzee.blackboard.terms.variables.*;
 
@@ -21,8 +30,16 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        PowerTerm powTerm = new PowerTerm(-1, new Variable("x"), 4, 3);
-        display.appendScript(new BlackboardLabel(powTerm.derive().toString(), 0.05));
+        ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>() {
+            {
+                // add(new SetInequality("x", InequalityType.LESS_THAN, 0));
+                // add(new SetEvenOdd("x", true));
+            }
+        };
+        SetAbstract[] domains = { new RationalSet() };
+        SetBuilder set = new SetBuilder("A", "x", domains, predicates);
+        System.out.println(set.inSet(Math.sqrt(2)));
+        display.appendScript(new BlackboardLabel(set.toString(), 0.05));
 
         /* Displaying */
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

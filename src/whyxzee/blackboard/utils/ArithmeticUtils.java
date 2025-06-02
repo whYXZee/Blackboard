@@ -72,7 +72,7 @@ public class ArithmeticUtils {
             return toScientific(value, sigFigs);
 
         } else {
-            return Double.toString(value);
+            return Integer.toString((int) value);
         }
     }
 
@@ -210,5 +210,22 @@ public class ArithmeticUtils {
 
     public static final boolean withinEpsilon(double value, double desired, double epsilon) {
         return (desired + epsilon > value) && (desired - epsilon < value);
+    }
+
+    public static final boolean isRational(double value, int sigFigs) {
+        double valToFind = Math.abs(value - (int) value);
+        for (int i = 2; i < Constants.NumberConstants.MAX_PRIME_NUMBER + 1; i++) {
+            for (int j = 1; j < i; j++) {
+                if (withinEpsilon((double) j / i, valToFind, Math.pow(10, -2 * sigFigs))) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static final boolean isRational(double value) {
+        return isRational(value, Constants.NumberConstants.SIG_FIGS);
     }
 }
