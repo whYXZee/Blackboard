@@ -4,15 +4,15 @@ import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.SetAbstract;
 
-public class NaturalSet extends SetAbstract {
+public class ComplexSet extends SetAbstract {
 
-    public NaturalSet() {
-        super(Constants.Unicode.NATURAL_SET, "", SetType.COMMON);
+    public ComplexSet() {
+        super(Constants.Unicode.COMPLEX_SET, "", SetType.COMMON);
     }
 
     @Override
     public final String toString() {
-        return getSetName() + " = {0, 1, 2, 3, ...}";
+        return getSetName();
     }
 
     @Override
@@ -20,9 +20,12 @@ public class NaturalSet extends SetAbstract {
         return toString();
     }
 
+    //
+    // Boolean Methods
+    //
     @Override
     public boolean inSet(NumberAbstract number) {
-        return number.isInteger() && number.getValue() > 0;
+        return number.isComplex();
     }
 
 }

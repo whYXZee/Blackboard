@@ -1,5 +1,7 @@
 package whyxzee.blackboard.settheory.predicates;
 
+import whyxzee.blackboard.numbers.NumberAbstract;
+
 /**
  * A package for defining which numbers are in a set.
  */
@@ -43,5 +45,5 @@ public abstract class PredicateAbstract {
     //
     // Boolean Methods
     //
-    public abstract boolean checkPredicate(double value);
+    public abstract boolean checkPredicate(NumberAbstract number);
 }

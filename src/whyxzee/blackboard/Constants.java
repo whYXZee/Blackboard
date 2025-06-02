@@ -49,8 +49,8 @@ public final class Constants {
         public static final String INTEGER_SET = "\u2124";
         public static final String RATIONAL_SET = "\u211A";
         public static final String REAL_SET = "\u211D";
-        public static final char IMAGINARY_SET = '\u2148';
-        public static final char COMPLEX_SET = '\u2102';
+        public static final String IMAGINARY_SET = "\u2148";
+        public static final String COMPLEX_SET = "\u2102";
 
         /* Inequality Characters */
         public static final char LESS_THAN = '<';
@@ -64,7 +64,7 @@ public final class Constants {
         /* General characters */
         public static final char FRACTION_SLASH = '\u2044';
         public static final char IMAGINARY_NUMBER = 'i';
-        public static final char INFINITY = '\u221E';
+        public static final String INFINITY = "\u221E";
         public static final char INTEGRAL = '\u222B';
 
         /* Random characters */

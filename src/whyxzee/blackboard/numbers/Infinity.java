@@ -1,0 +1,52 @@
+package whyxzee.blackboard.numbers;
+
+import whyxzee.blackboard.Constants;
+
+public class Infinity extends NumberAbstract {
+    /* Variables */
+    private boolean isNegative;
+
+    public Infinity() {
+        super(Double.POSITIVE_INFINITY, NumType.INFINITY);
+        this.isNegative = false;
+    }
+
+    public Infinity(boolean isNegative) {
+        super(isNegative ? Double.NEGATIVE_INFINITY : Double.NEGATIVE_INFINITY, NumType.INFINITY);
+        this.isNegative = false;
+    }
+
+    @Override
+    public final String toString() {
+        return isNegative ? "-" + Constants.Unicode.INFINITY : Constants.Unicode.INFINITY;
+    }
+
+    @Override
+    public final String printConsole() {
+        return isNegative ? "Negative Infinity" : "Infinity";
+    }
+
+    //
+    // Boolean Methods
+    //
+    @Override
+    public final boolean isImaginary() {
+        return false;
+    }
+
+    @Override
+    public final boolean isComplex() {
+        return false;
+    }
+
+    @Override
+    public final boolean isRational() {
+        return false;
+    }
+
+    @Override
+    public final boolean isInteger() {
+        return false;
+    }
+
+}

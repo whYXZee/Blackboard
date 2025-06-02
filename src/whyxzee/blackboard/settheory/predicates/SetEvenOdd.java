@@ -1,5 +1,6 @@
 package whyxzee.blackboard.settheory.predicates;
 
+import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.utils.ArithmeticUtils;
 
 /**
@@ -48,14 +49,14 @@ public class SetEvenOdd extends PredicateAbstract {
      * @return
      */
     @Override
-    public final boolean checkPredicate(double value) {
-        if (!ArithmeticUtils.isInteger(value)) {
+    public final boolean checkPredicate(NumberAbstract number) {
+        if (!number.isInteger()) {
             return false;
         }
 
         if (isConditionOdd) {
-            return !ArithmeticUtils.isEven(value);
+            return !ArithmeticUtils.isEven(number.getValue());
         }
-        return ArithmeticUtils.isEven(value);
+        return ArithmeticUtils.isEven(number.getValue());
     }
 }

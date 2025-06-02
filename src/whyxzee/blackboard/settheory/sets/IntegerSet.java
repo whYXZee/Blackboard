@@ -1,12 +1,12 @@
 package whyxzee.blackboard.settheory.sets;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.SetAbstract;
-import whyxzee.blackboard.utils.ArithmeticUtils;
 
 public class IntegerSet extends SetAbstract {
     public IntegerSet() {
-        super(Constants.Unicode.INTEGER_SET, "");
+        super(Constants.Unicode.INTEGER_SET, "", SetType.COMMON);
     }
 
     @Override
@@ -20,8 +20,8 @@ public class IntegerSet extends SetAbstract {
     }
 
     @Override
-    public boolean inSet(double value) {
-        return ArithmeticUtils.isInteger(value);
+    public boolean inSet(NumberAbstract number) {
+        return number.isInteger();
     }
 
 }

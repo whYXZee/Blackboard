@@ -1,6 +1,7 @@
 package whyxzee.blackboard.settheory.predicates;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.utils.ArithmeticUtils;
 
 /**
@@ -73,7 +74,9 @@ public class SetRange extends PredicateAbstract {
     // Boolean Methods
     //
     @Override
-    public boolean checkPredicate(double value) {
+    public boolean checkPredicate(NumberAbstract number) {
+        double value = number.getValue();
+
         /* Lower Bound */
         if (isLowerOpen && !(lowerBound < value)) {
             return false;

@@ -4,15 +4,15 @@ import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.SetAbstract;
 
-public class NaturalSet extends SetAbstract {
+public class ImaginarySet extends SetAbstract {
 
-    public NaturalSet() {
-        super(Constants.Unicode.NATURAL_SET, "", SetType.COMMON);
+    public ImaginarySet() {
+        super(Constants.Unicode.IMAGINARY_SET, "", SetType.COMMON);
     }
 
     @Override
     public final String toString() {
-        return getSetName() + " = {0, 1, 2, 3, ...}";
+        return getSetName();
     }
 
     @Override
@@ -22,7 +22,7 @@ public class NaturalSet extends SetAbstract {
 
     @Override
     public boolean inSet(NumberAbstract number) {
-        return number.isInteger() && number.getValue() > 0;
+        return number.isImaginary();
     }
 
 }

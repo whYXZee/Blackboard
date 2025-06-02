@@ -1,12 +1,13 @@
 package whyxzee.blackboard.settheory.sets;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.SetAbstract;
 
 public class RealSet extends SetAbstract {
 
     public RealSet() {
-        super(Constants.Unicode.REAL_SET, "");
+        super(Constants.Unicode.REAL_SET, "", SetType.COMMON);
     }
 
     @Override
@@ -20,11 +21,8 @@ public class RealSet extends SetAbstract {
     }
 
     @Override
-    public boolean inSet(double value) {
-        return 
-
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'inSet'");
+    public boolean inSet(NumberAbstract number) {
+        return !number.isImaginary();
     }
 
 }

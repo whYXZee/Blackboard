@@ -7,16 +7,15 @@ import javax.swing.JFrame;
 import whyxzee.blackboard.utils.*;
 import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.equations.*;
+import whyxzee.blackboard.numbers.ComplexNumber;
+import whyxzee.blackboard.numbers.NumberAbstract;
+import whyxzee.blackboard.numbers.RealNumber;
 import whyxzee.blackboard.settheory.SetAbstract;
 import whyxzee.blackboard.settheory.SetBuilder;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
-import whyxzee.blackboard.settheory.predicates.SetEvenOdd;
-import whyxzee.blackboard.settheory.predicates.SetInequality;
-import whyxzee.blackboard.settheory.predicates.SetRange;
 import whyxzee.blackboard.settheory.predicates.SetInequality.InequalityType;
-import whyxzee.blackboard.settheory.sets.IntegerSet;
-import whyxzee.blackboard.settheory.sets.NaturalSet;
-import whyxzee.blackboard.settheory.sets.RationalSet;
+import whyxzee.blackboard.settheory.predicates.*;
+import whyxzee.blackboard.settheory.sets.*;
 import whyxzee.blackboard.terms.*;
 import whyxzee.blackboard.terms.arithmetic.*;
 import whyxzee.blackboard.terms.arithmetic.special.*;
@@ -36,9 +35,9 @@ public class Debugger {
                 // add(new SetEvenOdd("x", true));
             }
         };
-        SetAbstract[] domains = { new RationalSet() };
+        SetAbstract[] domains = { new ComplexSet() };
         SetBuilder set = new SetBuilder("A", "x", domains, predicates);
-        System.out.println(set.inSet(Math.sqrt(2)));
+        NumberAbstract number = new ComplexNumber(1, -5);
         display.appendScript(new BlackboardLabel(set.toString(), 0.05));
 
         /* Displaying */

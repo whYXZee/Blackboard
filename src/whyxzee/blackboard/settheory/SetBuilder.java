@@ -1,8 +1,10 @@
 package whyxzee.blackboard.settheory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
 
 /**
@@ -18,22 +20,22 @@ public class SetBuilder extends SetAbstract {
     private ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>();
 
     public SetBuilder(String setName, String var) {
-        super(setName, var);
+        super(setName, var, SetType.SET_BUILDER);
     }
 
     public SetBuilder(String setName, String var, SetAbstract[] domains) {
-        super(setName, var);
+        super(setName, var, SetType.SET_BUILDER);
         this.domains = domains;
     }
 
     public SetBuilder(String setName, String var, SetAbstract[] domains, ArrayList<PredicateAbstract> predicates) {
-        super(setName, var);
+        super(setName, var, SetType.SET_BUILDER);
         this.domains = domains;
         this.predicates = predicates;
     }
 
     public SetBuilder(String setName, String var, ArrayList<PredicateAbstract> predicates) {
-        super(setName, var);
+        super(setName, var, SetType.SET_BUILDER);
         this.predicates = predicates;
     }
 
@@ -65,8 +67,20 @@ public class SetBuilder extends SetAbstract {
     }
 
     //
+    // Arithmetic Methods
+    //
+
+    //
     // Get & Set Methods
     //
+    public final SetAbstract[] getDomains() {
+        return domains;
+    }
+
+    public final ArrayList<PredicateAbstract> getPredicates() {
+        return predicates;
+    }
+
     private final String getValuesOfVar() {
         String output = getVar();
         if (domains.length == 0) {
@@ -86,9 +100,9 @@ public class SetBuilder extends SetAbstract {
     //
     // Boolean Methods
     //
-    public final boolean inDomain(double value) {
+    public final boolean inDomain(NumberAbstract number) {
         for (SetAbstract i : domains) {
-            if (!i.inSet(value)) {
+            if (!i.inSet(number)) {
                 return false;
             }
         }
@@ -97,13 +111,13 @@ public class SetBuilder extends SetAbstract {
     }
 
     @Override
-    public final boolean inSet(double value) {
-        if (!inDomain(value)) {
+    public final boolean inSet(NumberAbstract number) {
+        if (!inDomain(number)) {
             return false;
         }
 
         for (PredicateAbstract i : predicates) {
-            if (!i.checkPredicate(value)) {
+            if (!i.checkPredicate(number)) {
                 return false;
             }
         }

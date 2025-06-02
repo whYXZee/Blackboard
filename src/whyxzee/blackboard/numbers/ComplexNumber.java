@@ -1,44 +1,43 @@
 package whyxzee.blackboard.numbers;
 
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.Constants.Unicode;
 import whyxzee.blackboard.utils.ArithmeticUtils;
 
-public class ComplexNumber {
+public class ComplexNumber extends NumberAbstract {
     /* Variables */
-    private double a;
     private double b;
 
     public ComplexNumber(double a, double b) {
-        this.a = a;
+        super(a, NumType.IMAGINARY);
         this.b = b;
     }
 
     @Override
     public final String toString() {
-        if (a == 0) {
+        if (getValue() == 0) {
             return ArithmeticUtils.valueToString(b) + Constants.Unicode.IMAGINARY_NUMBER;
         }
 
         String output = "";
-        output += ArithmeticUtils.valueToString(a);
+        if (Math.abs(getValue()) == 1) {
+            output += (int) getValue();
+        } else {
+            output += ArithmeticUtils.valueToString(getValue());
+        }
         output += (b > 0) ? " + " : " - ";
         output += ArithmeticUtils.valueToString(b > 0 ? b : -b);
         output += Constants.Unicode.IMAGINARY_NUMBER;
         return output;
     }
 
+    @Override
+    public final String printConsole() {
+        return toString();
+    }
+
     //
     // Get & Set Methods
     //
-    public final double getA() {
-        return a;
-    }
-
-    public final void setA(double a) {
-        this.a = a;
-    }
-
     public final double getB() {
         return b;
     }
@@ -50,12 +49,24 @@ public class ComplexNumber {
     //
     // Boolean Methods
     //
+    @Override
     public final boolean isImaginary() {
         return b != 0;
     }
 
+    @Override
     public final boolean isComplex() {
-        return a != 0 && isImaginary();
+        return getValue() != 0 && isImaginary();
+    }
+
+    @Override
+    public final boolean isRational() {
+        return false;
+    }
+
+    @Override
+    public final boolean isInteger() {
+        return false;
     }
 
 }
