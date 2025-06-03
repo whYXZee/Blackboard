@@ -1,7 +1,10 @@
 package whyxzee.blackboard.settheory.predicates;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.numbers.Infinity;
 import whyxzee.blackboard.numbers.NumberAbstract;
+import whyxzee.blackboard.settheory.Bound;
+import whyxzee.blackboard.settheory.IntervalSet;
 import whyxzee.blackboard.utils.ArithmeticUtils;
 
 /**
@@ -13,7 +16,7 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
  */
 public class InequalityPredicate extends PredicateAbstract {
     /* Variables */
-    private double value;
+    private NumberAbstract value;
     private InequalityType inequality;
 
     public enum InequalityType {
@@ -23,7 +26,7 @@ public class InequalityPredicate extends PredicateAbstract {
         GREATER_THAN_EQUAL
     }
 
-    public InequalityPredicate(String var, InequalityType inequality, double value) {
+    public InequalityPredicate(String var, InequalityType inequality, NumberAbstract value) {
         super(var, PredicateType.INEQUALITY);
         this.inequality = inequality;
         this.value = value;
@@ -49,10 +52,37 @@ public class InequalityPredicate extends PredicateAbstract {
                 break;
         }
 
-        if (ArithmeticUtils.isInteger(value)) {
-            return output + (int) value;
+        if (ArithmeticUtils.isInteger(value.getValue())) {
+            return output + (int) value.getValue();
         }
         return output + value;
+    }
+
+    public final IntervalSet toInterval() {
+        Bound lBound, uBound;
+
+        switch (inequality) {
+            case LESS_THAN:
+                lBound = new Bound(new Infinity(true), true);
+                uBound = new Bound(value, true);
+                break;
+            case LESS_THAN_EQUAL:
+                lBound = new Bound(new Infinity(true), true);
+                uBound = new Bound(value, false);
+                break;
+            case GREATER_THAN:
+                lBound = new Bound(value, true);
+                uBound = new Bound(new Infinity(false), true);
+                break;
+            case GREATER_THAN_EQUAL:
+                lBound = new Bound(value, false);
+                uBound = new Bound(new Infinity(false), true);
+                break;
+            default:
+                lBound = uBound = null;
+                break;
+        }
+        return new IntervalSet("", getVar(), lBound, uBound);
     }
 
     @Override
@@ -63,11 +93,11 @@ public class InequalityPredicate extends PredicateAbstract {
     //
     // Get & Set Methods
     //
-    public final double getValue() {
+    public final NumberAbstract getValue() {
         return value;
     }
 
-    public final void setValue(double value) {
+    public final void setValue(NumberAbstract value) {
         this.value = value;
     }
 
@@ -76,24 +106,18 @@ public class InequalityPredicate extends PredicateAbstract {
     //
     @Override
     public boolean checkPredicate(NumberAbstract number) {
-        double value = number.getValue();
-
         switch (inequality) {
             case LESS_THAN:
-                return value < value;
+                return number.lessThan(value);
             case LESS_THAN_EQUAL:
-                return value <= value;
+                return number.lessThanEqual(value);
             case GREATER_THAN:
-                return value > value;
+                return number.greaterThan(value);
             case GREATER_THAN_EQUAL:
-                return value >= value;
+                return number.greaterThanEqual(value);
             default:
                 return false;
         }
-    }
-
-    public final boolean isInequality(InequalityType inequality) {
-        return this.inequality == inequality;
     }
 
     @Override
@@ -105,6 +129,10 @@ public class InequalityPredicate extends PredicateAbstract {
         InequalityPredicate ineq = (InequalityPredicate) other;
         return (value == ineq.getValue()) &&
                 (ineq.isInequality(inequality));
+    }
+
+    public final boolean isInequality(InequalityType inequality) {
+        return this.inequality == inequality;
     }
 
 }

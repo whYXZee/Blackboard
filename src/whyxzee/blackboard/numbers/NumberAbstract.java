@@ -44,6 +44,7 @@ public abstract class NumberAbstract {
     //
     // Boolean Methods
     //
+    public abstract boolean equals(NumberAbstract other);
 
     public final boolean isNumType(NumType numType) {
         return this.numType == numType;
@@ -56,4 +57,64 @@ public abstract class NumberAbstract {
     public abstract boolean isRational();
 
     public abstract boolean isInteger();
+
+    /**
+     * is <b>this</b> < <b>other</b>?
+     * 
+     * @param other
+     * @return
+     */
+    public final boolean lessThan(NumberAbstract other) {
+        if (other.isComplex() || isComplex()) {
+            // TODO: implement later
+            return false;
+        }
+
+        return value < other.getValue();
+    }
+
+    /**
+     * is <b>this</b> <= <b>other</b>?
+     * 
+     * @param other
+     * @return
+     */
+    public final boolean lessThanEqual(NumberAbstract other) {
+        if (other.isComplex() || isComplex()) {
+            // TODO: implement later
+            return false;
+        }
+
+        return value <= other.getValue();
+    }
+
+    /**
+     * is <b>this</b> > <b>other</b>?
+     * 
+     * @param other
+     * @return
+     */
+    public final boolean greaterThan(NumberAbstract other) {
+        if (other.isComplex() || isComplex()) {
+            // TODO: implement later
+            return false;
+        }
+
+        return value > other.getValue();
+    }
+
+    /**
+     * is <b>this</b> >= <b>other</b>?
+     * 
+     * @param other
+     * @return
+     */
+    public final boolean greaterThanEqual(NumberAbstract other) {
+        if (other.isComplex() || isComplex()) {
+            // TODO: implement later
+            return false;
+        }
+
+        return value >= other.getValue();
+    }
 }

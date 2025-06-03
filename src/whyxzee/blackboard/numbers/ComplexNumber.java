@@ -5,11 +5,14 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
 
 public class ComplexNumber extends NumberAbstract {
     /* Variables */
+    private double a;
     private double b;
 
     public ComplexNumber(double a, double b) {
-        super(a, NumType.IMAGINARY);
+        super(0, NumType.IMAGINARY);
+        this.a = a;
         this.b = b;
+        setValue(getModulus());
     }
 
     @Override
@@ -19,10 +22,10 @@ public class ComplexNumber extends NumberAbstract {
         }
 
         String output = "";
-        if (Math.abs(getValue()) == 1) {
-            output += (int) getValue();
+        if (Math.abs(a) == 1) {
+            output += (int) a;
         } else {
-            output += ArithmeticUtils.valueToString(getValue());
+            output += ArithmeticUtils.valueToString(a);
         }
         output += (b > 0) ? " + " : " - ";
         output += ArithmeticUtils.valueToString(b > 0 ? b : -b);
@@ -38,6 +41,18 @@ public class ComplexNumber extends NumberAbstract {
     //
     // Get & Set Methods
     //
+    public final double getModulus() {
+        return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+    }
+
+    public final double getA() {
+        return a;
+    }
+
+    public final void setA(double a) {
+        this.a = a;
+    }
+
     public final double getB() {
         return b;
     }
@@ -49,6 +64,16 @@ public class ComplexNumber extends NumberAbstract {
     //
     // Boolean Methods
     //
+    @Override
+    public final boolean equals(NumberAbstract other) {
+        if (!other.isNumType(getNumType())) {
+            return false;
+        }
+
+        ComplexNumber num = (ComplexNumber) other;
+        return (num.getValue() == getValue()) && (num.getB() == getB());
+    }
+
     @Override
     public final boolean isImaginary() {
         return b != 0;
@@ -68,5 +93,4 @@ public class ComplexNumber extends NumberAbstract {
     public final boolean isInteger() {
         return false;
     }
-
 }

@@ -10,6 +10,7 @@ import whyxzee.blackboard.equations.*;
 import whyxzee.blackboard.numbers.ComplexNumber;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.numbers.RealNumber;
+import whyxzee.blackboard.settheory.IntervalSet;
 import whyxzee.blackboard.settheory.SetAbstract;
 import whyxzee.blackboard.settheory.SetBuilder;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
@@ -29,16 +30,13 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>() {
-            {
-                // add(new SetInequality("x", InequalityType.LESS_THAN, 0));
-                // add(new SetEvenOdd("x", true));
-            }
-        };
-        SetAbstract[] domains = { new ComplexSet() };
-        SetBuilder set = new SetBuilder("A", "x", domains, predicates);
-        NumberAbstract number = new ComplexNumber(1, -5);
-        display.appendScript(new BlackboardLabel(set.toString(), 0.05));
+        InequalityPredicate ineqOne = new InequalityPredicate("x", InequalityType.LESS_THAN, new RealNumber(5));
+        InequalityPredicate ineqTwo = new InequalityPredicate("x", InequalityType.GREATER_THAN, new RealNumber(2));
+
+        display.appendScript(
+                new BlackboardLabel(
+                        IntervalSet.unionOne(ineqTwo.toInterval(), ineqOne.toInterval()).toPredicate().toString(),
+                        0.05));
 
         /* Displaying */
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

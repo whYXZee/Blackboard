@@ -23,6 +23,16 @@ public class RealNumber extends NumberAbstract {
     //
 
     @Override
+    public final boolean equals(NumberAbstract other) {
+        if (!other.isNumType(getNumType())) {
+            return false;
+        }
+
+        RealNumber num = (RealNumber) other;
+        return num.getValue() == getValue();
+    }
+
+    @Override
     public final boolean isImaginary() {
         return false;
     }
@@ -41,5 +51,4 @@ public class RealNumber extends NumberAbstract {
     public final boolean isInteger() {
         return ArithmeticUtils.isInteger(getValue());
     }
-
 }

@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
 import whyxzee.blackboard.settheory.predicates.EvenOddPredicate;
+import whyxzee.blackboard.settheory.predicates.InequalityPredicate;
 
 public class SetUtils {
     //
@@ -40,12 +41,18 @@ public class SetUtils {
     public static final ArrayList<PredicateAbstract> unionPredicates(String var,
             ArrayList<PredicateAbstract> predicates) {
         /* Predicates */
-
-        Boolean isConditionOdd = null;
+        IntervalSet ineq = null;
+        Boolean isConditionOdd = null; // for EvenOddPredicate
 
         for (PredicateAbstract i : predicates) {
             switch (i.getType()) {
                 case INEQUALITY:
+                    InequalityPredicate ineqPred = (InequalityPredicate) i;
+                    if (ineq != null) {
+                        ineq = ineqPred.toInterval();
+                    } else {
+                        ineq = (IntervalSet) ineq.union(ineqPred.toInterval());
+                    }
                     break;
                 case RANGE:
                     break;

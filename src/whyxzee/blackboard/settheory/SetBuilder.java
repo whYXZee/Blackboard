@@ -85,6 +85,8 @@ public class SetBuilder extends SetAbstract {
         switch (other.getSetType()) {
             case SET_LIST:
                 return null;
+            case INTERVAL:
+                return null;
             case SET_BUILDER:
                 SetBuilder builder = (SetBuilder) other;
 

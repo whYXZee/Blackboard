@@ -9,6 +9,7 @@ public abstract class SetAbstract implements Comparable<SetAbstract> {
     private SetType setType;
 
     public enum SetType {
+        INTERVAL(-3),
         SET_BUILDER(-2),
         SET_LIST(-1),
 

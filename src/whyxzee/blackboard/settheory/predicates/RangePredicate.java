@@ -2,7 +2,7 @@ package whyxzee.blackboard.settheory.predicates;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.utils.ArithmeticUtils;
+import whyxzee.blackboard.settheory.Bound;
 
 /**
  * A package for a boolean predicate for a set.
@@ -17,15 +17,16 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
  */
 public class RangePredicate extends PredicateAbstract {
     /* Variables */
-    private double lowerBound;
+    private NumberAbstract lowerBound;
     private boolean isLowerOpen;
-    private double upperBound;
+    private NumberAbstract upperBound;
     private boolean isUpperOpen;
 
-    public RangePredicate(double lowerBound, boolean isLowerOpen, String var, boolean isUpperOpen,
-            double upperBound) {
+    public RangePredicate(
+            NumberAbstract lowerBound, boolean isLowerOpen, String var, boolean isUpperOpen,
+            NumberAbstract upperBound) {
         super(var, PredicateType.INEQUALITY);
-        if (upperBound < lowerBound) {
+        if (upperBound.lessThanEqual(lowerBound)) {
             throw new ArithmeticException("lowerRange is greater than upperRange, thus the range is invalid.");
         }
 
@@ -36,13 +37,22 @@ public class RangePredicate extends PredicateAbstract {
         this.upperBound = upperBound;
     }
 
+    public RangePredicate(Bound lowerBound, String var, Bound upperBound) {
+        super(var, PredicateType.INEQUALITY);
+        this.lowerBound = lowerBound.getValue();
+        this.isLowerOpen = lowerBound.isOpen();
+        this.upperBound = upperBound.getValue();
+        this.isUpperOpen = upperBound.isOpen();
+
+        if (this.upperBound.lessThanEqual(this.lowerBound)) {
+            throw new ArithmeticException("lowerRange is greater than upperRange, thus the range is invalid.");
+        }
+    }
+
     @Override
     public final String toString() {
         /* Lower Bound */
-        String output = Double.toString(lowerBound);
-        if (ArithmeticUtils.isInteger(lowerBound)) {
-            output = Integer.toString((int) lowerBound);
-        }
+        String output = lowerBound.toString();
         if (isLowerOpen) {
             output += Constants.Unicode.LESS_THAN;
         } else {
@@ -59,10 +69,7 @@ public class RangePredicate extends PredicateAbstract {
             output += Constants.Unicode.LESS_THAN_EQUAL;
         }
 
-        if (ArithmeticUtils.isInteger(upperBound)) {
-            return output + (int) upperBound;
-        }
-        return output + upperBound;
+        return output + upperBound.toString();
     }
 
     @Override
@@ -73,11 +80,11 @@ public class RangePredicate extends PredicateAbstract {
     //
     // Get & Set Methods
     //
-    public final double getLowerBound() {
+    public final NumberAbstract getLowerBound() {
         return lowerBound;
     }
 
-    public final void setLowerBound(double lowerBound) {
+    public final void setLowerBound(NumberAbstract lowerBound) {
         this.lowerBound = lowerBound;
     }
 
@@ -89,11 +96,11 @@ public class RangePredicate extends PredicateAbstract {
         this.isLowerOpen = isLowerOpen;
     }
 
-    public final double getUpperBound() {
+    public final NumberAbstract getUpperBound() {
         return upperBound;
     }
 
-    public final void setUpperBound(double upperBound) {
+    public final void setUpperBound(NumberAbstract upperBound) {
         this.upperBound = upperBound;
     }
 
@@ -110,19 +117,17 @@ public class RangePredicate extends PredicateAbstract {
     //
     @Override
     public boolean checkPredicate(NumberAbstract number) {
-        double value = number.getValue();
-
         /* Lower Bound */
-        if (isLowerOpen && !(lowerBound < value)) {
+        if (isLowerOpen && !lowerBound.lessThan(number)) {
             return false;
-        } else if (!isLowerOpen && !(lowerBound <= value)) {
+        } else if (!isLowerOpen && !lowerBound.lessThanEqual(number)) {
             return false;
         }
 
         /* Upper Bound */
-        if (isUpperOpen && !(value < upperBound)) {
+        if (isUpperOpen && !number.lessThan(upperBound)) {
             return false;
-        } else if (!isUpperOpen && !(value <= upperBound)) {
+        } else if (!isUpperOpen && !number.lessThanEqual(upperBound)) {
             return false;
         }
 

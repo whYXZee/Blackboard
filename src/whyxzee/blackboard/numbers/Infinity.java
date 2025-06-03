@@ -12,13 +12,13 @@ public class Infinity extends NumberAbstract {
     }
 
     public Infinity(boolean isNegative) {
-        super(isNegative ? Double.NEGATIVE_INFINITY : Double.NEGATIVE_INFINITY, NumType.INFINITY);
-        this.isNegative = false;
+        super(isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY, NumType.INFINITY);
+        this.isNegative = isNegative;
     }
 
     @Override
     public final String toString() {
-        return isNegative ? "-" + Constants.Unicode.INFINITY : Constants.Unicode.INFINITY;
+        return (isNegative ? "-" : "") + Constants.Unicode.INFINITY;
     }
 
     @Override
@@ -27,8 +27,29 @@ public class Infinity extends NumberAbstract {
     }
 
     //
+    // Get & Set Mehtods
+    //
+    public final boolean isNegative() {
+        return isNegative;
+    }
+
+    public final void setNegative(boolean isNegative) {
+        this.isNegative = isNegative;
+    }
+
+    //
     // Boolean Methods
     //
+    @Override
+    public final boolean equals(NumberAbstract other) {
+        if (!other.isNumType(getNumType())) {
+            return false;
+        }
+
+        Infinity num = (Infinity) other;
+        return num.isNegative() == isNegative();
+    }
+
     @Override
     public final boolean isImaginary() {
         return false;
@@ -48,5 +69,4 @@ public class Infinity extends NumberAbstract {
     public final boolean isInteger() {
         return false;
     }
-
 }

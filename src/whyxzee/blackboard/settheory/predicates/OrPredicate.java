@@ -5,7 +5,7 @@ import whyxzee.blackboard.settheory.SetUtils;
 
 public class OrPredicate extends PredicateAbstract {
     /* Variables */
-    PredicateAbstract[] predicates;
+    private PredicateAbstract[] predicates;
 
     public OrPredicate(String var, PredicateAbstract... predicates) {
         super(var, PredicateType.OR);
