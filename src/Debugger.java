@@ -7,14 +7,8 @@ import javax.swing.JFrame;
 import whyxzee.blackboard.utils.*;
 import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.equations.*;
-import whyxzee.blackboard.numbers.ComplexNumber;
 import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.numbers.RealNumber;
-import whyxzee.blackboard.settheory.IntervalSet;
-import whyxzee.blackboard.settheory.SetAbstract;
-import whyxzee.blackboard.settheory.SetBuilder;
-import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
-import whyxzee.blackboard.settheory.predicates.InequalityPredicate.InequalityType;
+import whyxzee.blackboard.settheory.*;
 import whyxzee.blackboard.settheory.predicates.*;
 import whyxzee.blackboard.settheory.sets.*;
 import whyxzee.blackboard.terms.*;
@@ -30,12 +24,17 @@ public class Debugger {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
         /* Math Debugging */
-        InequalityPredicate ineqOne = new InequalityPredicate("x", InequalityType.LESS_THAN, new RealNumber(5));
-        InequalityPredicate ineqTwo = new InequalityPredicate("x", InequalityType.GREATER_THAN, new RealNumber(2));
+        NaturalSet natSet = new NaturalSet();
+        IntegerSet intSet = new IntegerSet();
+        SetBuilder builder = new SetBuilder("A", "x", new ArrayList<AmbiguousList>() {
+            {
+                add(natSet);
+            }
+        }, null);
 
         display.appendScript(
                 new BlackboardLabel(
-                        IntervalSet.unionOne(ineqTwo.toInterval(), ineqOne.toInterval()).toPredicate().toString(),
+                        intSet.union(builder).toString(),
                         0.05));
 
         /* Displaying */

@@ -1,181 +1,183 @@
 package whyxzee.blackboard.settheory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
+import whyxzee.blackboard.utils.SetUtils;
 
 /**
- * A package for sets as defined by Set Theory.
+ * A package for creating Sets under the Set Builder Notation.
  * 
- * <p>
- * This package was modeled after { values of <b>var</b> such that
- * <b>predicates</b>}
+ * The functionality of this class has been checked on {@code 6/3/2025}, and
+ * nothing has changed since.
  */
 public class SetBuilder extends SetAbstract {
-    /* Variables */
-    private SetAbstract[] domains = {};
-    private ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>();
+    /* Variable */
+    private String var;
+    private ArrayList<AmbiguousList> domains;
+    private ArrayList<PredicateAbstract> predicates;
 
     public SetBuilder(String setName, String var) {
-        super(setName, var, SetType.SET_BUILDER);
+        super(setName, SetType.BUILDER);
+        this.var = var;
+        this.domains = new ArrayList<AmbiguousList>();
+        this.predicates = new ArrayList<PredicateAbstract>();
+
     }
 
-    public SetBuilder(String setName, String var, SetAbstract[] domains) {
-        super(setName, var, SetType.SET_BUILDER);
-        this.domains = domains;
-    }
-
-    public SetBuilder(String setName, String var, SetAbstract[] domains, ArrayList<PredicateAbstract> predicates) {
-        super(setName, var, SetType.SET_BUILDER);
+    public SetBuilder(String setName, String var, ArrayList<AmbiguousList> domains,
+            ArrayList<PredicateAbstract> predicates) {
+        super(setName, SetType.BUILDER);
+        this.var = var;
         this.domains = domains;
         this.predicates = predicates;
-    }
 
-    public SetBuilder(String setName, String var, ArrayList<PredicateAbstract> predicates) {
-        super(setName, var, SetType.SET_BUILDER);
-        this.predicates = predicates;
+        if (domains == null) {
+            this.domains = new ArrayList<AmbiguousList>();
+        }
+        if (predicates == null) {
+            this.predicates = new ArrayList<PredicateAbstract>();
+        }
     }
 
     @Override
     public final String toString() {
         String output = getSetName() + " = ";
-        /* Null Set */
-        if (predicates.size() == 0 && domains.length == 0) {
+        if (domains.size() == 0 && predicates.size() == 0) {
             return output + Constants.Unicode.NULL_SET;
         }
 
-        output += "{" + getValuesOfVar();
+        output += "{" + var + getVarDomains();
         for (int i = 0; i < predicates.size(); i++) {
-            PredicateAbstract indexPredicate = predicates.get(i);
-            if (i == 0) {
-                output += " " + Constants.Unicode.SET_SUCH_THAT + " ";
+            if (i != 0) {
+                output += ",";
             } else {
-                output += ", ";
+                output += Constants.Unicode.SET_SUCH_THAT;
             }
-            output += indexPredicate;
+            output += predicates.get(i);
         }
         output += "}";
+
         return output;
     }
 
     @Override
-    public final String printConsole() {
-        return "";
+    public String printConsole() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'printConsole'");
     }
 
-    public final void simplify() {
-        // int[][] indexes = SetUtils.indexOfPredicates(predicates);
-
-    }
-
-    //
-    // Arithmetic Methods
-    //
     @Override
-    public final SetAbstract union(SetAbstract other) {
-        if (!other.getVar().equals(getVar())) {
-            return null;
-        }
+    public IntervalSet toInterval() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toInterval'");
+    }
 
-        SetAbstract[] newDomains;
+    @Override
+    public DefinedList toDefinedList() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toDefinedList'");
+    }
 
-        switch (other.getSetType()) {
-            case SET_LIST:
-                return null;
-            case INTERVAL:
-                return null;
-            case SET_BUILDER:
-                SetBuilder builder = (SetBuilder) other;
-
-                /* Domains */
-                newDomains = getDomains();
-                for (SetAbstract i : builder.getDomains()) {
-                    newDomains = SetUtils.augmentDomains(newDomains, i);
-                }
-                Arrays.sort(newDomains);
-
-                /* Predicates */
-                ArrayList<PredicateAbstract> newPredicates = getPredicates();
-                newPredicates.addAll(builder.getPredicates());
-
-                return new SetBuilder("Union Set", getVar(), newDomains, SetUtils.sortPredicates(newPredicates));
-            default:
-                newDomains = SetUtils.augmentDomains(getDomains(), other);
-
-                this.setDomains(newDomains);
-                return this;
-        }
+    @Override
+    public SetBuilder toBuilder() {
+        return this;
     }
 
     //
     // Get & Set Methods
     //
-    public final SetAbstract[] getDomains() {
+    private final String getVarDomains() {
+        if (domains.size() == 0) {
+            return "";
+        }
+
+        String output = Constants.Unicode.ELEMENT_OF + domains.get(0).toString();
+        for (int i = 1; i < domains.size(); i++) {
+            output += "," + domains.get(i);
+        }
+        return output;
+    }
+
+    public final ArrayList<AmbiguousList> getDomains() {
         return domains;
     }
 
-    public final void setDomains(SetAbstract[] domains) {
+    public final void setDomains(ArrayList<AmbiguousList> domains) {
         this.domains = domains;
+    }
+
+    public final void unionDomain(AmbiguousList addend) {
+        if (!inDomains(addend)) {
+            domains.add(addend);
+            setDomains(SetUtils.unionDomains(domains));
+        }
     }
 
     public final ArrayList<PredicateAbstract> getPredicates() {
         return predicates;
     }
 
-    private final String getValuesOfVar() {
-        String output = getVar();
-        if (domains.length == 0) {
-            return output;
-        }
+    //
+    // Arithmetic Methods
+    //
+    @Override
+    public SetAbstract union(SetAbstract other) {
+        switch (other.getType()) {
+            case AMBIGUOUS_LIST:
+                break;
+            case BUILDER:
+                break;
+            case DEFINED_LIST:
+                break;
+            case INTERVAL:
+                break;
+            case NULL:
+                return this;
+            case SOLUTION:
+                break;
+            default:
+                break;
 
-        output += Constants.Unicode.ELEMENT_OF;
-        for (int i = 0; i < domains.length; i++) {
-            if (i != 0) {
-                output += ",";
-            }
-            output += domains[i].getSetName();
         }
-        return output;
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'union'");
+    }
+
+    @Override
+    public SetAbstract disjunction(SetAbstract other) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'disjoint'");
+    }
+
+    @Override
+    public SetAbstract complement(SetAbstract universe) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'complement'");
     }
 
     //
     // Boolean Methods
     //
-    public final boolean inDomain(NumberAbstract number) {
-        for (SetAbstract i : domains) {
-            if (!i.inSet(number)) {
-                return false;
-            }
-        }
-
-        return true;
+    @Override
+    public boolean inSet(NumberAbstract number) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'inSet'");
     }
 
     @Override
-    public final boolean inSet(NumberAbstract number) {
-        if (!inDomain(number)) {
-            return false;
-        }
-
-        for (PredicateAbstract i : predicates) {
-            if (!i.checkPredicate(number)) {
-                return false;
-            }
-        }
-
-        return true;
+    public boolean equals(SetAbstract other) {
+        throw new UnsupportedOperationException();
     }
 
-    @Override
-    public final boolean equals(SetAbstract other) {
-        if (!similarSetType(other) || !getSetName().equals(other.getSetName())) {
-            return false;
+    public final boolean inDomains(AmbiguousList domain) {
+        for (AmbiguousList i : domains) {
+            if (i.equals(domain)) {
+                return true;
+            }
         }
-
-        // TODO: compare domains and predicates
-        return true;
+        return false;
     }
 }

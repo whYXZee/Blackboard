@@ -2,48 +2,42 @@ package whyxzee.blackboard.settheory;
 
 import whyxzee.blackboard.numbers.NumberAbstract;
 
-public abstract class SetAbstract implements Comparable<SetAbstract> {
+public abstract class SetAbstract {
     /* Variables */
     private String setName;
-    private String var;
-    private SetType setType;
+    private SetType type;
 
     public enum SetType {
-        INTERVAL(-3),
-        SET_BUILDER(-2),
-        SET_LIST(-1),
+        BUILDER,
+        DEFINED_LIST,
+        AMBIGUOUS_LIST,
+        SOLUTION,
+        INTERVAL,
 
-        /* Common Sets */
-        REAL(5),
-        NATURAL(4),
-        INTEGER(3),
-        RATIONAL(2),
-        IMAGINARY(1),
-        COMPLEX(0);
-
-        public final int orderNum;
-
-        private SetType(int orderNum) {
-            this.orderNum = orderNum;
-
-        }
+        NULL
     }
 
-    public SetAbstract(String setName, String var, SetType setType) {
+    public SetAbstract(String setName, SetType type) {
         this.setName = setName;
-        this.var = var;
-        this.setType = setType;
+        this.type = type;
     }
 
     public abstract String printConsole();
 
-    public void simplify() {
-    }
+    public abstract IntervalSet toInterval();
+
+    public abstract DefinedList toDefinedList();
+
+    public abstract SetBuilder toBuilder();
 
     //
     // Arithmetic Methods
     //
     public abstract SetAbstract union(SetAbstract other);
+
+    public abstract SetAbstract disjunction(SetAbstract other);
+
+    public abstract SetAbstract complement(SetAbstract universe);
 
     //
     // Get & Set Methods
@@ -56,39 +50,22 @@ public abstract class SetAbstract implements Comparable<SetAbstract> {
         this.setName = setName;
     }
 
-    public final String getVar() {
-        return var;
+    public final SetType getType() {
+        return type;
     }
 
-    public final void setVar(String var) {
-        this.var = var;
-    }
-
-    public final SetType getSetType() {
-        return setType;
-    }
-
-    public final void setSetType(SetType setType) {
-        this.setType = setType;
+    public final void setType(SetType type) {
+        this.type = type;
     }
 
     //
     // Boolean Methods
     //
-    public final boolean similarSetType(SetAbstract other) {
-        return setType == other.getSetType();
-    }
-
-    public final boolean isSetType(SetType setType) {
-        return this.setType == setType;
-    }
-
     public abstract boolean inSet(NumberAbstract number);
 
-    public abstract boolean equals(SetAbstract other);
-
-    @Override
-    public final int compareTo(SetAbstract other) {
-        return Integer.compare(setType.orderNum, other.getSetType().orderNum);
+    public final boolean isType(SetType type) {
+        return this.type == type;
     }
+
+    public abstract boolean equals(SetAbstract other);
 }

@@ -1,22 +1,40 @@
 package whyxzee.blackboard.settheory;
 
+import java.util.ArrayList;
+
+import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
 
-public class IntervalSet extends SetAbstract {
+public class DefinedList extends SetAbstract {
+    private ArrayList<NumberAbstract> numbers;
 
-    public IntervalSet(String setName) {
-        super(setName, SetType.INTERVAL);
+    public DefinedList(String setName, ArrayList<NumberAbstract> numbers) {
+        super(setName, SetType.DEFINED_LIST);
+        this.numbers = numbers;
     }
 
     @Override
-    public String printConsole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'printConsole'");
+    public final String toString() {
+        String output = getSetName() + " = ";
+        if (numbers.size() == 0) {
+            return output + Constants.Unicode.NULL_SET;
+        }
+
+        output += "{" + numbers.get(0);
+        for (int i = 1; i < numbers.size(); i++) {
+            output += ", " + numbers.get(i);
+        }
+        return output + "}";
+    }
+
+    @Override
+    public final String printConsole() {
+        return toString();
     }
 
     @Override
     public IntervalSet toInterval() {
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -64,5 +82,4 @@ public class IntervalSet extends SetAbstract {
     public boolean equals(SetAbstract other) {
         throw new UnsupportedOperationException();
     }
-
 }

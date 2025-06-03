@@ -2,40 +2,42 @@ package whyxzee.blackboard.settheory.sets;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
+import whyxzee.blackboard.settheory.AmbiguousList;
+import whyxzee.blackboard.settheory.DefinedList;
+import whyxzee.blackboard.settheory.IntervalSet;
 import whyxzee.blackboard.settheory.SetAbstract;
 import whyxzee.blackboard.settheory.SetBuilder;
 
-public class NaturalSet extends SetAbstract {
-
+public class NaturalSet extends AmbiguousList {
     public NaturalSet() {
-        super(Constants.Unicode.NATURAL_SET, "", SetType.NATURAL);
+        super(Constants.Unicode.NATURAL_SET, 1);
     }
 
     @Override
-    public final String toString() {
-        return getSetName() + " = {0, 1, 2, 3, ...}";
+    public IntervalSet toInterval() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toInterval'");
     }
 
     @Override
-    public String printConsole() {
-        return toString();
+    public DefinedList toDefinedList() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toDefinedList'");
+    }
+
+    @Override
+    public SetBuilder toBuilder() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'toBuilder'");
     }
 
     //
     // Arithmetic Methods
     //
     @Override
-    public final SetAbstract union(SetAbstract other) {
-        if (equals(other)) {
-            return this;
-        }
-
-        if (other.isSetType(SetType.SET_BUILDER)) {
-            return other.union(this);
-        }
-
-        SetAbstract[] domains = { this, other };
-        return new SetBuilder("", "n", domains);
+    public SetAbstract complement(SetAbstract universe) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'complement'");
     }
 
     //
@@ -45,14 +47,4 @@ public class NaturalSet extends SetAbstract {
     public boolean inSet(NumberAbstract number) {
         return number.isInteger() && number.getValue() > 0;
     }
-
-    @Override
-    public final boolean equals(SetAbstract other) {
-        if (!similarSetType(other)) {
-            return false;
-        }
-
-        return getSetName().equals(other.getSetName());
-    }
-
 }
