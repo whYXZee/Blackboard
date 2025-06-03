@@ -42,6 +42,7 @@ public final class Constants {
 
         /* Set Theory Characters */
         public static final char ELEMENT_OF = '\u2208';
+        public static final char NOT_ELEMENT_OF = '\u2209';
         public static final char UNION = '\u222A';
         public static final char SET_SUCH_THAT = '|';
         public static final char NULL_SET = '\u2205';
@@ -57,6 +58,8 @@ public final class Constants {
         public static final char LESS_THAN_EQUAL = '\u2264';
         public static final char GREATER_THAN = '>';
         public static final char GREATER_THAN_EQUAL = '\u2265';
+        public static final char EQUAL = '=';
+        public static final char NOT_EQUAL = '\u2260';
 
         /* Greek characters */
         public static final char UPPERCASE_SIGMA = '\u03A3';
@@ -85,6 +88,7 @@ public final class Constants {
     }
 
     public static final class NumberConstants {
+        public static final String DEFAULT_VAR = "x";
         public static final int[] PRIME_NUMBERS = {
                 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31
         };

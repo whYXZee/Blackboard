@@ -52,9 +52,9 @@ public class SetBuilder extends SetAbstract {
         output += "{" + var + getVarDomains();
         for (int i = 0; i < predicates.size(); i++) {
             if (i != 0) {
-                output += ",";
+                output += ", ";
             } else {
-                output += Constants.Unicode.SET_SUCH_THAT;
+                output += " " + Constants.Unicode.SET_SUCH_THAT + " ";
             }
             output += predicates.get(i);
         }
@@ -136,8 +136,6 @@ public class SetBuilder extends SetAbstract {
                 break;
             case NULL:
                 return this;
-            case SOLUTION:
-                break;
             default:
                 break;
 

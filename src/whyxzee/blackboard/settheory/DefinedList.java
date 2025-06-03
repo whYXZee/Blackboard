@@ -49,6 +49,13 @@ public class DefinedList extends SetAbstract {
     }
 
     //
+    // Get & Set Methods
+    //
+    public final ArrayList<NumberAbstract> getNumbers() {
+        return numbers;
+    }
+
+    //
     // Arithmetic Methods
     //
     @Override

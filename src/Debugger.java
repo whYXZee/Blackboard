@@ -8,6 +8,7 @@ import whyxzee.blackboard.utils.*;
 import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.equations.*;
 import whyxzee.blackboard.numbers.NumberAbstract;
+import whyxzee.blackboard.numbers.RealNumber;
 import whyxzee.blackboard.settheory.*;
 import whyxzee.blackboard.settheory.predicates.*;
 import whyxzee.blackboard.settheory.sets.*;
@@ -26,15 +27,17 @@ public class Debugger {
         /* Math Debugging */
         NaturalSet natSet = new NaturalSet();
         IntegerSet intSet = new IntegerSet();
-        SetBuilder builder = new SetBuilder("A", "x", new ArrayList<AmbiguousList>() {
+        DefinedList list = new DefinedList("A", new ArrayList<NumberAbstract>() {
             {
-                add(natSet);
+                add(new RealNumber(1));
+                add(new RealNumber(3.5));
+                add(new RealNumber(2));
             }
-        }, null);
+        });
 
         display.appendScript(
                 new BlackboardLabel(
-                        intSet.union(builder).toString(),
+                        intSet.union(list).toString(),
                         0.05));
 
         /* Displaying */

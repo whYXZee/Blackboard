@@ -11,7 +11,6 @@ public abstract class SetAbstract {
         BUILDER,
         DEFINED_LIST,
         AMBIGUOUS_LIST,
-        SOLUTION,
         INTERVAL,
 
         NULL

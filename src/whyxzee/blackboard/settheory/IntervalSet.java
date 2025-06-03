@@ -2,10 +2,29 @@ package whyxzee.blackboard.settheory;
 
 import whyxzee.blackboard.numbers.NumberAbstract;
 
+/**
+ * <p>
+ * The functionality of this package has been checkced on {@code 6/3/2025} and
+ * nothing has changed since.
+ */
 public class IntervalSet extends SetAbstract {
+    /* Variables */
+    private NumberAbstract lowBound;
+    private boolean isLowOpen;
+    private NumberAbstract upBound;
+    private boolean isUpOpen;
 
     public IntervalSet(String setName) {
         super(setName, SetType.INTERVAL);
+    }
+
+    public IntervalSet(String setName, NumberAbstract lowBound, boolean isLowOpen, boolean isUpOpen,
+            NumberAbstract upBound) {
+        super(setName, SetType.INTERVAL);
+        this.lowBound = lowBound;
+        this.isLowOpen = isLowOpen;
+        this.isUpOpen = isUpOpen;
+        this.upBound = upBound;
     }
 
     @Override
@@ -28,6 +47,25 @@ public class IntervalSet extends SetAbstract {
     @Override
     public SetBuilder toBuilder() {
         throw new UnsupportedOperationException("Unimplemented method 'toDefinedList'");
+    }
+
+    //
+    // Get & Set Methods
+    //
+    public final NumberAbstract getLowBound() {
+        return lowBound;
+    }
+
+    public final boolean isLowOpen() {
+        return isLowOpen;
+    }
+
+    public final NumberAbstract getUpBound() {
+        return upBound;
+    }
+
+    public final boolean isUpOpen() {
+        return isUpOpen;
     }
 
     //
