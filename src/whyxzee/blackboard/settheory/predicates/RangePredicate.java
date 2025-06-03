@@ -15,14 +15,14 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
  * The functionality of this class has been checked on {@code 6/2/2025} and
  * nothing has changed since.
  */
-public class SetRange extends PredicateAbstract {
+public class RangePredicate extends PredicateAbstract {
     /* Variables */
     private double lowerBound;
     private boolean isLowerOpen;
     private double upperBound;
     private boolean isUpperOpen;
 
-    public SetRange(double lowerBound, boolean isLowerOpen, String var, boolean isUpperOpen,
+    public RangePredicate(double lowerBound, boolean isLowerOpen, String var, boolean isUpperOpen,
             double upperBound) {
         super(var, PredicateType.INEQUALITY);
         if (upperBound < lowerBound) {
@@ -71,6 +71,41 @@ public class SetRange extends PredicateAbstract {
     }
 
     //
+    // Get & Set Methods
+    //
+    public final double getLowerBound() {
+        return lowerBound;
+    }
+
+    public final void setLowerBound(double lowerBound) {
+        this.lowerBound = lowerBound;
+    }
+
+    public final boolean isLowerOpen() {
+        return isLowerOpen;
+    }
+
+    public final void setLowerOpen(boolean isLowerOpen) {
+        this.isLowerOpen = isLowerOpen;
+    }
+
+    public final double getUpperBound() {
+        return upperBound;
+    }
+
+    public final void setUpperBound(double upperBound) {
+        this.upperBound = upperBound;
+    }
+
+    public final boolean isUpperOpen() {
+        return isUpperOpen;
+    }
+
+    public final void setUpperOpen(boolean isUpperOpen) {
+        this.isUpperOpen = isUpperOpen;
+    }
+
+    //
     // Boolean Methods
     //
     @Override
@@ -92,6 +127,19 @@ public class SetRange extends PredicateAbstract {
         }
 
         return true;
+    }
+
+    @Override
+    public final boolean equals(PredicateAbstract other) {
+        if (!other.isType(PredicateType.INEQUALITY) || !other.getVar().equals(getVar())) {
+            return false;
+        }
+
+        RangePredicate range = (RangePredicate) other;
+        return (lowerBound == range.getLowerBound()) &&
+                (isLowerOpen == range.isLowerOpen()) &&
+                (upperBound == range.getUpperBound()) &&
+                (isUpperOpen == range.isUpperOpen());
     }
 
 }

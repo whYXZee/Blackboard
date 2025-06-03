@@ -66,15 +66,57 @@ public class SetBuilder extends SetAbstract {
         return "";
     }
 
+    public final void simplify() {
+        // int[][] indexes = SetUtils.indexOfPredicates(predicates);
+
+    }
+
     //
     // Arithmetic Methods
     //
+    @Override
+    public final SetAbstract union(SetAbstract other) {
+        if (!other.getVar().equals(getVar())) {
+            return null;
+        }
+
+        SetAbstract[] newDomains;
+
+        switch (other.getSetType()) {
+            case SET_LIST:
+                return null;
+            case SET_BUILDER:
+                SetBuilder builder = (SetBuilder) other;
+
+                /* Domains */
+                newDomains = getDomains();
+                for (SetAbstract i : builder.getDomains()) {
+                    newDomains = SetUtils.augmentDomains(newDomains, i);
+                }
+                Arrays.sort(newDomains);
+
+                /* Predicates */
+                ArrayList<PredicateAbstract> newPredicates = getPredicates();
+                newPredicates.addAll(builder.getPredicates());
+
+                return new SetBuilder("Union Set", getVar(), newDomains, SetUtils.sortPredicates(newPredicates));
+            default:
+                newDomains = SetUtils.augmentDomains(getDomains(), other);
+
+                this.setDomains(newDomains);
+                return this;
+        }
+    }
 
     //
     // Get & Set Methods
     //
     public final SetAbstract[] getDomains() {
         return domains;
+    }
+
+    public final void setDomains(SetAbstract[] domains) {
+        this.domains = domains;
     }
 
     public final ArrayList<PredicateAbstract> getPredicates() {
@@ -122,6 +164,16 @@ public class SetBuilder extends SetAbstract {
             }
         }
 
+        return true;
+    }
+
+    @Override
+    public final boolean equals(SetAbstract other) {
+        if (!similarSetType(other) || !getSetName().equals(other.getSetName())) {
+            return false;
+        }
+
+        // TODO: compare domains and predicates
         return true;
     }
 }

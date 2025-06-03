@@ -11,9 +11,9 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
  * This package is built similar to a <b>var</b> <b>inequalityType</b> number
  * (example: x < 5)
  */
-public class SetInequality extends PredicateAbstract {
+public class InequalityPredicate extends PredicateAbstract {
     /* Variables */
-    private double comparison;
+    private double value;
     private InequalityType inequality;
 
     public enum InequalityType {
@@ -23,10 +23,10 @@ public class SetInequality extends PredicateAbstract {
         GREATER_THAN_EQUAL
     }
 
-    public SetInequality(String var, InequalityType inequality, double comparison) {
+    public InequalityPredicate(String var, InequalityType inequality, double value) {
         super(var, PredicateType.INEQUALITY);
         this.inequality = inequality;
-        this.comparison = comparison;
+        this.value = value;
     }
 
     @Override
@@ -49,10 +49,10 @@ public class SetInequality extends PredicateAbstract {
                 break;
         }
 
-        if (ArithmeticUtils.isInteger(comparison)) {
-            return output + (int) comparison;
+        if (ArithmeticUtils.isInteger(value)) {
+            return output + (int) value;
         }
-        return output + comparison;
+        return output + value;
     }
 
     @Override
@@ -61,7 +61,18 @@ public class SetInequality extends PredicateAbstract {
     }
 
     //
-    // Boolean
+    // Get & Set Methods
+    //
+    public final double getValue() {
+        return value;
+    }
+
+    public final void setValue(double value) {
+        this.value = value;
+    }
+
+    //
+    // Boolean Methods
     //
     @Override
     public boolean checkPredicate(NumberAbstract number) {
@@ -69,16 +80,31 @@ public class SetInequality extends PredicateAbstract {
 
         switch (inequality) {
             case LESS_THAN:
-                return value < comparison;
+                return value < value;
             case LESS_THAN_EQUAL:
-                return value <= comparison;
+                return value <= value;
             case GREATER_THAN:
-                return value > comparison;
+                return value > value;
             case GREATER_THAN_EQUAL:
-                return value >= comparison;
+                return value >= value;
             default:
                 return false;
         }
+    }
+
+    public final boolean isInequality(InequalityType inequality) {
+        return this.inequality == inequality;
+    }
+
+    @Override
+    public final boolean equals(PredicateAbstract other) {
+        if (!other.isType(PredicateType.INEQUALITY) || !other.getVar().equals(getVar())) {
+            return false;
+        }
+
+        InequalityPredicate ineq = (InequalityPredicate) other;
+        return (value == ineq.getValue()) &&
+                (ineq.isInequality(inequality));
     }
 
 }

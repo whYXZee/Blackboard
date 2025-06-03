@@ -10,15 +10,15 @@ import whyxzee.blackboard.utils.ArithmeticUtils;
  * The functionality of this method has been checked on {@code 6/2/2025} and
  * nothing has changed since.
  */
-public class SetEvenOdd extends PredicateAbstract {
+public class EvenOddPredicate extends PredicateAbstract {
     /* Variables */
     private boolean isConditionOdd = false;
 
-    public SetEvenOdd(String var) {
+    public EvenOddPredicate(String var) {
         super(var, PredicateType.EVEN_ODD);
     }
 
-    public SetEvenOdd(String var, boolean isConditionOdd) {
+    public EvenOddPredicate(String var, boolean isConditionOdd) {
         super(var, PredicateType.EVEN_ODD);
         this.isConditionOdd = isConditionOdd;
     }
@@ -33,6 +33,9 @@ public class SetEvenOdd extends PredicateAbstract {
         return toString();
     }
 
+    //
+    // Boolean Methods
+    //
     /**
      * Returns false if the following criteria are met:
      * <ul>
@@ -58,5 +61,19 @@ public class SetEvenOdd extends PredicateAbstract {
             return !ArithmeticUtils.isEven(number.getValue());
         }
         return ArithmeticUtils.isEven(number.getValue());
+    }
+
+    @Override
+    public final boolean equals(PredicateAbstract other) {
+        if (!other.isType(PredicateType.EVEN_ODD) || !other.getVar().equals(getVar())) {
+            return false;
+        }
+
+        EvenOddPredicate evenOdd = (EvenOddPredicate) other;
+        return isConditionOdd == evenOdd.isConditionOdd();
+    }
+
+    public boolean isConditionOdd() {
+        return isConditionOdd;
     }
 }

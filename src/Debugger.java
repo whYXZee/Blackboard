@@ -13,7 +13,7 @@ import whyxzee.blackboard.numbers.RealNumber;
 import whyxzee.blackboard.settheory.SetAbstract;
 import whyxzee.blackboard.settheory.SetBuilder;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
-import whyxzee.blackboard.settheory.predicates.SetInequality.InequalityType;
+import whyxzee.blackboard.settheory.predicates.InequalityPredicate.InequalityType;
 import whyxzee.blackboard.settheory.predicates.*;
 import whyxzee.blackboard.settheory.sets.*;
 import whyxzee.blackboard.terms.*;

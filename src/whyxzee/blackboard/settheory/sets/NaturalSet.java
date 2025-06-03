@@ -3,11 +3,12 @@ package whyxzee.blackboard.settheory.sets;
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.SetAbstract;
+import whyxzee.blackboard.settheory.SetBuilder;
 
 public class NaturalSet extends SetAbstract {
 
     public NaturalSet() {
-        super(Constants.Unicode.NATURAL_SET, "", SetType.COMMON);
+        super(Constants.Unicode.NATURAL_SET, "", SetType.NATURAL);
     }
 
     @Override
@@ -20,9 +21,38 @@ public class NaturalSet extends SetAbstract {
         return toString();
     }
 
+    //
+    // Arithmetic Methods
+    //
+    @Override
+    public final SetAbstract union(SetAbstract other) {
+        if (equals(other)) {
+            return this;
+        }
+
+        if (other.isSetType(SetType.SET_BUILDER)) {
+            return other.union(this);
+        }
+
+        SetAbstract[] domains = { this, other };
+        return new SetBuilder("", "n", domains);
+    }
+
+    //
+    // Boolean Methods
+    //
     @Override
     public boolean inSet(NumberAbstract number) {
         return number.isInteger() && number.getValue() > 0;
+    }
+
+    @Override
+    public final boolean equals(SetAbstract other) {
+        if (!similarSetType(other)) {
+            return false;
+        }
+
+        return getSetName().equals(other.getSetName());
     }
 
 }
