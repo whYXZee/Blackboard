@@ -20,5 +20,4 @@ public class AlephNaught extends Uncountable {
     public String printConsole() {
         return Constants.Unicode.ALEPH + "_0";
     }
-
 }

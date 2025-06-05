@@ -7,15 +7,15 @@ import whyxzee.blackboard.utils.SetUtils;
 
 public class UnionPredicate {
     /* Variables */
-    private ArrayList<PredicateAbstract> elementsOf;
+    private static ArrayList<PredicateAbstract> elementsOf = new ArrayList<PredicateAbstract>();
 
-    public UnionPredicate() {
-        elementsOf = new ArrayList<PredicateAbstract>();
-    }
-
-    public final ArrayList<PredicateAbstract> performUnion(ArrayList<PredicateAbstract> predicates) {
+    public static final ArrayList<PredicateAbstract> performUnion(ArrayList<PredicateAbstract> predicates) {
         if (predicates.size() == 0) {
             return predicates;
+        }
+
+        if (elementsOf.size() != 0) {
+            elementsOf.clear();
         }
 
         for (PredicateAbstract i : predicates) {
@@ -25,14 +25,13 @@ public class UnionPredicate {
         }
 
         elementsOf = SetUtils.UnionHelper.unionDomains(elementsOf);
-
         return getPredicateList();
     }
 
     //
     // Get & Set Methods
     //
-    private final ArrayList<PredicateAbstract> getPredicateList() {
+    private static final ArrayList<PredicateAbstract> getPredicateList() {
         return new ArrayList<PredicateAbstract>() {
             {
                 addAll(elementsOf);
@@ -40,7 +39,7 @@ public class UnionPredicate {
         };
     }
 
-    private final void add(PredicateAbstract predicate) {
+    private static final void add(PredicateAbstract predicate) {
         switch (predicate.getType()) {
             case ELEMENT_OF:
                 elementsOf.add((ElementOf) predicate);
@@ -59,7 +58,7 @@ public class UnionPredicate {
     //
     // Boolean Methods
     //
-    private final boolean contains(PredicateAbstract predicate) {
+    private static final boolean contains(PredicateAbstract predicate) {
         switch (predicate.getType()) {
             case ELEMENT_OF:
                 for (PredicateAbstract i : elementsOf) {
@@ -74,6 +73,5 @@ public class UnionPredicate {
             default:
                 return false;
         }
-
     }
 }

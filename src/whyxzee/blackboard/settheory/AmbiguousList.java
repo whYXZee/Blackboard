@@ -83,36 +83,31 @@ public abstract class AmbiguousList extends SetAbstract implements Comparable<Am
 
             case DEFINED_LIST:
                 ArrayList<NumberAbstract> numbers = ((DefinedList) other).getNumbers();
-                int[] domainsNeeded = SetUtils.needsTwoDomains(numbers, this);
+                int[] domainsNeeded = SetUtils.UnionHelper.needsTwoDomains(numbers, this);
+                predicates.add(this.toPredicate());
+
+                /* Extra Predicates */
                 if (domainsNeeded[0] == 0) {
-                    predicates.add(this.toPredicate());
                     return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR,
                             predicates);
 
                 } else if (domainsNeeded[0] == 1) {
-                    predicates.add(new OrPredicate(new ArrayList<PredicateAbstract>() {
-                        {
-                            add(toPredicate());
-                            add(new EqualPredicate(Constants.NumberConstants.DEFAULT_VAR,
-                                    numbers.get(domainsNeeded[1])));
-                        }
-                    }));
-                    return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR,
-                            predicates);
+                    predicates.add(new EqualPredicate(Constants.NumberConstants.DEFAULT_VAR,
+                            numbers.get(domainsNeeded[1])));
+                } else {
+                    predicates.add(new ElementOf(Constants.NumberConstants.DEFAULT_VAR, other));
+
                 }
 
-                predicates.add(new OrPredicate(new ArrayList<PredicateAbstract>() {
-                    {
-                        add(toPredicate());
-                        add(new ElementOf(Constants.NumberConstants.DEFAULT_VAR, other));
-                    }
-                }));
                 return new SetBuilder(other.getSetName() + "'", Constants.NumberConstants.DEFAULT_VAR,
-                        predicates);
+                        new OrPredicate(predicates).toPredicateList());
+
             case INTERVAL:
                 predicates.add(this.toPredicate());
                 predicates.add(new RangePredicate(Constants.NumberConstants.DEFAULT_VAR, (IntervalSet) other));
-                return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR, predicates);
+                return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR,
+                        new OrPredicate(predicates).toPredicateList());
+
             case NULL:
                 return this;
             default:

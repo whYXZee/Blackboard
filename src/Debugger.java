@@ -9,7 +9,6 @@ import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.equations.*;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.numbers.RealNumber;
-import whyxzee.blackboard.numbers.uncountable.AlephNaught;
 import whyxzee.blackboard.numbers.uncountable.Infinity;
 import whyxzee.blackboard.settheory.*;
 import whyxzee.blackboard.settheory.predicates.*;
@@ -32,16 +31,22 @@ public class Debugger {
         RationalSet ratSet = new RationalSet();
         DefinedList list = new DefinedList("A", new ArrayList<NumberAbstract>() {
             {
-                add(new RealNumber(-5));
-                add(new RealNumber(-3.5));
-                add(new RealNumber(-2));
+                add(new RealNumber(5.75));
+                add(new RealNumber(6));
+                add(new RealNumber(5));
+            }
+        });
+
+        SetBuilder builder = new SetBuilder("B", "x", new ArrayList<PredicateAbstract>() {
+            {
+                add(new ElementOf("x", intSet));
+                add(new RangePredicate("x", new RealNumber(-2), false, false, new Infinity()));
             }
         });
 
         display.appendScript(
                 new BlackboardLabel(
-                        // intSet.union(list).toString(),
-                        new AlephNaught().toString(),
+                        list.union(builder).toString(),
                         0.05));
 
         /* Displaying */

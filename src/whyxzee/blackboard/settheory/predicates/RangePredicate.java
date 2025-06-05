@@ -19,6 +19,15 @@ public class RangePredicate extends PredicateAbstract {
         this.isUpOpen = interval.isUpOpen();
     }
 
+    public RangePredicate(String var, NumberAbstract lowBound, boolean isLowOpen, boolean isUpOpen,
+            NumberAbstract upBound) {
+        super(var, PredicateType.RANGE);
+        this.lowBound = lowBound;
+        this.isLowOpen = isLowOpen;
+        this.upBound = upBound;
+        this.isUpOpen = isUpOpen;
+    }
+
     @Override
     public final String toString() {
         String output = lowBound.toString();
@@ -43,8 +52,7 @@ public class RangePredicate extends PredicateAbstract {
 
     @Override
     public IntervalSet toInterval() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toInterval'");
+        return new IntervalSet("", this);
     }
 
     //
@@ -79,7 +87,7 @@ public class RangePredicate extends PredicateAbstract {
 
     @Override
     public final boolean equals(PredicateAbstract other) {
-        if (!other.isType(PredicateType.EQUAL) || !(getVar().equals(other.getVar()))) {
+        if (!other.isType(PredicateType.RANGE) || !(getVar().equals(other.getVar()))) {
             return false;
         }
 

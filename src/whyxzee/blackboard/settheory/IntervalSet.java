@@ -1,11 +1,20 @@
 package whyxzee.blackboard.settheory;
 
+import java.util.ArrayList;
+
+import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
+import whyxzee.blackboard.settheory.predicates.OrPredicate;
+import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
+import whyxzee.blackboard.settheory.predicates.RangePredicate;
+import whyxzee.blackboard.utils.SetUtils;
 
 /**
  * <p>
  * The functionality of this package has been checkced on {@code 6/3/2025} and
- * nothing has changed since.
+ * the following has changed since:
+ * <ul>
+ * <li>union()
  */
 public class IntervalSet extends SetAbstract {
     /* Variables */
@@ -14,8 +23,12 @@ public class IntervalSet extends SetAbstract {
     private NumberAbstract upBound;
     private boolean isUpOpen;
 
-    public IntervalSet(String setName) {
+    public IntervalSet(String setName, RangePredicate range) {
         super(setName, SetType.INTERVAL);
+        this.lowBound = range.getLowBound();
+        this.isLowOpen = range.isLowOpen();
+        this.isUpOpen = range.isUpOpen();
+        this.upBound = range.getUpBound();
     }
 
     public IntervalSet(String setName, NumberAbstract lowBound, boolean isLowOpen, boolean isUpOpen,
@@ -25,6 +38,15 @@ public class IntervalSet extends SetAbstract {
         this.isLowOpen = isLowOpen;
         this.isUpOpen = isUpOpen;
         this.upBound = upBound;
+    }
+
+    @Override
+    public final String toString() {
+        String output = isLowOpen ? "(" : "[";
+        output += lowBound + "," + upBound;
+        output += isUpOpen ? "(" : "[";
+
+        return output;
     }
 
     @Override
@@ -78,6 +100,28 @@ public class IntervalSet extends SetAbstract {
 
     @Override
     public SetAbstract union(SetAbstract other) {
+        ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>();
+
+        switch (other.getType()) {
+            case AMBIGUOUS_LIST:
+                predicates.add(((AmbiguousList) other).toPredicate());
+                predicates.add(new RangePredicate(Constants.NumberConstants.DEFAULT_VAR, this));
+                return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR,
+                        new OrPredicate(predicates).toPredicateList());
+
+            case BUILDER:
+                break;
+            case DEFINED_LIST:
+                return new SetBuilder(SetUtils.unionString(this, other), Constants.NumberConstants.DEFAULT_VAR,
+                        SetUtils.UnionHelper.numbersInInterval((DefinedList) other, this));
+            case INTERVAL:
+                break;
+            case NULL:
+                return this;
+            default:
+                return null;
+
+        }
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'union'");
     }
@@ -99,13 +143,26 @@ public class IntervalSet extends SetAbstract {
     //
     @Override
     public boolean inSet(NumberAbstract number) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'inSet'");
+        boolean lower, upper;
+
+        lower = isLowOpen ? lowBound.lessThan(number) : lowBound.lessThanEqual(number);
+        upper = isUpOpen ? number.lessThan(upBound) : number.lessThanEqual(upBound);
+
+        return lower && upper;
     }
 
     @Override
     public boolean equals(SetAbstract other) {
-        throw new UnsupportedOperationException();
+        if (!other.isType(SetType.INTERVAL)) {
+            return false;
+        }
+
+        IntervalSet interval = (IntervalSet) other;
+
+        return (lowBound.equals(interval.getLowBound()))
+                && (upBound.equals(interval.getUpBound()))
+                && (isLowOpen == interval.isLowOpen())
+                && (isUpOpen == interval.isUpOpen());
     }
 
 }

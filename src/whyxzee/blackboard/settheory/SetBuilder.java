@@ -82,8 +82,8 @@ public class SetBuilder extends SetAbstract {
     public final void unionPredicate(PredicateAbstract addend) {
         if (!inPredicates(addend)) {
             predicates.add(addend);
-            UnionPredicate unionPredicate = new UnionPredicate();
-            predicates = unionPredicate.performUnion(predicates);
+
+            predicates = UnionPredicate.performUnion(predicates);
         }
     }
 
@@ -93,8 +93,11 @@ public class SetBuilder extends SetAbstract {
                 predicates.add(i);
             }
         }
-        UnionPredicate unionPredicate = new UnionPredicate();
-        predicates = unionPredicate.performUnion(predicates);
+        predicates = UnionPredicate.performUnion(predicates);
+    }
+
+    public final String getVar() {
+        return var;
     }
 
     //
@@ -143,8 +146,12 @@ public class SetBuilder extends SetAbstract {
     //
     @Override
     public boolean inSet(NumberAbstract number) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'inSet'");
+        for (PredicateAbstract i : predicates) {
+            if (!i.checkPredicate(number)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

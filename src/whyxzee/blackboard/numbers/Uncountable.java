@@ -44,8 +44,22 @@ public abstract class Uncountable extends NumberAbstract {
     }
 
     @Override
+    public final boolean isImaginary() {
+        return false;
+    }
+
+    @Override
     public final boolean isComplex() {
         return false;
+    }
+
+    @Override
+    public final boolean equals(NumberAbstract other) {
+        if (!other.isType(NumType.UNCOUNTABLE)) {
+            return false;
+        }
+
+        return order == ((Uncountable) other).getOrder();
     }
 
     @Override

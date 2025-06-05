@@ -46,6 +46,8 @@ public abstract class NumberAbstract {
 
     public abstract boolean isReal();
 
+    public abstract boolean isImaginary();
+
     public abstract boolean isComplex();
 
     public boolean equals(NumberAbstract other) {

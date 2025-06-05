@@ -42,6 +42,11 @@ public class RealNumber extends NumberAbstract {
     }
 
     @Override
+    public final boolean isImaginary() {
+        return false;
+    }
+
+    @Override
     public final boolean isComplex() {
         return true;
     }
