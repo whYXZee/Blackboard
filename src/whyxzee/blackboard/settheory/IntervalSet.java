@@ -72,6 +72,11 @@ public class IntervalSet extends SetAbstract {
     // Arithmetic Methods
     //
     @Override
+    public final NumberAbstract cardinality() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public SetAbstract union(SetAbstract other) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'union'");

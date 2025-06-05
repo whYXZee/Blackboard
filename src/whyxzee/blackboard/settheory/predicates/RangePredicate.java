@@ -48,6 +48,25 @@ public class RangePredicate extends PredicateAbstract {
     }
 
     //
+    // Get & Set Methods
+    //
+    public final NumberAbstract getLowBound() {
+        return lowBound;
+    }
+
+    public final boolean isLowOpen() {
+        return isLowOpen;
+    }
+
+    public final NumberAbstract getUpBound() {
+        return upBound;
+    }
+
+    public final boolean isUpOpen() {
+        return isUpOpen;
+    }
+
+    //
     // Boolean Methods
     //
     @Override
@@ -58,4 +77,17 @@ public class RangePredicate extends PredicateAbstract {
         return lower && upper;
     }
 
+    @Override
+    public final boolean equals(PredicateAbstract other) {
+        if (!other.isType(PredicateType.EQUAL) || !(getVar().equals(other.getVar()))) {
+            return false;
+        }
+
+        RangePredicate range = (RangePredicate) other;
+
+        return (lowBound.equals(range.getLowBound()))
+                && (upBound.equals(range.getUpBound()))
+                && (isLowOpen == range.isLowOpen())
+                && (isUpOpen == range.isUpOpen());
+    }
 }

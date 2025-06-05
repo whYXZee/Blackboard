@@ -64,10 +64,13 @@ public final class Constants {
         /* Greek characters */
         public static final char UPPERCASE_SIGMA = '\u03A3';
 
+        /* Infinity */
+        public static final String INFINITY = "\u221E";
+        public static final String ALEPH = "\u2135";
+
         /* General characters */
         public static final char FRACTION_SLASH = '\u2044';
         public static final char IMAGINARY_NUMBER = 'i';
-        public static final String INFINITY = "\u221E";
         public static final char INTEGRAL = '\u222B';
 
         /* Random characters */

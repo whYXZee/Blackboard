@@ -40,11 +40,34 @@ public class ElementOf extends PredicateAbstract {
     }
 
     //
+    // Get & Set Methods
+    //
+    public final SetAbstract getDomain() {
+        return domain;
+    }
+
+    public final boolean isNotElementOf() {
+        return notElementOf;
+    }
+
+    //
     // Boolean Methods
     //
     @Override
     public boolean checkPredicate(NumberAbstract number) {
         return notElementOf ? !domain.inSet(number) : domain.inSet(number);
+    }
+
+    @Override
+    public final boolean equals(PredicateAbstract other) {
+        if (!other.isType(PredicateType.ELEMENT_OF)) {
+            return false;
+        }
+
+        ElementOf e = (ElementOf) other;
+        return (getVar().equals(e.getVar()))
+                && (notElementOf == e.isNotElementOf())
+                && (domain.equals(e.getDomain()));
     }
 
 }

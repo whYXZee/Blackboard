@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.settheory.predicates.ElementOf;
-import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
-import whyxzee.blackboard.settheory.predicates.RangePredicate;
+import whyxzee.blackboard.numbers.uncountable.AlephNaught;
+import whyxzee.blackboard.settheory.predicates.*;
 import whyxzee.blackboard.utils.SetUtils;
 
 /**
@@ -41,11 +40,17 @@ public abstract class AmbiguousList extends SetAbstract implements Comparable<Am
         return toString();
     }
 
-    public final ArrayList<AmbiguousList> toDomainList() {
-        ArrayList<AmbiguousList> output = new ArrayList<AmbiguousList>();
-        output.add(this);
+    public final ElementOf toPredicate() {
+        return new ElementOf(Constants.NumberConstants.DEFAULT_VAR, this);
+    }
 
-        return output;
+    @Override
+    public final SetBuilder toBuilder() {
+        return new SetBuilder(getSetName(), Constants.NumberConstants.DEFAULT_VAR, new ArrayList<PredicateAbstract>() {
+            {
+                add(toPredicate());
+            }
+        });
     }
 
     //
@@ -59,31 +64,55 @@ public abstract class AmbiguousList extends SetAbstract implements Comparable<Am
     // Arithmetic Methods
     //
     @Override
+    public NumberAbstract cardinality() {
+        return new AlephNaught();
+    }
+
+    @Override
     public final SetAbstract union(SetAbstract other) {
-        // TODO: add more union functionality
+        ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>();
+
         switch (other.getType()) {
             case AMBIGUOUS_LIST:
                 return this.getOrder() < ((AmbiguousList) other).getOrder() ? other : this;
+
             case BUILDER:
                 SetBuilder builder = (SetBuilder) other;
-                builder.unionDomain(this);
+                builder.unionPredicate(this.toPredicate());
                 return builder;
-            case DEFINED_LIST:
-                int domainsNeeded = SetUtils.needsTwoDomains(((DefinedList) other).getNumbers(), this);
-                if (domainsNeeded == 0) {
-                    return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR, toDomainList(),
-                            null);
-                }
-                ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>();
-                predicates.add(new ElementOf(Constants.NumberConstants.DEFAULT_VAR, this));
-                predicates.add(new ElementOf(Constants.NumberConstants.DEFAULT_VAR, other));
 
-                return new SetBuilder(other.getSetName() + "'", Constants.NumberConstants.DEFAULT_VAR, null,
+            case DEFINED_LIST:
+                ArrayList<NumberAbstract> numbers = ((DefinedList) other).getNumbers();
+                int[] domainsNeeded = SetUtils.needsTwoDomains(numbers, this);
+                if (domainsNeeded[0] == 0) {
+                    predicates.add(this.toPredicate());
+                    return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR,
+                            predicates);
+
+                } else if (domainsNeeded[0] == 1) {
+                    predicates.add(new OrPredicate(new ArrayList<PredicateAbstract>() {
+                        {
+                            add(toPredicate());
+                            add(new EqualPredicate(Constants.NumberConstants.DEFAULT_VAR,
+                                    numbers.get(domainsNeeded[1])));
+                        }
+                    }));
+                    return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR,
+                            predicates);
+                }
+
+                predicates.add(new OrPredicate(new ArrayList<PredicateAbstract>() {
+                    {
+                        add(toPredicate());
+                        add(new ElementOf(Constants.NumberConstants.DEFAULT_VAR, other));
+                    }
+                }));
+                return new SetBuilder(other.getSetName() + "'", Constants.NumberConstants.DEFAULT_VAR,
                         predicates);
             case INTERVAL:
-                return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR, toDomainList(),
-                        new RangePredicate(Constants.NumberConstants.DEFAULT_VAR,
-                                (IntervalSet) other).toPredicateList());
+                predicates.add(this.toPredicate());
+                predicates.add(new RangePredicate(Constants.NumberConstants.DEFAULT_VAR, (IntervalSet) other));
+                return new SetBuilder(other.getSetName(), Constants.NumberConstants.DEFAULT_VAR, predicates);
             case NULL:
                 return this;
             default:

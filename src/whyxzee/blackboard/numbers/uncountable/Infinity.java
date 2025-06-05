@@ -1,18 +1,22 @@
-package whyxzee.blackboard.numbers;
+package whyxzee.blackboard.numbers.uncountable;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.numbers.Uncountable;
 
-public class Infinity extends NumberAbstract {
+/**
+ * A package for the general infinity.
+ */
+public class Infinity extends Uncountable {
     /* Variables */
     private boolean isNegative;
 
     public Infinity() {
-        super(Double.POSITIVE_INFINITY, NumType.INFINITY);
+        super(10, Double.POSITIVE_INFINITY);
         this.isNegative = false;
     }
 
     public Infinity(boolean isNegative) {
-        super(isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY, NumType.INFINITY);
+        super(10, isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY);
         this.isNegative = isNegative;
     }
 
@@ -25,13 +29,4 @@ public class Infinity extends NumberAbstract {
     public final String printConsole() {
         return isNegative ? "Negative Infinity" : "Infinity";
     }
-
-    //
-    // Boolean Methods
-    //
-    @Override
-    public boolean isInteger() {
-        return false;
-    }
-
 }

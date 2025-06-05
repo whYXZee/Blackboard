@@ -4,7 +4,11 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
+import whyxzee.blackboard.numbers.RealNumber;
 
+/**
+ * A package for sets with a cardinality of zero.
+ */
 public class NullSet extends SetAbstract {
     public NullSet(String setName) {
         super(setName, SetType.NULL);
@@ -32,12 +36,17 @@ public class NullSet extends SetAbstract {
 
     @Override
     public SetBuilder toBuilder() {
-        throw new UnsupportedOperationException("Unimplemented method 'toDefinedList'");
+        return new SetBuilder(getSetName(), Constants.NumberConstants.DEFAULT_VAR, null);
     }
 
     //
     // Arithmetic Methods
     //
+    @Override
+    public final NumberAbstract cardinality() {
+        return new RealNumber(0);
+    }
+
     @Override
     public SetAbstract union(SetAbstract other) {
         return other;

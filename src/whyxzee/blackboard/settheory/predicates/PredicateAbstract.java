@@ -39,8 +39,18 @@ public abstract class PredicateAbstract {
         return var;
     }
 
+    public final PredicateType getType() {
+        return type;
+    }
+
     //
     // Boolean Methods
     //
+    public final boolean isType(PredicateType type) {
+        return this.type == type;
+    }
+
     public abstract boolean checkPredicate(NumberAbstract number);
+
+    public abstract boolean equals(PredicateAbstract other);
 }

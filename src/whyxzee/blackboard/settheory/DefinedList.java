@@ -4,7 +4,17 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
+import whyxzee.blackboard.numbers.RealNumber;
+import whyxzee.blackboard.settheory.predicates.ElementOf;
+import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
+import whyxzee.blackboard.settheory.predicates.RangePredicate;
 
+/**
+ * A package that is a set of numbers.
+ * 
+ * <p>
+ * The functionality of this class has not been checked.
+ */
 public class DefinedList extends SetAbstract {
     private ArrayList<NumberAbstract> numbers;
 
@@ -59,7 +69,29 @@ public class DefinedList extends SetAbstract {
     // Arithmetic Methods
     //
     @Override
+    public final NumberAbstract cardinality() {
+        return new RealNumber(numbers.size());
+    }
+
+    @Override
     public SetAbstract union(SetAbstract other) {
+        switch (other.getType()) {
+            case AMBIGUOUS_LIST:
+                break;
+            case BUILDER:
+                break;
+            case DEFINED_LIST:
+                break;
+            case INTERVAL:
+                ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>();
+                predicates.add(new RangePredicate(Constants.NumberConstants.DEFAULT_VAR, other.toInterval()));
+                predicates.add(new ElementOf(getSetName(), this));
+                return new SetBuilder(getSetName(), Constants.NumberConstants.DEFAULT_VAR, predicates);
+            case NULL:
+                return this;
+            default:
+                return null;
+        }
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'union'");
     }

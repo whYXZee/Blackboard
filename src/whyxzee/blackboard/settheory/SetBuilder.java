@@ -4,39 +4,25 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
+import whyxzee.blackboard.settheory.arithmetic.UnionPredicate;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
-import whyxzee.blackboard.utils.SetUtils;
 
 /**
  * A package for creating Sets under the Set Builder Notation.
  * 
- * The functionality of this class has been checked on {@code 6/3/2025}, and
+ * The functionality of this class has been checked on {@code 6/5/2025}, and
  * nothing has changed since.
  */
 public class SetBuilder extends SetAbstract {
     /* Variable */
     private String var;
-    private ArrayList<AmbiguousList> domains;
     private ArrayList<PredicateAbstract> predicates;
 
-    public SetBuilder(String setName, String var) {
+    public SetBuilder(String setName, String var, ArrayList<PredicateAbstract> predicates) {
         super(setName, SetType.BUILDER);
         this.var = var;
-        this.domains = new ArrayList<AmbiguousList>();
-        this.predicates = new ArrayList<PredicateAbstract>();
-
-    }
-
-    public SetBuilder(String setName, String var, ArrayList<AmbiguousList> domains,
-            ArrayList<PredicateAbstract> predicates) {
-        super(setName, SetType.BUILDER);
-        this.var = var;
-        this.domains = domains;
         this.predicates = predicates;
 
-        if (domains == null) {
-            this.domains = new ArrayList<AmbiguousList>();
-        }
         if (predicates == null) {
             this.predicates = new ArrayList<PredicateAbstract>();
         }
@@ -45,11 +31,11 @@ public class SetBuilder extends SetAbstract {
     @Override
     public final String toString() {
         String output = getSetName() + " = ";
-        if (domains.size() == 0 && predicates.size() == 0) {
+        if (predicates.size() == 0) {
             return output + Constants.Unicode.NULL_SET;
         }
 
-        output += "{" + var + getVarDomains();
+        output += "{" + var;
         for (int i = 0; i < predicates.size(); i++) {
             if (i != 0) {
                 output += ", ";
@@ -89,40 +75,36 @@ public class SetBuilder extends SetAbstract {
     //
     // Get & Set Methods
     //
-    private final String getVarDomains() {
-        if (domains.size() == 0) {
-            return "";
-        }
-
-        String output = Constants.Unicode.ELEMENT_OF + domains.get(0).toString();
-        for (int i = 1; i < domains.size(); i++) {
-            output += "," + domains.get(i);
-        }
-        return output;
-    }
-
-    public final ArrayList<AmbiguousList> getDomains() {
-        return domains;
-    }
-
-    public final void setDomains(ArrayList<AmbiguousList> domains) {
-        this.domains = domains;
-    }
-
-    public final void unionDomain(AmbiguousList addend) {
-        if (!inDomains(addend)) {
-            domains.add(addend);
-            setDomains(SetUtils.unionDomains(domains));
-        }
-    }
-
     public final ArrayList<PredicateAbstract> getPredicates() {
         return predicates;
+    }
+
+    public final void unionPredicate(PredicateAbstract addend) {
+        if (!inPredicates(addend)) {
+            predicates.add(addend);
+            UnionPredicate unionPredicate = new UnionPredicate();
+            predicates = unionPredicate.performUnion(predicates);
+        }
+    }
+
+    public final void unionPredicates(ArrayList<PredicateAbstract> addends) {
+        for (PredicateAbstract i : addends) {
+            if (!inPredicates(i)) {
+                predicates.add(i);
+            }
+        }
+        UnionPredicate unionPredicate = new UnionPredicate();
+        predicates = unionPredicate.performUnion(predicates);
     }
 
     //
     // Arithmetic Methods
     //
+    @Override
+    public final NumberAbstract cardinality() {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public SetAbstract union(SetAbstract other) {
         switch (other.getType()) {
@@ -170,9 +152,9 @@ public class SetBuilder extends SetAbstract {
         throw new UnsupportedOperationException();
     }
 
-    public final boolean inDomains(AmbiguousList domain) {
-        for (AmbiguousList i : domains) {
-            if (i.equals(domain)) {
+    public final boolean inPredicates(PredicateAbstract predicate) {
+        for (PredicateAbstract i : predicates) {
+            if (i.equals(predicate)) {
                 return true;
             }
         }

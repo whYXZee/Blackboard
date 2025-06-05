@@ -9,6 +9,8 @@ import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.equations.*;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.numbers.RealNumber;
+import whyxzee.blackboard.numbers.uncountable.AlephNaught;
+import whyxzee.blackboard.numbers.uncountable.Infinity;
 import whyxzee.blackboard.settheory.*;
 import whyxzee.blackboard.settheory.predicates.*;
 import whyxzee.blackboard.settheory.sets.*;
@@ -27,17 +29,19 @@ public class Debugger {
         /* Math Debugging */
         NaturalSet natSet = new NaturalSet();
         IntegerSet intSet = new IntegerSet();
+        RationalSet ratSet = new RationalSet();
         DefinedList list = new DefinedList("A", new ArrayList<NumberAbstract>() {
             {
-                add(new RealNumber(1));
-                add(new RealNumber(3.5));
-                add(new RealNumber(2));
+                add(new RealNumber(-5));
+                add(new RealNumber(-3.5));
+                add(new RealNumber(-2));
             }
         });
 
         display.appendScript(
                 new BlackboardLabel(
-                        intSet.union(list).toString(),
+                        // intSet.union(list).toString(),
+                        new AlephNaught().toString(),
                         0.05));
 
         /* Displaying */

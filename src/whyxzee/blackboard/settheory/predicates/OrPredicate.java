@@ -40,6 +40,13 @@ public class OrPredicate extends PredicateAbstract {
     }
 
     //
+    // Get & Set Methods
+    //
+    public final ArrayList<PredicateAbstract> getPredicates() {
+        return predicates;
+    }
+
+    //
     // Boolean Methods
     //
     @Override
@@ -50,6 +57,16 @@ public class OrPredicate extends PredicateAbstract {
             }
         }
         return true;
+    }
+
+    @Override
+    public final boolean equals(PredicateAbstract other) {
+        if (!other.isType(PredicateType.OR)) {
+            return false;
+        }
+
+        OrPredicate or = (OrPredicate) other;
+        return predicates == or.getPredicates();
     }
 
 }

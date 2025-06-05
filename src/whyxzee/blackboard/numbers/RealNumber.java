@@ -23,8 +23,27 @@ public class RealNumber extends NumberAbstract {
     // Boolean Methods
     //
     @Override
-    public boolean isInteger() {
+    public final boolean isInteger() {
         return ArithmeticUtils.isInteger(getValue());
+    }
+
+    @Override
+    public final boolean isRational() {
+        if (ArithmeticUtils.isInteger(getValue())) {
+            return true;
+        }
+
+        return ArithmeticUtils.isRational(getValue());
+    }
+
+    @Override
+    public final boolean isReal() {
+        return true;
+    }
+
+    @Override
+    public final boolean isComplex() {
+        return true;
     }
 
 }

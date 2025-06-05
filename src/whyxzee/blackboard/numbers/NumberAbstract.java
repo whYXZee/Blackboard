@@ -6,7 +6,7 @@ public abstract class NumberAbstract {
     private NumType type;
 
     public enum NumType {
-        INFINITY,
+        UNCOUNTABLE,
         REAL
     }
 
@@ -42,11 +42,21 @@ public abstract class NumberAbstract {
 
     public abstract boolean isInteger();
 
-    public final boolean lessThan(NumberAbstract other) {
+    public abstract boolean isRational();
+
+    public abstract boolean isReal();
+
+    public abstract boolean isComplex();
+
+    public boolean equals(NumberAbstract other) {
+        return value == other.getValue();
+    }
+
+    public boolean lessThan(NumberAbstract other) {
         return value < other.getValue();
     }
 
-    public final boolean lessThanEqual(NumberAbstract other) {
+    public boolean lessThanEqual(NumberAbstract other) {
         return value <= other.getValue();
     }
 }

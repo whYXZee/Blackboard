@@ -23,7 +23,7 @@ public class EqualPredicate extends PredicateAbstract {
 
     @Override
     public final String toString() {
-        return getVar() + (isNotEqual ? Constants.Unicode.NOT_EQUAL : Constants.Unicode.NOT_EQUAL) + value.toString();
+        return getVar() + (isNotEqual ? Constants.Unicode.NOT_EQUAL : Constants.Unicode.EQUAL) + value.toString();
     }
 
     @Override
@@ -39,12 +39,35 @@ public class EqualPredicate extends PredicateAbstract {
     }
 
     //
+    // Get & Set Methods
     //
+    public final boolean isNotEqual() {
+        return isNotEqual;
+    }
+
+    public final NumberAbstract getValue() {
+        return value;
+    }
+
+    //
+    // Boolean Methods
     //
     @Override
     public boolean checkPredicate(NumberAbstract number) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'checkPredicate'");
+    }
+
+    @Override
+    public final boolean equals(PredicateAbstract other) {
+        if (!other.isType(PredicateType.EQUAL) || !(getVar().equals(other.getVar()))) {
+            return false;
+        }
+
+        EqualPredicate eq = (EqualPredicate) other;
+
+        return (isNotEqual == eq.isNotEqual())
+                && (value.equals(eq.getValue()));
     }
 
 }

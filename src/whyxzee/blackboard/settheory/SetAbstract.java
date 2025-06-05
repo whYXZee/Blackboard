@@ -2,6 +2,12 @@ package whyxzee.blackboard.settheory;
 
 import whyxzee.blackboard.numbers.NumberAbstract;
 
+/**
+ * An abstract package for generic sets in Set Theory.
+ * 
+ * <p>
+ * The functionality of this class has not been checked.
+ */
 public abstract class SetAbstract {
     /* Variables */
     private String setName;
@@ -32,6 +38,8 @@ public abstract class SetAbstract {
     //
     // Arithmetic Methods
     //
+    public abstract NumberAbstract cardinality();
+
     public abstract SetAbstract union(SetAbstract other);
 
     public abstract SetAbstract disjunction(SetAbstract other);

@@ -8,15 +8,15 @@ import whyxzee.blackboard.settheory.IntervalSet;
 import whyxzee.blackboard.settheory.SetAbstract;
 
 /**
- * A package that is the set of all natural numbers. Denoted as {0, 1, 2, 3,
- * ...}
+ * A package for the set of all real numbers.
  * 
  * <p>
- * the functionality of this class has not been checked.
+ * The functionality of this class has not been checked.
  */
-public class NaturalSet extends AmbiguousList {
-    public NaturalSet() {
-        super(Constants.Unicode.NATURAL_SET, 1);
+
+public class RealSet extends AmbiguousList {
+    public RealSet() {
+        super(Constants.Unicode.REAL_SET, 5);
     }
 
     @Override
@@ -46,6 +46,7 @@ public class NaturalSet extends AmbiguousList {
     //
     @Override
     public boolean inSet(NumberAbstract number) {
-        return number.isInteger() && number.getValue() > 0;
+        return number.isReal();
     }
+
 }
