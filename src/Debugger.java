@@ -31,7 +31,7 @@ public class Debugger {
         RationalSet ratSet = new RationalSet();
         DefinedList list = new DefinedList("A", new ArrayList<NumberAbstract>() {
             {
-                add(new RealNumber(5.75));
+                add(new RealNumber(0));
                 add(new RealNumber(6));
                 add(new RealNumber(5));
             }

@@ -116,6 +116,7 @@ public class DefinedList extends SetAbstract {
                     predicates.add(new ElementOf(builder.getVar(), this));
                 }
 
+                System.out.println(domainsNeeded[0]);
                 builder.unionPredicates(predicates);
                 return builder;
 

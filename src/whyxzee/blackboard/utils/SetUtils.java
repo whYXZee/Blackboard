@@ -45,6 +45,7 @@ public class SetUtils {
          */
         public static final ArrayList<PredicateAbstract> unionDomains(ArrayList<PredicateAbstract> predicates) {
             // TODO: implement "not element of" type of predicates
+            // TODO: abstract into OrPrediate, AndPredicate, and SetBuilder
             if (predicates.size() == 0) {
                 return predicates;
             }
@@ -78,9 +79,8 @@ public class SetUtils {
                 }
             }
 
-            // is this even needed?
-            if (domains.size() == 0 && output.size() == 0) {
-                return predicates;
+            if (domains.size() == 0) {
+                return output;
             }
 
             int iGreatestOrder = 0; // index of greatest order

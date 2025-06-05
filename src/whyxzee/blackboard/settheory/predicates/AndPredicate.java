@@ -5,21 +5,13 @@ import java.util.ArrayList;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.IntervalSet;
 
-public class OrPredicate extends PredicateAbstract {
+public class AndPredicate extends PredicateAbstract {
     /* Variables */
     private ArrayList<PredicateAbstract> predicates;
 
-    public OrPredicate(ArrayList<PredicateAbstract> predicates) {
-        super("", PredicateType.OR);
+    public AndPredicate(ArrayList<PredicateAbstract> predicates) {
+        super("", PredicateType.AND);
         this.predicates = predicates;
-    }
-
-    public OrPredicate(PredicateAbstract... predicates) {
-        super("", PredicateType.OR);
-        this.predicates = new ArrayList<PredicateAbstract>();
-        for (PredicateAbstract i : predicates) {
-            this.predicates.add(i);
-        }
     }
 
     @Override
@@ -28,10 +20,11 @@ public class OrPredicate extends PredicateAbstract {
             return "";
         }
 
-        String output = predicates.get(0).toString();
+        String output = "(" + predicates.get(0).toString();
         for (int i = 1; i < predicates.size(); i++) {
-            output += " or " + predicates.get(i);
+            output += ", " + predicates.get(i);
         }
+        output += ")";
         return output;
     }
 
@@ -47,24 +40,11 @@ public class OrPredicate extends PredicateAbstract {
         throw new UnsupportedOperationException("Unimplemented method 'toInterval'");
     }
 
-    /**
-     * Condenses down predicates so there are no redundancies.
-     */
-    public final void simplify() {
-
-    }
-
     //
     // Get & Set Methods
     //
     public final ArrayList<PredicateAbstract> getPredicates() {
         return predicates;
-    }
-
-    public final void addPredicate(PredicateAbstract predicate) {
-        if (!contains(predicate)) {
-            predicates.add(predicate);
-        }
     }
 
     //
@@ -73,30 +53,21 @@ public class OrPredicate extends PredicateAbstract {
     @Override
     public boolean checkPredicate(NumberAbstract number) {
         for (PredicateAbstract i : predicates) {
-            if (i.checkPredicate(number)) {
-                return true;
+            if (!i.checkPredicate(number)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     @Override
     public final boolean equals(PredicateAbstract other) {
-        if (!other.isType(PredicateType.OR)) {
+        if (!other.isType(PredicateType.AND)) {
             return false;
         }
 
-        OrPredicate or = (OrPredicate) other;
-        return predicates == or.getPredicates();
-    }
-
-    public final boolean contains(PredicateAbstract predicate) {
-        for (PredicateAbstract i : predicates) {
-            if (i.equals(predicate)) {
-                return true;
-            }
-        }
-        return false;
+        AndPredicate and = (AndPredicate) other;
+        return predicates == and.getPredicates();
     }
 
 }

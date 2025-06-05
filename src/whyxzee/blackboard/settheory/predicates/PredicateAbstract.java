@@ -14,6 +14,7 @@ public abstract class PredicateAbstract {
         EQUAL,
         RANGE,
         OR,
+        AND,
         ELEMENT_OF
     }
 

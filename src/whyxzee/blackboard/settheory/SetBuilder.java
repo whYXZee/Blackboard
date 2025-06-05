@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.arithmetic.UnionPredicate;
+import whyxzee.blackboard.settheory.predicates.AndPredicate;
+import whyxzee.blackboard.settheory.predicates.OrPredicate;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
+import whyxzee.blackboard.settheory.predicates.PredicateAbstract.PredicateType;
 
 /**
  * A package for creating Sets under the Set Builder Notation.
@@ -81,19 +84,24 @@ public class SetBuilder extends SetAbstract {
 
     public final void unionPredicate(PredicateAbstract addend) {
         if (!inPredicates(addend)) {
-            predicates.add(addend);
-
-            predicates = UnionPredicate.performUnion(predicates);
+            if (predicates.size() == 1) {
+                predicates = UnionPredicate.performUnion(predicates.get(0), addend);
+            } else {
+                AndPredicate and = new AndPredicate(predicates);
+                predicates = UnionPredicate.performUnion(and, addend);
+            }
         }
     }
 
     public final void unionPredicates(ArrayList<PredicateAbstract> addends) {
-        for (PredicateAbstract i : addends) {
-            if (!inPredicates(i)) {
-                predicates.add(i);
-            }
+        System.out.println(addends);
+        if (addends.size() == 1) {
+            unionPredicate(addends.get(0));
+        } else {
+            AndPredicate and = new AndPredicate(predicates);
+            addends.add(and);
+            predicates = UnionPredicate.performUnion(addends);
         }
-        predicates = UnionPredicate.performUnion(predicates);
     }
 
     public final String getVar() {
@@ -161,7 +169,12 @@ public class SetBuilder extends SetAbstract {
 
     public final boolean inPredicates(PredicateAbstract predicate) {
         for (PredicateAbstract i : predicates) {
-            if (i.equals(predicate)) {
+            if (i.isType(PredicateType.OR)) {
+                OrPredicate or = (OrPredicate) i;
+                if (or.contains(i)) {
+                    return true;
+                }
+            } else if (i.equals(predicate)) {
                 return true;
             }
         }
