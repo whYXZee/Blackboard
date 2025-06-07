@@ -18,16 +18,37 @@ import whyxzee.blackboard.utils.SetUtils;
  * <ul>
  * <li>union() for IntervalSet
  */
-public abstract class AmbiguousList extends SetAbstract implements Comparable<AmbiguousList> {
+public abstract class AmbiguousList extends SetAbstract {
     /* Variables */
-    /**
-     * The number used to dictate the order.
-     */
-    private int order;
+    private DomainType domain;
 
-    public AmbiguousList(String setName, int order) {
+    public enum DomainType {
+        COMPLEX(6),
+        REAL(5),
+        RATIONAL(4),
+        INTEGER(3),
+        NATURAL(2),
+
+        IMAGINARY(-1);
+
+        /**
+         * The number used to dictate the highest-level list. A greater number indicates
+         * that it encompasses more numbers.
+         */
+        private final int order;
+
+        private DomainType(int order) {
+            this.order = order;
+        }
+
+        public final int getOrder() {
+            return order;
+        }
+    }
+
+    public AmbiguousList(String setName, DomainType domain) {
         super(setName, SetType.AMBIGUOUS_LIST);
-        this.order = order;
+        this.domain = domain;
     }
 
     @Override
@@ -56,8 +77,8 @@ public abstract class AmbiguousList extends SetAbstract implements Comparable<Am
     //
     // Get & Set Methods
     //
-    public final int getOrder() {
-        return order;
+    public final DomainType getDomain() {
+        return domain;
     }
 
     //
@@ -72,9 +93,9 @@ public abstract class AmbiguousList extends SetAbstract implements Comparable<Am
     public final SetAbstract union(SetAbstract other) {
         ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>();
 
-        switch (other.getType()) {
+        switch (other.getAmbiguousList()) {
             case AMBIGUOUS_LIST:
-                return this.getOrder() < ((AmbiguousList) other).getOrder() ? other : this;
+                return domain.getOrder() < ((AmbiguousList) other).getDomain().getOrder() ? other : this;
 
             case BUILDER:
                 SetBuilder builder = (SetBuilder) other;
@@ -118,9 +139,9 @@ public abstract class AmbiguousList extends SetAbstract implements Comparable<Am
     @Override
     public final SetAbstract disjunction(SetAbstract other) {
         // TODO: add more disjunction functionality
-        switch (other.getType()) {
+        switch (other.getAmbiguousList()) {
             case AMBIGUOUS_LIST:
-                return getOrder() > ((AmbiguousList) other).getOrder() ? other : this;
+                return domain.getOrder() > ((AmbiguousList) other).getDomain().getOrder() ? other : this;
             case BUILDER:
                 break;
             case DEFINED_LIST:
@@ -140,15 +161,35 @@ public abstract class AmbiguousList extends SetAbstract implements Comparable<Am
     // Boolean Methods
     //
     @Override
+    public final boolean isSuperset(SetAbstract other) {
+        switch (other.getAmbiguousList()) {
+            case AMBIGUOUS_LIST:
+                AmbiguousList oList = (AmbiguousList) other;
+                if (oList.getDomain().getOrder() == -1) {
+                    return domain == DomainType.COMPLEX;
+                }
+
+                return domain.getOrder() > oList.getDomain().getOrder();
+            case BUILDER:
+                break;
+            case DEFINED_LIST:
+                break;
+            case INTERVAL:
+                break;
+            case NULL:
+                break;
+            default:
+                break;
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public final boolean equals(SetAbstract other) {
         if (!other.isType(SetType.AMBIGUOUS_LIST)) {
             return false;
         }
         return getSetName().equals(other.getSetName());
-    }
-
-    @Override
-    public final int compareTo(AmbiguousList other) {
-        return Integer.compare(order, other.getOrder());
     }
 }

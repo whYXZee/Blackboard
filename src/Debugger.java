@@ -11,6 +11,7 @@ import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.numbers.RealNumber;
 import whyxzee.blackboard.numbers.uncountable.Infinity;
 import whyxzee.blackboard.settheory.*;
+import whyxzee.blackboard.settheory.arithmetic.UnionBounds;
 import whyxzee.blackboard.settheory.predicates.*;
 import whyxzee.blackboard.settheory.sets.*;
 import whyxzee.blackboard.terms.*;
@@ -36,17 +37,20 @@ public class Debugger {
                 add(new RealNumber(5));
             }
         });
-
         SetBuilder builder = new SetBuilder("B", "x", new ArrayList<PredicateAbstract>() {
             {
                 add(new ElementOf("x", intSet));
                 add(new RangePredicate("x", new RealNumber(-2), false, false, new Infinity()));
             }
         });
+        IntervalSet intInf = new IntervalSet("C");
+        IntervalSet intOne = new IntervalSet("A", new RealNumber(-50), false, false, new RealNumber(0));
+        IntervalSet intTwo = new IntervalSet("B", new RealNumber(0), true, true, new RealNumber(70));
+        IntervalSet intTest = new IntervalSet("Test", new RealNumber(0), true, false, new RealNumber(-70));
 
         display.appendScript(
                 new BlackboardLabel(
-                        list.union(builder).toString(),
+                        intTest.toString(),
                         0.05));
 
         /* Displaying */

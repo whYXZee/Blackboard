@@ -16,7 +16,7 @@ import whyxzee.blackboard.settheory.SetAbstract;
 
 public class RealSet extends AmbiguousList {
     public RealSet() {
-        super(Constants.Unicode.REAL_SET, 5);
+        super(Constants.Unicode.REAL_SET, DomainType.REAL);
     }
 
     @Override

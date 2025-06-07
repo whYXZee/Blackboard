@@ -71,6 +71,11 @@ public class NullSet extends SetAbstract {
     }
 
     @Override
+    public final boolean isSuperset(SetAbstract other) {
+        return false;
+    }
+
+    @Override
     public final boolean equals(SetAbstract other) {
         return other.isType(SetType.NULL);
     }

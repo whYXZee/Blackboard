@@ -57,7 +57,7 @@ public abstract class SetAbstract {
         this.setName = setName;
     }
 
-    public final SetType getType() {
+    public final SetType getAmbiguousList() {
         return type;
     }
 
@@ -69,6 +69,18 @@ public abstract class SetAbstract {
     // Boolean Methods
     //
     public abstract boolean inSet(NumberAbstract number);
+
+    /**
+     * Checks if <b>this</b> is a superset of <b>other</b> (conversely, is
+     * <b>other</b> is a subset of <b>this</b>).
+     * 
+     * <p>
+     * Essentially, does <b>this</b> encompass <b>other</b>?
+     * 
+     * @param other
+     * @return
+     */
+    public abstract boolean isSuperset(SetAbstract other);
 
     public final boolean isType(SetType type) {
         return this.type == type;

@@ -16,7 +16,7 @@ import whyxzee.blackboard.settheory.SetAbstract;
 public class ComplexSet extends AmbiguousList {
 
     public ComplexSet() {
-        super(Constants.Unicode.COMPLEX_SET, 6);
+        super(Constants.Unicode.COMPLEX_SET, DomainType.COMPLEX);
     }
 
     @Override
@@ -34,7 +34,6 @@ public class ComplexSet extends AmbiguousList {
     //
     // Arithmetic Methods
     //
-
     @Override
     public SetAbstract complement(SetAbstract universe) {
         // TODO Auto-generated method stub

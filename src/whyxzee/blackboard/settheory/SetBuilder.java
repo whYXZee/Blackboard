@@ -6,15 +6,21 @@ import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
 import whyxzee.blackboard.settheory.arithmetic.UnionPredicate;
 import whyxzee.blackboard.settheory.predicates.AndPredicate;
+import whyxzee.blackboard.settheory.predicates.ElementOf;
+import whyxzee.blackboard.settheory.predicates.EqualPredicate;
 import whyxzee.blackboard.settheory.predicates.OrPredicate;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract;
 import whyxzee.blackboard.settheory.predicates.PredicateAbstract.PredicateType;
+import whyxzee.blackboard.settheory.predicates.RangePredicate;
+import whyxzee.blackboard.utils.SetUtils;
 
 /**
  * A package for creating Sets under the Set Builder Notation.
  * 
  * The functionality of this class has been checked on {@code 6/5/2025}, and
- * nothing has changed since.
+ * the following has changed since:
+ * <ul>
+ * <li>union()
  */
 public class SetBuilder extends SetAbstract {
     /* Variable */
@@ -38,28 +44,32 @@ public class SetBuilder extends SetAbstract {
             return output + Constants.Unicode.NULL_SET;
         }
 
-        output += "{" + var;
-        for (int i = 0; i < predicates.size(); i++) {
-            if (i != 0) {
-                output += ", ";
-            } else {
-                output += " " + Constants.Unicode.SET_SUCH_THAT + " ";
-            }
-            output += predicates.get(i);
+        output += "{" + var + " " + Constants.Unicode.SET_SUCH_THAT + " " + predicates.get(0);
+        for (int i = 1; i < predicates.size(); i++) {
+            output += ", " + predicates.get(i);
         }
         output += "}";
-
         return output;
     }
 
     @Override
     public String printConsole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'printConsole'");
+        String output = getSetName() + " = ";
+        if (predicates.size() == 0) {
+            return output + Constants.Unicode.NULL_SET;
+        }
+
+        output += "{" + var + " " + Constants.Unicode.SET_SUCH_THAT + " " + predicates.get(0).printConsole();
+        for (int i = 1; i < predicates.size(); i++) {
+            output += ", " + predicates.get(i).printConsole();
+        }
+        output += "}";
+        return output;
     }
 
     @Override
     public IntervalSet toInterval() {
+        // doable if it has a range predicate
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'toInterval'");
     }
@@ -118,23 +128,40 @@ public class SetBuilder extends SetAbstract {
 
     @Override
     public SetAbstract union(SetAbstract other) {
-        switch (other.getType()) {
+        int[] domainsNeeded;
+        switch (other.getAmbiguousList()) {
             case AMBIGUOUS_LIST:
-                break;
+                unionPredicate(((AmbiguousList) other).toPredicate());
+                return this;
+
             case BUILDER:
-                break;
+                unionPredicates(((SetBuilder) other).getPredicates());
+                return this;
+
             case DEFINED_LIST:
-                break;
+                DefinedList dList = (DefinedList) other;
+                domainsNeeded = SetUtils.UnionHelper.needsTwoDomains(dList.getNumbers(), this);
+                /* Extra Predicates */
+                if (domainsNeeded[0] == 0) {
+                    return this;
+
+                } else if (domainsNeeded[0] == 1) {
+                    unionPredicate(new EqualPredicate(var, dList.getNumbers().get(domainsNeeded[1])));
+                } else {
+                    unionPredicate(new ElementOf(var, dList));
+                }
+                return this;
+
             case INTERVAL:
-                break;
+                unionPredicate(new RangePredicate(var, (IntervalSet) other));
+                return this;
+
             case NULL:
                 return this;
             default:
-                break;
+                return null;
 
         }
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'union'");
     }
 
     @Override
@@ -160,6 +187,11 @@ public class SetBuilder extends SetAbstract {
             }
         }
         return true;
+    }
+
+    @Override
+    public final boolean isSuperset(SetAbstract other) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

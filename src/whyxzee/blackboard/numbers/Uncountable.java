@@ -54,6 +54,11 @@ public abstract class Uncountable extends NumberAbstract {
     }
 
     @Override
+    public final boolean isInfinite() {
+        return true;
+    }
+
+    @Override
     public final boolean equals(NumberAbstract other) {
         if (!other.isType(NumType.UNCOUNTABLE)) {
             return false;
@@ -65,7 +70,7 @@ public abstract class Uncountable extends NumberAbstract {
     @Override
     public final boolean lessThan(NumberAbstract other) {
         if (!other.isType(NumType.UNCOUNTABLE)) {
-            return false;
+            return getValue() < other.getValue();
         }
 
         return order < ((Uncountable) other).getOrder();
@@ -74,7 +79,7 @@ public abstract class Uncountable extends NumberAbstract {
     @Override
     public final boolean lessThanEqual(NumberAbstract other) {
         if (!other.isType(NumType.UNCOUNTABLE)) {
-            return false;
+            return getValue() <= other.getValue();
         }
 
         return order <= ((Uncountable) other).getOrder();

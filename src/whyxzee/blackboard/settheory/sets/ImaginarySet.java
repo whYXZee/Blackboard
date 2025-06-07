@@ -10,7 +10,7 @@ import whyxzee.blackboard.settheory.SetAbstract;
 public class ImaginarySet extends AmbiguousList {
 
     public ImaginarySet() {
-        super(Constants.Unicode.IMAGINARY_SET, -1);
+        super(Constants.Unicode.IMAGINARY_SET, DomainType.IMAGINARY);
     }
 
     @Override

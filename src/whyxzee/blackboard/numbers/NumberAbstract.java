@@ -50,6 +50,8 @@ public abstract class NumberAbstract {
 
     public abstract boolean isComplex();
 
+    public abstract boolean isInfinite();
+
     public boolean equals(NumberAbstract other) {
         return value == other.getValue();
     }

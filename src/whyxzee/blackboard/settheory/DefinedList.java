@@ -82,7 +82,7 @@ public class DefinedList extends SetAbstract {
         int[] domainsNeeded;
         String unionName = SetUtils.unionString(this, other);
 
-        switch (other.getType()) {
+        switch (other.getAmbiguousList()) {
             case AMBIGUOUS_LIST: // functional
                 AmbiguousList domain = (AmbiguousList) other;
                 domainsNeeded = SetUtils.UnionHelper.needsTwoDomains(numbers, domain);
@@ -115,12 +115,10 @@ public class DefinedList extends SetAbstract {
                 } else {
                     predicates.add(new ElementOf(builder.getVar(), this));
                 }
-
-                System.out.println(domainsNeeded[0]);
                 builder.unionPredicates(predicates);
                 return builder;
 
-            case DEFINED_LIST: // functional
+            case DEFINED_LIST:
                 return UnionDefinedLists.performUnion(this, (DefinedList) other);
             case INTERVAL:
                 return new SetBuilder(unionName, Constants.NumberConstants.DEFAULT_VAR,
@@ -152,6 +150,11 @@ public class DefinedList extends SetAbstract {
     public boolean inSet(NumberAbstract number) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'inSet'");
+    }
+
+    @Override
+    public final boolean isSuperset(SetAbstract other) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

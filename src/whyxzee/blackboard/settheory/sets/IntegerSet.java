@@ -17,7 +17,7 @@ import whyxzee.blackboard.settheory.SetAbstract;
  */
 public class IntegerSet extends AmbiguousList {
     public IntegerSet() {
-        super(Constants.Unicode.INTEGER_SET, 2);
+        super(Constants.Unicode.INTEGER_SET, DomainType.INTEGER);
     }
 
     @Override

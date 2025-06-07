@@ -51,4 +51,9 @@ public class RealNumber extends NumberAbstract {
         return true;
     }
 
+    @Override
+    public final boolean isInfinite() {
+        return false;
+    }
+
 }

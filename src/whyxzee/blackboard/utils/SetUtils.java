@@ -84,11 +84,12 @@ public class SetUtils {
             }
 
             int iGreatestOrder = 0; // index of greatest order
-            int greatestOrder = domains.get(0).getOrder();
+            int greatestOrder = domains.get(0).getDomain().getOrder();
             for (int i = 1; i < domains.size(); i++) {
-                int indexOrder = domains.get(i).getOrder();
+                int indexOrder = domains.get(i).getDomain().getOrder();
                 if (greatestOrder < indexOrder) {
                     iGreatestOrder = i;
+                    greatestOrder = domains.get(i).getDomain().getOrder();
                 }
             }
 
@@ -161,6 +162,27 @@ public class SetUtils {
 
             return new OrPredicate(predicates).toPredicateList();
         }
+    }
+
+    //
+    // Boolean Methods
+    //
+    /**
+     * Checks two intervals to see if they make up a split region. The following
+     * criteria must be met for a {@code true} return value:
+     * <ul>
+     * <li>both <b>regionOne's</b> upper bound and <b>regionTwo's</b> lower bound
+     * are not open
+     * <li><b>a</b>'s upper bound and <b>b</b>'s lower bound must be the same
+     * number.
+     * </ul>
+     */
+    public static final boolean isRegionSplit(IntervalSet regionOne, IntervalSet regionTwo) {
+        if (regionTwo.isLowOpen() && regionOne.isUpOpen()) {
+            return false;
+        }
+
+        return regionTwo.getLowBound().equals(regionOne.getUpBound());
     }
 
 }

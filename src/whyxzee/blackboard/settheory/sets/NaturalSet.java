@@ -16,7 +16,7 @@ import whyxzee.blackboard.settheory.SetAbstract;
  */
 public class NaturalSet extends AmbiguousList {
     public NaturalSet() {
-        super(Constants.Unicode.NATURAL_SET, 1);
+        super(Constants.Unicode.NATURAL_SET, DomainType.NATURAL);
     }
 
     @Override

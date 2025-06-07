@@ -18,7 +18,7 @@ import whyxzee.blackboard.settheory.SetAbstract;
 public class RationalSet extends AmbiguousList {
 
     public RationalSet() {
-        super(Constants.Unicode.RATIONAL_SET, 3);
+        super(Constants.Unicode.RATIONAL_SET, DomainType.RATIONAL);
     }
 
     @Override

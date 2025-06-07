@@ -11,7 +11,7 @@ public class Infinity extends Uncountable {
     private boolean isNegative;
 
     public Infinity() {
-        super(10, Double.POSITIVE_INFINITY);
+        super(10);
         this.isNegative = false;
     }
 
