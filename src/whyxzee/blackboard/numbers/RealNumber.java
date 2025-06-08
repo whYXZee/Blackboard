@@ -15,8 +15,7 @@ public class RealNumber extends NumberAbstract {
 
     @Override
     public String printConsole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'printConsole'");
+        return ArithmeticUtils.valueToConsole(getValue());
     }
 
     //

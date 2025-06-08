@@ -30,12 +30,20 @@ public class RangePredicate extends PredicateAbstract {
 
     @Override
     public final String toString() {
+        if (lowBound.isInfinite() && !upBound.isInfinite()) {
+            return getVar() + (isUpOpen ? Constants.Unicode.LESS_THAN : Constants.Unicode.LESS_THAN_EQUAL)
+                    + upBound.toString();
+
+        } else if (!lowBound.isInfinite() && upBound.isInfinite()) {
+            return getVar() + (isLowOpen ? Constants.Unicode.GREATER_THAN : Constants.Unicode.GREATER_THAN_EQUAL)
+                    + lowBound.toString();
+        }
+
         String output = lowBound.toString();
         output += isLowOpen ? Constants.Unicode.LESS_THAN : Constants.Unicode.LESS_THAN_EQUAL;
         output += getVar();
         output += isUpOpen ? Constants.Unicode.LESS_THAN : Constants.Unicode.LESS_THAN_EQUAL;
         output += upBound.toString();
-
         return output;
     }
 
@@ -50,8 +58,7 @@ public class RangePredicate extends PredicateAbstract {
         return output;
     }
 
-    @Override
-    public IntervalSet toInterval() {
+    public final IntervalSet toInterval() {
         return new IntervalSet("", this);
     }
 

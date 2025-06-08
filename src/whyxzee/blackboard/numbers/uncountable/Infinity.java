@@ -5,28 +5,37 @@ import whyxzee.blackboard.numbers.Uncountable;
 
 /**
  * A package for the general infinity.
+ * 
+ * <p>
+ * The functionality of this class has not been checked.
  */
 public class Infinity extends Uncountable {
-    /* Variables */
-    private boolean isNegative;
-
+    /**
+     * Creates a power infinity.
+     */
     public Infinity() {
-        super(10);
-        this.isNegative = false;
+        super(1, InfType.INFINITY);
+    }
+
+    public Infinity(int size) {
+        super(size, InfType.INFINITY);
     }
 
     public Infinity(boolean isNegative) {
-        super(10, isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY);
-        this.isNegative = isNegative;
+        super(1, InfType.INFINITY, isNegative);
+    }
+
+    public Infinity(int size, boolean isNegative) {
+        super(size, InfType.INFINITY, isNegative);
     }
 
     @Override
     public final String toString() {
-        return (isNegative ? "-" : "") + Constants.Unicode.INFINITY;
+        return (isNegative() ? "-" : "") + Constants.Unicode.INFINITY;
     }
 
     @Override
     public final String printConsole() {
-        return isNegative ? "Negative Infinity" : "Infinity";
+        return isNegative() ? "Negative Infinity" : "Infinity";
     }
 }

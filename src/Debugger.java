@@ -44,13 +44,14 @@ public class Debugger {
             }
         });
         IntervalSet intInf = new IntervalSet("C");
-        IntervalSet intOne = new IntervalSet("A", new RealNumber(-50), false, false, new RealNumber(0));
+        IntervalSet intOne = new IntervalSet("A", new Infinity(true), false, false, new RealNumber(5));
         IntervalSet intTwo = new IntervalSet("B", new RealNumber(0), true, true, new RealNumber(70));
         IntervalSet intTest = new IntervalSet("Test", new RealNumber(0), true, false, new RealNumber(-70));
+        RangePredicate rangeTest = new RangePredicate("x", intOne);
 
         display.appendScript(
                 new BlackboardLabel(
-                        intTest.toString(),
+                        rangeTest.toString(),
                         0.05));
 
         /* Displaying */

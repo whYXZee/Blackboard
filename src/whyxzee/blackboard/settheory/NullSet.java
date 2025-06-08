@@ -53,7 +53,7 @@ public class NullSet extends SetAbstract {
     }
 
     @Override
-    public SetAbstract disjunction(SetAbstract other) {
+    public SetAbstract intersection(SetAbstract other) {
         return this;
     }
 

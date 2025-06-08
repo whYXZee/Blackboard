@@ -3,7 +3,6 @@ package whyxzee.blackboard.settheory.predicates;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.settheory.IntervalSet;
 
 public abstract class PredicateAbstract {
     /* Variables */
@@ -24,8 +23,6 @@ public abstract class PredicateAbstract {
     }
 
     public abstract String printConsole();
-
-    public abstract IntervalSet toInterval();
 
     public final ArrayList<PredicateAbstract> toPredicateList() {
         ArrayList<PredicateAbstract> output = new ArrayList<PredicateAbstract>();

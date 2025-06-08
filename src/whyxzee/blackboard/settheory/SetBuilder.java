@@ -165,7 +165,7 @@ public class SetBuilder extends SetAbstract {
     }
 
     @Override
-    public SetAbstract disjunction(SetAbstract other) {
+    public SetAbstract intersection(SetAbstract other) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'disjoint'");
     }

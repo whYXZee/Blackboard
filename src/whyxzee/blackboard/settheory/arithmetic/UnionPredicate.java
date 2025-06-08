@@ -17,35 +17,29 @@ public class UnionPredicate {
     public static final ArrayList<PredicateAbstract> performUnion(ArrayList<PredicateAbstract> predicates) {
         if (predicates.size() == 0) {
             return new ArrayList<PredicateAbstract>();
+        } else if (predicates.size() == 1) {
+            return predicates.get(0).toPredicateList();
         }
 
-        if (!areArraysEmpty()) {
-            elementsOf.clear();
-            equals.clear();
-            ranges.clear();
+        PredicateAbstract[] predicateArr = new PredicateAbstract[predicates.size()];
+        for (int i = 0; i < predicates.size(); i++) {
+            predicateArr[i] = predicates.get(i);
         }
-
-        for (PredicateAbstract i : predicates) {
-            if (!contains(i)) {
-                add(i);
-            }
-        }
-
-        if (elementsOf.size() != 0) {
-            elementsOf = SetUtils.UnionHelper.unionDomains(elementsOf);
-        }
-        return getPredicateList();
+        return performUnion(predicateArr);
     }
 
     public static final ArrayList<PredicateAbstract> performUnion(PredicateAbstract... predicates) {
         if (predicates.length == 0) {
             return new ArrayList<PredicateAbstract>();
+        } else if (predicates.length == 1) {
+            return predicates[0].toPredicateList();
         }
 
         if (!areArraysEmpty()) {
             elementsOf.clear();
             equals.clear();
             ranges.clear();
+            ands.clear();
         }
 
         for (PredicateAbstract i : predicates) {
@@ -53,9 +47,18 @@ public class UnionPredicate {
                 add(i);
             }
         }
-        System.out.println(elementsOf);
+
+        /* Element Of */
         if (elementsOf.size() != 0) {
+            // check if DefinedLists are redundant because of new predicates
             elementsOf = SetUtils.UnionHelper.unionDomains(elementsOf);
+        }
+        if (ranges.size() >= 2) {
+            ArrayList<RangePredicate> specialization = new ArrayList<RangePredicate>();
+            for (PredicateAbstract i : predicates) {
+                specialization.add((RangePredicate) i);
+            }
+            ranges = UnionBounds.performUnion(specialization).toPredicateList();
         }
         return getPredicateList();
     }
@@ -142,6 +145,6 @@ public class UnionPredicate {
     }
 
     private static final boolean areArraysEmpty() {
-        return elementsOf.size() != 0 || equals.size() != 0;
+        return elementsOf.size() != 0 || equals.size() != 0 || ranges.size() != 0 || ands.size() != 0;
     }
 }

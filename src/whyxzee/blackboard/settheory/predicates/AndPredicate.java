@@ -3,7 +3,6 @@ package whyxzee.blackboard.settheory.predicates;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.settheory.IntervalSet;
 
 public class AndPredicate extends PredicateAbstract {
     /* Variables */
@@ -30,14 +29,16 @@ public class AndPredicate extends PredicateAbstract {
 
     @Override
     public String printConsole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'printConsole'");
-    }
+        if (predicates.size() == 0) {
+            return "";
+        }
 
-    @Override
-    public IntervalSet toInterval() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toInterval'");
+        String output = "(" + predicates.get(0).printConsole();
+        for (int i = 1; i < predicates.size(); i++) {
+            output += ", " + predicates.get(i).printConsole();
+        }
+        output += ")";
+        return output;
     }
 
     //

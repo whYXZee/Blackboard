@@ -2,7 +2,6 @@ package whyxzee.blackboard.settheory.predicates;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.settheory.IntervalSet;
 
 public class EqualPredicate extends PredicateAbstract {
     /* Variables */
@@ -28,14 +27,7 @@ public class EqualPredicate extends PredicateAbstract {
 
     @Override
     public String printConsole() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'printConsole'");
-    }
-
-    @Override
-    public IntervalSet toInterval() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toInterval'");
+        return getVar() + (isNotEqual ? Constants.Unicode.NOT_EQUAL : Constants.Unicode.EQUAL) + value.printConsole();
     }
 
     //
@@ -54,8 +46,7 @@ public class EqualPredicate extends PredicateAbstract {
     //
     @Override
     public boolean checkPredicate(NumberAbstract number) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkPredicate'");
+        return isNotEqual ? !number.equals(number) : number.equals(number);
     }
 
     @Override

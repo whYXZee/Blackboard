@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.numbers.uncountable.AlephNaught;
+import whyxzee.blackboard.numbers.uncountable.Aleph;
 import whyxzee.blackboard.settheory.predicates.*;
 import whyxzee.blackboard.utils.SetUtils;
 
@@ -86,7 +86,7 @@ public abstract class AmbiguousList extends SetAbstract {
     //
     @Override
     public NumberAbstract cardinality() {
-        return new AlephNaught();
+        return new Aleph();
     }
 
     @Override
@@ -137,8 +137,8 @@ public abstract class AmbiguousList extends SetAbstract {
     }
 
     @Override
-    public final SetAbstract disjunction(SetAbstract other) {
-        // TODO: add more disjunction functionality
+    public final SetAbstract intersection(SetAbstract other) {
+        // TODO: add more intersection functionality
         switch (other.getAmbiguousList()) {
             case AMBIGUOUS_LIST:
                 return domain.getOrder() > ((AmbiguousList) other).getDomain().getOrder() ? other : this;

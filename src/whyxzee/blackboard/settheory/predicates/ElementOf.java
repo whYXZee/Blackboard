@@ -2,7 +2,6 @@ package whyxzee.blackboard.settheory.predicates;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.settheory.IntervalSet;
 import whyxzee.blackboard.settheory.SetAbstract;
 
 public class ElementOf extends PredicateAbstract {
@@ -31,12 +30,6 @@ public class ElementOf extends PredicateAbstract {
     @Override
     public String printConsole() {
         return toString();
-    }
-
-    @Override
-    public IntervalSet toInterval() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'toInterval'");
     }
 
     //

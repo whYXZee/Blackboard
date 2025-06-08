@@ -57,7 +57,7 @@ public class ArithmeticUtils {
      * @param sigFigs the amount of significant figures in the output.
      * @return an optimized String based on <b>sigFigs</b>.
      */
-    public static String valueToString(double value, int sigFigs) {
+    public static final String valueToString(double value, int sigFigs) {
         if (withinEpsilon(value, 1, Math.pow(10, -2 * sigFigs))) {
             return "";
         } else if (withinEpsilon(value, -1, Math.pow(10, -2 * sigFigs))) {
@@ -92,8 +92,31 @@ public class ArithmeticUtils {
      * @return an optimized String based on
      *         {@link whyxzee.blackboard.Constants.NumberConstants#SIG_FIGS}.
      */
-    public static String valueToString(double value) {
+    public static final String valueToString(double value) {
         return valueToString(value, Constants.NumberConstants.SIG_FIGS);
+    }
+
+    public static final String valueToConsole(double value, int sigFigs) {
+        if (withinEpsilon(value, 1, Math.pow(10, -2 * sigFigs))) {
+            return "";
+        } else if (withinEpsilon(value, -1, Math.pow(10, -2 * sigFigs))) {
+            return "-";
+        }
+
+        if (!isInteger(value)) {
+            // can be represented by a fraction
+            return toFractionConsole(value, sigFigs);
+
+        } else if (numOfDigits(value) > sigFigs) {
+            return toScientific(value, sigFigs);
+
+        } else {
+            return Integer.toString((int) value);
+        }
+    }
+
+    public static final String valueToConsole(double value) {
+        return valueToConsole(value, Constants.NumberConstants.SIG_FIGS);
     }
 
     public static String toScientific(double value, int sigFigs) {
@@ -139,6 +162,36 @@ public class ArithmeticUtils {
                 if (withinEpsilon((double) j / i, valToFind, Math.pow(10, -2 * sigFigs))) {
                     return integer + UnicodeUtils.intToSuperscript(j) + Constants.Unicode.FRACTION_SLASH
                             + UnicodeUtils.intToSubscript(i);
+                }
+            }
+        }
+
+        /* Turning into fraction was unsuccessful */
+        return truncate(value, sigFigs);
+    }
+
+    /**
+     * 
+     * @param value
+     * @param sigFigs the multiplier of precision, where the fraction has a
+     *                10^(-2 * <b>sigFigs</b>) tolerance due to how double can
+     *                sometimes be imprecise.
+     * @return
+     */
+    public static final String toFractionConsole(double value, int sigFigs) {
+        String integer = "";
+        if (value < 0) {
+            integer += "-";
+        }
+        if (Math.abs(value) > 1) {
+            integer += (int) Math.abs(value);
+        }
+
+        double valToFind = Math.abs(value - (int) value);
+        for (int i = 2; i < Constants.NumberConstants.MAX_PRIME_NUMBER + 1; i++) {
+            for (int j = 1; j < i; j++) {
+                if (withinEpsilon((double) j / i, valToFind, Math.pow(10, -2 * sigFigs))) {
+                    return integer + "(" + j + "/" + i + ")";
                 }
             }
         }

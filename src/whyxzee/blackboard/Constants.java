@@ -3,6 +3,7 @@ package whyxzee.blackboard;
 import java.awt.Font;
 
 import whyxzee.blackboard.equations.SequentialEQ;
+import whyxzee.blackboard.numbers.uncountable.Infinity;
 import whyxzee.blackboard.terms.PowerTerm;
 import whyxzee.blackboard.terms.variables.Variable;
 
@@ -97,6 +98,12 @@ public final class Constants {
         };
         public static final int MAX_PRIME_NUMBER = 17;
         public static final int SIG_FIGS = 4;
+
+        /* Infinity */
+        public static final Infinity LOG_INFTY = new Infinity(0);
+        public static final Infinity INFINITY = new Infinity(1);
+        public static final Infinity EXP_INFTY = new Infinity(2);
+        public static final Infinity FACT_INFTY = new Infinity(3); // factorial
     }
 
     public static final class SeriesConstants {

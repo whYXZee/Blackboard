@@ -172,9 +172,9 @@ public class SetUtils {
      * criteria must be met for a {@code true} return value:
      * <ul>
      * <li>both <b>regionOne's</b> upper bound and <b>regionTwo's</b> lower bound
-     * are not open
-     * <li><b>a</b>'s upper bound and <b>b</b>'s lower bound must be the same
-     * number.
+     * are not open.
+     * <li><b>regionOne's</b> upper bound and <b>regionTwo's</b> lower bound must be
+     * the same number.
      * </ul>
      */
     public static final boolean isRegionSplit(IntervalSet regionOne, IntervalSet regionTwo) {
@@ -185,4 +185,21 @@ public class SetUtils {
         return regionTwo.getLowBound().equals(regionOne.getUpBound());
     }
 
+    /**
+     * Checks two intervals to see if they make up a split region. The following
+     * criteria must be met for a {@code true} return value:
+     * <ul>
+     * <li>both <b>regionOne's</b> upper bound and <b>regionTwo's</b> lower bound
+     * are not open
+     * <li><b>regionOne's</b> upper bound and <b>regionTwo's</b> lower bound must be
+     * the same number.
+     * </ul>
+     */
+    public static final boolean isRegionSplit(RangePredicate regionOne, RangePredicate regionTwo) {
+        if (regionTwo.isLowOpen() && regionOne.isUpOpen()) {
+            return false;
+        }
+
+        return regionTwo.getLowBound().equals(regionOne.getUpBound());
+    }
 }

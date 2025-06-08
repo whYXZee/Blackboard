@@ -42,7 +42,7 @@ public abstract class SetAbstract {
 
     public abstract SetAbstract union(SetAbstract other);
 
-    public abstract SetAbstract disjunction(SetAbstract other);
+    public abstract SetAbstract intersection(SetAbstract other);
 
     public abstract SetAbstract complement(SetAbstract universe);
 
@@ -69,6 +69,16 @@ public abstract class SetAbstract {
     // Boolean Methods
     //
     public abstract boolean inSet(NumberAbstract number);
+
+    /**
+     * Checks if the two sets have no terms in common.
+     * 
+     * @param other
+     * @return
+     */
+    public final boolean isDisjoint(SetAbstract other) {
+        return intersection(other).isType(SetType.NULL);
+    }
 
     /**
      * Checks if <b>this</b> is a superset of <b>other</b> (conversely, is
