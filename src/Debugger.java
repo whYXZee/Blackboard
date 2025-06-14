@@ -1,66 +1,45 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
-import whyxzee.blackboard.utils.*;
+import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.display.*;
-import whyxzee.blackboard.equations.*;
-import whyxzee.blackboard.numbers.NumberAbstract;
-import whyxzee.blackboard.numbers.RealNumber;
-import whyxzee.blackboard.numbers.uncountable.Infinity;
-import whyxzee.blackboard.settheory.*;
-import whyxzee.blackboard.settheory.arithmetic.UnionBounds;
-import whyxzee.blackboard.settheory.predicates.*;
-import whyxzee.blackboard.settheory.sets.*;
-import whyxzee.blackboard.terms.*;
-import whyxzee.blackboard.terms.arithmetic.*;
-import whyxzee.blackboard.terms.arithmetic.special.*;
-import whyxzee.blackboard.terms.variables.*;
+import whyxzee.blackboard.math.pure.algebra.equations.CompleteSquare;
+import whyxzee.blackboard.math.pure.algebra.equations.SolveFor;
+import whyxzee.blackboard.math.pure.equations.SequentialFunc;
+import whyxzee.blackboard.math.pure.numbers.*;
+import whyxzee.blackboard.math.pure.numbers.BUncountable.UncountableType;
+import whyxzee.blackboard.math.pure.numbers.uncountables.*;
+import whyxzee.blackboard.math.pure.terms.PowerTerm;
+import whyxzee.blackboard.math.pure.terms.TermUtils;
+import whyxzee.blackboard.math.pure.terms.variables.USub;
+import whyxzee.blackboard.math.pure.terms.variables.Variable;
 
 public class Debugger {
-    public static void main(String[] args) throws Exception {
-        /* Frame stuff */
-        JFrame frame = new JFrame();
-        BlackboardDisplay display = new BlackboardDisplay(frame);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        public static void main(String[] args) throws Exception {
+                /* Frame stuff */
+                JFrame frame = new JFrame();
+                BlackboardDisplay display = new BlackboardDisplay(frame);
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        /* Math Debugging */
-        NaturalSet natSet = new NaturalSet();
-        IntegerSet intSet = new IntegerSet();
-        RationalSet ratSet = new RationalSet();
-        DefinedList list = new DefinedList("A", new ArrayList<NumberAbstract>() {
-            {
-                add(new RealNumber(0));
-                add(new RealNumber(6));
-                add(new RealNumber(5));
-            }
-        });
-        SetBuilder builder = new SetBuilder("B", "x", new ArrayList<PredicateAbstract>() {
-            {
-                add(new ElementOf("x", intSet));
-                add(new RangePredicate("x", new RealNumber(-2), false, false, new Infinity()));
-            }
-        });
-        IntervalSet intInf = new IntervalSet("C");
-        IntervalSet intOne = new IntervalSet("A", new Infinity(true), false, false, new RealNumber(5));
-        IntervalSet intTwo = new IntervalSet("B", new RealNumber(0), true, true, new RealNumber(70));
-        IntervalSet intTest = new IntervalSet("Test", new RealNumber(0), true, false, new RealNumber(-70));
-        RangePredicate rangeTest = new RangePredicate("x", intOne);
+                /* Math Debugging */
+                Variable xVar = new Variable("x");
+                SequentialFunc lFunc = new SequentialFunc(new PowerTerm(1, xVar, 2));
+                SequentialFunc rFunc = new SequentialFunc(new PowerTerm(-25));
+                SequentialFunc quadFunc = new SequentialFunc(new PowerTerm(2, xVar, 2), new PowerTerm(-12, xVar),
+                                new PowerTerm(6));
+                // CompleteSquare.performOp("x", quadFunc.getTerms(), new BNumber(18, 0))
+                display.appendScript(new BlackboardLabel(
+                                SolveFor.performOp("x", lFunc, rFunc).toString(), 0.05));
 
-        display.appendScript(
-                new BlackboardLabel(
-                        rangeTest.toString(),
-                        0.05));
-
-        /* Displaying */
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setSize((int) (screenSize.width / 1.5), (int) (screenSize.height / 1.5));
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.setResizable(true);
-        frame.setContentPane(display);
-    }
+                /* Displaying */
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                // frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                frame.setSize((int) (screenSize.width / 1.5), (int) (screenSize.height / 1.5));
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                frame.setResizable(true);
+                frame.setContentPane(display);
+        }
 }

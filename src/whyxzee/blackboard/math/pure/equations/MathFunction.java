@@ -1,0 +1,104 @@
+package whyxzee.blackboard.math.pure.equations;
+
+import java.util.ArrayList;
+
+import whyxzee.blackboard.math.applied.settheory.DefinedList;
+import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.terms.Term;
+import whyxzee.blackboard.math.pure.terms.Term.TermType;
+
+public abstract class MathFunction {
+    /* Terms */
+    private ArrayList<Term> terms = new ArrayList<Term>();
+    private ArrayList<Term> powTerms = new ArrayList<Term>();
+    private ArrayList<Term> plusMinTerms = new ArrayList<Term>();
+
+    /* Logic */
+    private FunctionType type = FunctionType.SEQUENTIAL;
+
+    public enum FunctionType {
+        SEQUENTIAL
+    }
+
+    public MathFunction(FunctionType type, ArrayList<Term> terms) {
+        this.type = type;
+        for (Term i : terms) {
+            sort(i);
+        }
+    }
+
+    public MathFunction(FunctionType type, Term... terms) {
+        this.type = type;
+        for (Term i : terms) {
+            sort(i);
+        }
+    }
+
+    public final void sort(Term term) {
+        switch (term.getTermType()) {
+            case POWER:
+                powTerms.add(term);
+                break;
+            case PLUS_MINUS:
+                plusMinTerms.add(term);
+                break;
+            default:
+                break;
+        }
+
+        terms.add(term);
+    }
+
+    ///
+    /// Get & Set Methods
+    ///
+    public final ArrayList<Term> getTerms() {
+        return terms;
+    }
+
+    public final ArrayList<Term> getTermArr(TermType termType) {
+        switch (termType) {
+            case POWER:
+                return powTerms;
+            case PLUS_MINUS:
+                return plusMinTerms;
+            default:
+                return null;
+        }
+    }
+
+    ///
+    /// Arithmetic Methods
+    ///
+    public abstract BNumber solve(BNumber value);
+
+    /**
+     * Should only be used for equations that do not have any variables in them, but
+     * have multiple term types.
+     * 
+     * @return
+     */
+    public abstract DefinedList solutions();
+
+    ///
+    /// Boolean Methods
+    ///
+    /**
+     * Checks if the math function contains the given variable.
+     * 
+     * @param var
+     * @return
+     */
+    public final boolean containsVar(String var) {
+        for (Term i : terms) {
+            if (i.containsVar(var)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public final boolean isType(FunctionType type) {
+        return this.type == type;
+    }
+}

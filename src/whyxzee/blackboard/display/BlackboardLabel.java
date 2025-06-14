@@ -29,12 +29,12 @@ public class BlackboardLabel extends JLabel {
     }
 
     @Override
-    public void resize(Dimension dimension) {
+    public final void resize(Dimension dimension) {
         super.setFont(new Font(Constants.DisplayConstants.FONT_NAME, Constants.DisplayConstants.FONT_STYLE,
                 (int) (dimension.getHeight() * resizeFactor)));
     }
 
-    public void resize(int height) {
+    public final void resize(int height) {
         super.setFont(new Font(Constants.DisplayConstants.FONT_NAME, Constants.DisplayConstants.FONT_STYLE,
                 (int) (height * resizeFactor)));
     }
@@ -42,12 +42,20 @@ public class BlackboardLabel extends JLabel {
     //
     // Get & Set Methods
     //
-    public String getText() {
+    public final String getText() {
         return text;
     }
 
-    public void setText(String text) {
+    public final void setText(String text) {
         this.text = text;
         super.setText(text);
+    }
+
+    public final double getResizeFactor() {
+        return resizeFactor;
+    }
+
+    public final void setResizeFactor(double resizeFactor) {
+        this.resizeFactor = resizeFactor;
     }
 }

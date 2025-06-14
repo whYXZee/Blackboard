@@ -2,11 +2,6 @@ package whyxzee.blackboard;
 
 import java.awt.Font;
 
-import whyxzee.blackboard.equations.SequentialEQ;
-import whyxzee.blackboard.numbers.uncountable.Infinity;
-import whyxzee.blackboard.terms.PowerTerm;
-import whyxzee.blackboard.terms.variables.Variable;
-
 public final class Constants {
     public static final class Unicode {
         /* Superscript */
@@ -64,6 +59,7 @@ public final class Constants {
 
         /* Greek characters */
         public static final char UPPERCASE_SIGMA = '\u03A3';
+        public static final char LOWERCASE_PI = '\u03C0';
 
         /* Infinity */
         public static final String INFINITY = "\u221E";
@@ -73,6 +69,7 @@ public final class Constants {
         public static final char FRACTION_SLASH = '\u2044';
         public static final char IMAGINARY_NUMBER = 'i';
         public static final char INTEGRAL = '\u222B';
+        public static final char PLUS_MINUS = '\u00B1';
 
         /* Random characters */
         public static final char STOPWATCH = '\u23F1';
@@ -99,16 +96,19 @@ public final class Constants {
         public static final int MAX_PRIME_NUMBER = 17;
         public static final int SIG_FIGS = 4;
 
-        /* Infinity */
-        public static final Infinity LOG_INFTY = new Infinity(0);
-        public static final Infinity INFINITY = new Infinity(1);
-        public static final Infinity EXP_INFTY = new Infinity(2);
-        public static final Infinity FACT_INFTY = new Infinity(3); // factorial
+        /* Complex Numbers */
+        public static final double NEG_ONE_TO_I = 0.0432139186;
     }
 
-    public static final class SeriesConstants {
-        public static final SequentialEQ N_MINUS_ONE = new SequentialEQ(
-                new PowerTerm(1, new Variable("n")),
-                new PowerTerm(-1));
+    public static final class TelemetryConstants {
+        /* Arithmetic */
+        public static final boolean SOLVE_FOR_TELEMETRY = true;
+
+        /* Equations */
+        public static final boolean SEQ_FUN_TELEMETRY = false;
+
+        /* Terms */
+        public static final boolean POW_TERM_TELEMETRY = false;
+
     }
 }
