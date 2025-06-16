@@ -8,7 +8,7 @@ import whyxzee.blackboard.math.pure.terms.PowerTerm;
  * The package is built for the polar definition of complex numbers.
  * 
  * <p>
- * The functionality of this class has been checked on {@code 6/13/2025} and
+ * The functionality of this class has been checked on <b>6/14/2025</b> and
  * nothing has changed since.
  */
 public class BNumber {
@@ -237,6 +237,11 @@ public class BNumber {
     /// Operations
     ///
     // #region
+    /**
+     * Performs a deep copy of the complex number, and then negates the copy.
+     * 
+     * @return
+     */
     public final BNumber negate() {
         return new BNumber(-a, -b);
     }
@@ -314,11 +319,27 @@ public class BNumber {
     }
 
     /**
-     * Multiplies <b>n</b> number of numbers together.
+     * A static division class for complex numbers. The method does a deep copy of
+     * <b>divisor</b> and then uses the
+     * {@link whyxzee.blackboard.math.pure.numbers.BNumber#divide(BNumber...)}
+     * method.
+     * 
+     * @param divisor
+     * @param dividend
+     * @return
+     */
+    public static final BNumber divide(BNumber divisor, BNumber dividend) {
+        BNumber output = divisor.clone();
+        output.divide(dividend);
+        return output;
+    }
+
+    /**
+     * Divides <b>n</b> number of complex numbers together.
      * <ul>
-     * <li>if two numbers are real, it performs normal multiplication.
-     * <li>if two numbers are imaginary, it performs normal multiplication -> ai*bi
-     * = -ab
+     * <li>if two numbers are real, it performs normal division.
+     * <li>if two numbers are imaginary, it performs normal division -> ai/bi
+     * = a/b
      * <li>if there is a mismatch or one number is complex, then it performs the
      * following equation:
      * {@code ((r_1 / r_2) * cos(theta_1 - theta_2)) + ((r_1 / r_2) * i * sin(theta_1 - theta_2))}
@@ -362,7 +383,6 @@ public class BNumber {
                 System.out.println("modulus: " + combinedModulus + " theta: " + combinedTheta);
             }
         }
-
     }
 
     /**
@@ -410,56 +430,71 @@ public class BNumber {
 
     // TODO: roots of a complex number
 
+    /**
+     * Gets the complex number of a real base to a real, imaginary, or complex
+     * power.
+     * 
+     * @param base
+     * @param power
+     * @return
+     */
     public static final BNumber pow(double base, BNumber power) {
-        double aIn = power.getA(), bIn = power.getB();
+        double aPow = power.getA(), bPow = power.getB();
         double aOut, bOut;
         if (power.isReal()) {
-            if (base < 0) {
-                aOut = 0;
-                bOut = Math.pow(-base, aIn);
-            } else {
-                aOut = Math.pow(base, aIn);
-                bOut = 0;
+            if (!(0 < Math.abs(aPow)) || !(Math.abs(aPow) < 1)) {
+                return new BNumber(Math.pow(base, aPow), 0);
             }
-            return new BNumber(aOut, bOut);
+
+            int[] ratio = NumberUtils.findRatio(aPow);
+            if (ratio[1] % 2 == 0 && base < 0) {
+                return new BNumber(0, Math.pow(-base, aPow));
+            }
+            return new BNumber(Math.pow(base, aPow), 0);
         }
 
         if (power.isImaginary()) {
             if (base < 0) {
                 // negative base
-                BNumber temp = pow(-base, power);
-                if (Math.pow(-1, bIn) < 0) {
-                    temp.multiplyScalar(Constants.NumberConstants.NEG_ONE_TO_I);
+                BNumber output = pow(-base, power);
+                if (Math.pow(-1, bPow) < 0) {
+                    output.multiplyScalar(Constants.NumberConstants.NEG_ONE_TO_I);
                 }
-                return temp;
+                return output;
 
             } else {
-                aOut = Math.cos(bIn * Math.log(base));
-                bOut = Math.sin(bIn * Math.log(base));
+                aOut = Math.cos(bPow * Math.log(base));
+                bOut = Math.sin(bPow * Math.log(base));
+                return new BNumber(aOut, bOut);
             }
         } else {
             // complex power
             if (base < 0) {
                 // negative base
                 BNumber temp = pow(-base, power);
-                aOut = Math.pow(-1, aIn);
-                bOut = Math.pow(-1, bIn);
+                aOut = Math.pow(-1, aPow);
+                bOut = Math.pow(-1, bPow);
                 if (bOut < 0) {
                     bOut = Constants.NumberConstants.NEG_ONE_TO_I;
                 }
                 temp.multiplyScalar(aOut * bOut);
                 return temp;
             } else {
-                aOut = Math.cos(bIn * Math.log(base));
-                bOut = Math.sin(bIn * Math.log(base));
-                BNumber temp = new BNumber(aOut, bOut);
-                temp.multiplyScalar(Math.exp(aIn * Math.log(base)));
-                return temp;
+                double tTheta = bPow * Math.log(base); // temp theta
+                double tModulus = Math.exp(aPow * Math.log(base));
+                return fromPolar(tModulus, tTheta);
             }
         }
-        return new BNumber(aOut, bOut);
     }
 
+    /**
+     * Gets the complex number of a real, imaginary, or complex base to a real,
+     * imaginary, or complex power.
+     * 
+     * @param base
+     * @param power
+     * @return
+     */
     public static final BNumber pow(BNumber base, BNumber power) {
         BNumber baseCopy = base.clone();
         BNumber powerCopy = power.clone();

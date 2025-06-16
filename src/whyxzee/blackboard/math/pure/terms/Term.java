@@ -111,6 +111,11 @@ public abstract class Term {
         coef.divide(value);
     }
 
+    /**
+     * Deep copies the term while also multiplying the coefficient by -1.
+     * 
+     * @return
+     */
     public abstract Term negate();
 
     /**

@@ -100,9 +100,16 @@ public final class Constants {
         public static final double NEG_ONE_TO_I = 0.0432139186;
     }
 
+    /**
+     * Global constants for activating telemetry in certain aspects of the package.
+     * This is only used for debugging and developmental purposes.
+     */
     public static final class TelemetryConstants {
         /* Arithmetic */
-        public static final boolean SOLVE_FOR_TELEMETRY = true;
+        public static final boolean SOLVE_FOR_TELEMETRY = false;
+        public static final boolean RATIONAL_ROOT_TELEMETRY = false;
+        public static final boolean MULTIPLY_TERMS_TELEMETRY = false;
+        public static final boolean ALGEBRA_UTILS_TELEMETRY = true;
 
         /* Equations */
         public static final boolean SEQ_FUN_TELEMETRY = false;

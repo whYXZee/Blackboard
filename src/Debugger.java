@@ -1,17 +1,20 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.display.*;
-import whyxzee.blackboard.math.pure.algebra.equations.CompleteSquare;
+import whyxzee.blackboard.math.pure.algebra.AlgebraUtils;
 import whyxzee.blackboard.math.pure.algebra.equations.SolveFor;
-import whyxzee.blackboard.math.pure.equations.SequentialFunc;
+import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
+import whyxzee.blackboard.math.pure.equations.MultiplyEQ;
 import whyxzee.blackboard.math.pure.numbers.*;
 import whyxzee.blackboard.math.pure.numbers.BUncountable.UncountableType;
 import whyxzee.blackboard.math.pure.numbers.uncountables.*;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
+import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.TermUtils;
 import whyxzee.blackboard.math.pure.terms.variables.USub;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
@@ -25,13 +28,25 @@ public class Debugger {
 
                 /* Math Debugging */
                 Variable xVar = new Variable("x");
-                SequentialFunc lFunc = new SequentialFunc(new PowerTerm(1, xVar, 2));
-                SequentialFunc rFunc = new SequentialFunc(new PowerTerm(-25));
-                SequentialFunc quadFunc = new SequentialFunc(new PowerTerm(2, xVar, 2), new PowerTerm(-12, xVar),
-                                new PowerTerm(6));
-                // CompleteSquare.performOp("x", quadFunc.getTerms(), new BNumber(18, 0))
+                ArrayList<Term> lTerms = new ArrayList<Term>() {
+                        {
+                                add(new PowerTerm(1, xVar, 2));
+                                add(new PowerTerm(1, xVar));
+                                add(new PowerTerm(3));
+                        }
+                };
+
+                ArrayList<Term> rTerms = new ArrayList<Term>() {
+                        {
+                                add(new PowerTerm(18));
+                        }
+                };
+
+                // TermUtils.MultiplyTerms.performMultiply(mEQ.getTerms())
                 display.appendScript(new BlackboardLabel(
-                                SolveFor.performOp("x", lFunc, rFunc).toString(), 0.05));
+                                SolveFor.performOp("x", new AdditiveEQ(lTerms), new AdditiveEQ(rTerms))
+                                                .toString(),
+                                0.05));
 
                 /* Displaying */
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

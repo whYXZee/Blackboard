@@ -1,5 +1,7 @@
 package whyxzee.blackboard.math.pure.numbers;
 
+import java.util.ArrayList;
+
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.utils.UnicodeUtils;
 
@@ -81,6 +83,112 @@ public class NumberUtils {
         return digits;
     }
 
+    /**
+     * Finds which two numbers makes the ratio.
+     * 
+     * @param ratio
+     * @param sigFigs the multiplier of precision, where the fraction has a
+     *                10^(-2 * <b>sigFigs</b>) tolerance due to how double can
+     *                sometimes be imprecise.
+     * @return
+     */
+    public static final int[] findRatio(double ratio, int sigFigs) {
+        int integer = 0;
+        if (ratio < 0) {
+            integer = -1;
+        }
+        if (Math.abs(ratio) > 1) {
+            integer += (int) Math.abs(ratio);
+        }
+
+        double valToFind = Math.abs(ratio - (int) ratio);
+        double epsilon = Math.pow(10, -2 * sigFigs);
+        for (int i = 2; i < Constants.NumberConstants.MAX_PRIME_NUMBER + 1; i++) {
+            for (int j = 1; j < i; j++) {
+                if (withinEpsilon((double) j / i, valToFind, epsilon)) {
+                    int[] output = new int[2];
+                    output[0] = (integer * i) + j;
+                    output[1] = i;
+                    return output;
+                }
+            }
+        }
+
+        /* Turning into fraction was unsuccessful */
+        return new int[2];
+    }
+
+    /**
+     * 
+     * Finds which two numbers makes the ratio, using .
+     * 
+     * @param ratio
+     * @return a ratio based on
+     *         {@link whyxzee.blackboard.Constants.NumberConstants#SIG_FIGS}.
+     */
+    public static final int[] findRatio(double ratio) {
+        return findRatio(ratio, Constants.NumberConstants.SIG_FIGS);
+    }
+
+    /**
+     * <p>
+     * The functionality of this class has been checked on <b>6/15/2025</b> and
+     * nothing has changed since.
+     */
+    public static class Factors {
+        /* Variables */
+        private static ArrayList<BNumber> numbers = new ArrayList<BNumber>();
+
+        /**
+         * Gets all of the factors of the <b>number</b>.
+         * 
+         * @param number Must be an integer.
+         * @return
+         */
+        public static final ArrayList<BNumber> factorsOf(BNumber number) {
+            numbers = new ArrayList<BNumber>();
+            if (!number.isReal()) {
+                throw new UnsupportedOperationException();
+            }
+
+            double a = Math.abs(number.getA());
+            for (int i = 1; i <= a / 2; i++) {
+                if ((a / i) % 1 == 0) {
+                    add(new BNumber(a / i, 0), new BNumber(i, 0));
+                }
+            }
+
+            return numbers;
+        }
+
+        ///
+        /// Get & Set Methods
+        ///
+        private static final void add(BNumber... factors) {
+            for (BNumber i : factors) {
+                if (!contains(i)) {
+                    numbers.add(i);
+                }
+            }
+        }
+
+        ///
+        /// Boolean Methods
+        ///
+        private static final boolean contains(BNumber number) {
+            for (BNumber i : numbers) {
+                if (i.equals(number)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    ///
+    /// String Optimization
+    ///
+    // #region
     /**
      * "Optimizes" a value for user readability through the following criteria:
      * <ul>
@@ -234,10 +342,12 @@ public class NumberUtils {
 
         return output;
     }
+    // #endregion
 
-    //
-    // Boolean Methods
-    //
+    ///
+    /// Boolean Methods
+    ///
+    // #region
     public static final boolean isInteger(double value) {
         return value % 1 == 0;
     }
@@ -311,4 +421,5 @@ public class NumberUtils {
     public static final boolean isRational(double value) {
         return isRational(value, Constants.NumberConstants.SIG_FIGS);
     }
+    // #endregion
 }

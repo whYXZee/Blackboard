@@ -7,27 +7,29 @@ import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
 
-public abstract class MathFunction {
+public abstract class MathEQ {
     /* Terms */
+    private boolean autoCondense = false;;
     private ArrayList<Term> terms = new ArrayList<Term>();
     private ArrayList<Term> powTerms = new ArrayList<Term>();
     private ArrayList<Term> plusMinTerms = new ArrayList<Term>();
 
     /* Logic */
-    private FunctionType type = FunctionType.SEQUENTIAL;
+    private EQType type = EQType.ADDITIVE;
 
-    public enum FunctionType {
-        SEQUENTIAL
+    public enum EQType {
+        ADDITIVE,
+        MULTIPLY,
     }
 
-    public MathFunction(FunctionType type, ArrayList<Term> terms) {
+    public MathEQ(EQType type, ArrayList<Term> terms) {
         this.type = type;
         for (Term i : terms) {
             sort(i);
         }
     }
 
-    public MathFunction(FunctionType type, Term... terms) {
+    public MathEQ(EQType type, Term... terms) {
         this.type = type;
         for (Term i : terms) {
             sort(i);
@@ -54,6 +56,10 @@ public abstract class MathFunction {
     ///
     public final ArrayList<Term> getTerms() {
         return terms;
+    }
+
+    public final void setTerms(ArrayList<Term> terms) {
+        this.terms = terms;
     }
 
     public final ArrayList<Term> getTermArr(TermType termType) {
@@ -98,7 +104,7 @@ public abstract class MathFunction {
         return false;
     }
 
-    public final boolean isType(FunctionType type) {
+    public final boolean isType(EQType type) {
         return this.type == type;
     }
 }

@@ -1,6 +1,6 @@
 package whyxzee.blackboard.math.pure.terms.variables;
 
-import whyxzee.blackboard.math.pure.equations.MathFunction;
+import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.Term;
 
@@ -95,7 +95,7 @@ public class Variable {
         return varType;
     }
 
-    public MathFunction getInnerFunction() {
+    public MathEQ getInnerFunction() {
         return null;
     }
 

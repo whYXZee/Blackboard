@@ -2,22 +2,28 @@ package whyxzee.blackboard.math.pure.equations;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.Term;
+import whyxzee.blackboard.math.pure.terms.TermUtils;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
 
-public class SequentialFunc extends MathFunction {
-    private static final boolean telemetryOn = Constants.TelemetryConstants.SEQ_FUN_TELEMETRY;
-
-    public SequentialFunc(ArrayList<Term> terms) {
-        super(FunctionType.SEQUENTIAL, terms);
+public class AdditiveEQ extends MathEQ {
+    ///
+    /// Constructor Methods
+    ///
+    // #region
+    public AdditiveEQ(ArrayList<Term> terms) {
+        super(EQType.ADDITIVE, terms);
+        setTerms(TermUtils.AddTerms.performAddition(terms));
     }
 
-    public SequentialFunc(Term... terms) {
-        super(FunctionType.SEQUENTIAL, terms);
+    public AdditiveEQ(Term... terms) {
+        super(EQType.ADDITIVE, terms);
+        setTerms(TermUtils.AddTerms.performAddition(getTerms()));
     }
+
+    // #endregion
 
     @Override
     public final String toString() {

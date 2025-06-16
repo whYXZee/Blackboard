@@ -103,6 +103,10 @@ public class PowerTerm extends Term {
             return "0";
         } else if (coef.isComplex()) {
             output += "(" + coef + ")";
+        } else if (!isConstant() && coef.equals(1)) {
+            output += "";
+        } else if (!isConstant() && coef.equals(-1)) {
+            output += "-";
         } else {
             output += coef;
         }
@@ -159,7 +163,7 @@ public class PowerTerm extends Term {
     ///
     @Override
     public final Term negate() {
-        return new PowerTerm(getCoef().negate(), getVar(), power);
+        return new PowerTerm(getCoef().negate(), getVar(), power.clone());
     }
 
     @Override

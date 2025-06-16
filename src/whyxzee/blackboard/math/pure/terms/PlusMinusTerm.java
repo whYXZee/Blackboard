@@ -4,6 +4,9 @@ import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 
+/**
+ * Maybe this class can be implemented somehow else?
+ */
 public class PlusMinusTerm extends Term {
     ///
     /// Constructor Methods

@@ -3,9 +3,10 @@ package whyxzee.blackboard.math.pure.algebra.equations;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.math.pure.equations.EquationUtils;
-import whyxzee.blackboard.math.pure.equations.MathFunction;
-import whyxzee.blackboard.math.pure.equations.SequentialFunc;
-import whyxzee.blackboard.math.pure.equations.MathFunction.FunctionType;
+import whyxzee.blackboard.math.pure.equations.MathEQ;
+import whyxzee.blackboard.math.pure.algebra.AlgebraUtils;
+import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
+import whyxzee.blackboard.math.pure.equations.MathEQ.EQType;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
@@ -34,11 +35,16 @@ public class SolveFor {
     private static ArrayList<Term> leftSide = new ArrayList<Term>(); // will have the variable
     private static ArrayList<Term> rightSide = new ArrayList<Term>();
     private static String varToFind = "";
+    /**
+     * If nothing is performed, then mark true to check for special operations (such
+     * as completing the square, rational root theorem, etc.)
+     */
+    private static boolean somethingPerformed;
 
-    public static final DefinedList performOp(String var, SequentialFunc left, SequentialFunc right) {
+    public static final DefinedList performOp(String var, AdditiveEQ left, AdditiveEQ right) {
         /* Var declarations */
         varToFind = var;
-
+        DefinedList allSols = null;
         leftSide = EquationUtils.deepCopyTerms(left.getTerms());
         rightSide = EquationUtils.deepCopyTerms(right.getTerms());
 
@@ -51,13 +57,28 @@ public class SolveFor {
             }
 
             /* Arithmetic */
+            somethingPerformed = false;
             inverse();
             multiplication();
             addition();
+
+            System.out.println(somethingPerformed);
+            if (somethingPerformed == false) {
+                allSols = powerOps();
+                if (allSols != null) {
+                    break;
+                }
+            }
+
+            if (i > 6) {
+                break;
+            }
             i++;
         }
 
-        DefinedList allSols = getSolutions();
+        if (allSols == null) {
+            allSols = getSolutions();
+        }
         return extraneousSolutions(allSols, left, right);
     }
 
@@ -80,6 +101,7 @@ public class SolveFor {
             System.out.println("inverse");
 
         /* Algorithm */
+        somethingPerformed = true;
         ArrayList<Term> newRight = new ArrayList<Term>();
         ArrayList<Term> newLeft = new ArrayList<Term>();
         switch (lTerm.getTermType()) {
@@ -97,7 +119,7 @@ public class SolveFor {
                 }
 
                 boolean rSideNeedsUSub = true;
-                USub rSide = new USub(new SequentialFunc(rightSide));
+                USub rSide = new USub(new AdditiveEQ(rightSide));
                 BNumber constantVal = rightSide.get(0).getCoef();
                 if (rightSide.size() == 1) {
                     rSideNeedsUSub = false;
@@ -135,8 +157,8 @@ public class SolveFor {
                 powTerm.setPower(1);
                 switch (lTerm.getVar().getVarType()) {
                     case U_SUB_EQ:
-                        MathFunction inner = lTerm.getVar().getInnerFunction();
-                        if (inner.isType(FunctionType.SEQUENTIAL)) {
+                        MathEQ inner = lTerm.getVar().getInnerFunction();
+                        if (inner.isType(EQType.ADDITIVE)) {
                             newLeft = inner.getTerms();
                         }
                         break;
@@ -168,6 +190,7 @@ public class SolveFor {
 
         /* Algorithm */
         if (lTerm.getVar().containsVar(varToFind)) {
+            somethingPerformed = true;
             if (!lTerm.getCoef().equals(new BNumber(1, 0))) {
                 BNumber coef = lTerm.getCoef();
                 lTerm.setCoef(1);
@@ -185,11 +208,12 @@ public class SolveFor {
                 default:
                     break;
             }
+
+            /* Telemetry */
+            if (telemetryOn)
+                System.out.println("multiplication\nnew eq: " + leftSide + " = " + rightSide);
         }
 
-        /* Telemetry */
-        if (telemetryOn)
-            System.out.println("multiplication\nnew eq: " + leftSide + " = " + rightSide);
     }
 
     private static final void addition() {
@@ -217,19 +241,46 @@ public class SolveFor {
             }
         }
 
+        // if nothing changed, then do not continue
+        if (newLeft.equals(leftSide) && newRight.equals(newRight)) {
+            return;
+        }
+        somethingPerformed = true;
+
         rightSide = TermUtils.AddTerms.performAddition(newRight);
         leftSide = TermUtils.AddTerms.performAddition(newLeft);
 
         /* Telemetry */
         if (telemetryOn)
-            System.out.println("multiplication\nnew eq: " + leftSide + " = " + rightSide);
+            System.out.println("addition\nnew eq: " + leftSide + " = " + rightSide);
+    }
+
+    /**
+     * If the system is a power equation, then it performs special operations on the
+     * equation in the following order:
+     * <ol>
+     * <li>isQuadratic() -> Completing the Square
+     * <li>Rational Root Theorem
+     */
+    private static final DefinedList powerOps() {
+        ArrayList<Term> terms = EquationUtils.deepCopyTerms(leftSide);
+        for (Term i : rightSide) {
+            terms.add(i.negate());
+        }
+        System.out.println(terms);
+
+        if (AlgebraUtils.isQuadratic(terms)) {
+            return AlgebraUtils.completeSquare(varToFind, terms, new BNumber(0, 0));
+        } else {
+            return null;
+        }
     }
 
     private static final void setUSubToLSide(Term lTerm) {
         switch (lTerm.getVar().getVarType()) {
             case U_SUB_EQ:
-                MathFunction inner = lTerm.getVar().getInnerFunction();
-                if (inner.isType(FunctionType.SEQUENTIAL)) {
+                MathEQ inner = lTerm.getVar().getInnerFunction();
+                if (inner.isType(EQType.ADDITIVE)) {
                     leftSide = inner.getTerms();
                 }
                 break;
@@ -244,7 +295,7 @@ public class SolveFor {
     /// Get & Set Methods
     ///
     private static final DefinedList getSolutions() {
-        DefinedList list = new SequentialFunc(rightSide).solutions();
+        DefinedList list = new AdditiveEQ(rightSide).solutions();
         list.setSetName(varToFind);
 
         /* Telemetry */
@@ -254,7 +305,7 @@ public class SolveFor {
         return list;
     }
 
-    private static final DefinedList extraneousSolutions(DefinedList list, SequentialFunc left, SequentialFunc right) {
+    private static final DefinedList extraneousSolutions(DefinedList list, AdditiveEQ left, AdditiveEQ right) {
         if (telemetryOn)
             System.out.println("----Extraneous Solutions----");
 

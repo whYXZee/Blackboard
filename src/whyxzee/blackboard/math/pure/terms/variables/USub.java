@@ -1,6 +1,6 @@
 package whyxzee.blackboard.math.pure.terms.variables;
 
-import whyxzee.blackboard.math.pure.equations.MathFunction;
+import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.Term;
 
@@ -13,10 +13,10 @@ import whyxzee.blackboard.math.pure.terms.Term;
  */
 public class USub extends Variable {
     /* Variables */
-    private MathFunction innerFunction;
+    private MathEQ innerFunction;
     private Term innerTerm;
 
-    public USub(MathFunction innerFunction) {
+    public USub(MathEQ innerFunction) {
         super("u", VarType.U_SUB_EQ);
         this.innerFunction = innerFunction;
         this.innerTerm = null;
@@ -56,7 +56,7 @@ public class USub extends Variable {
     // Get and Set Methods
     //
     @Override
-    public final MathFunction getInnerFunction() {
+    public final MathEQ getInnerFunction() {
         return innerFunction;
     }
 
