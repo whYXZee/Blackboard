@@ -3,6 +3,7 @@ package whyxzee.blackboard.math.pure.terms;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.terms.variables.USub;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 
 /**
@@ -48,6 +49,9 @@ public abstract class Term {
         this.termType = termType;
     }
 
+    /**
+     * Performs a deep copy of the term.
+     */
     public abstract Term clone();
 
     public final ArrayList<Term> toTermArray() {
@@ -104,7 +108,7 @@ public abstract class Term {
      * @param value
      */
     public final void addToCoef(BNumber value) {
-        coef.add(value);
+        coef = BNumber.add(coef, value);
     }
 
     public final void divideCoefBy(BNumber value) {
@@ -134,6 +138,39 @@ public abstract class Term {
      */
     public final BNumber solve(double value) {
         return solve(new BNumber(value, 0));
+    }
+
+    /**
+     * 
+     * @param power
+     * @return
+     */
+    public final Term toPower(BNumber power) {
+        PowerTerm powTerm;
+        switch (termType) {
+            case POWER:
+                powTerm = (PowerTerm) this;
+
+                /* Power */
+                powTerm.getPower().multiply(power);
+
+                /* Coefficient */
+                powTerm.setCoef(BNumber.pow(getCoef(), power));
+                break;
+            default:
+                /* Coefficient */
+                BNumber newCoef = BNumber.pow(coef, power);
+                setCoef(1);
+
+                /* Power and U-Sub */
+                powTerm = new PowerTerm(newCoef, new USub(this), power);
+                break;
+        }
+        return powTerm;
+    }
+
+    public final Term toPower(double power) {
+        return toPower(new BNumber(power, 0));
     }
 
     //

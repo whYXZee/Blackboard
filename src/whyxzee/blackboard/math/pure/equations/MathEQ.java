@@ -9,7 +9,6 @@ import whyxzee.blackboard.math.pure.terms.Term.TermType;
 
 public abstract class MathEQ {
     /* Terms */
-    private boolean autoCondense = false;;
     private ArrayList<Term> terms = new ArrayList<Term>();
     private ArrayList<Term> powTerms = new ArrayList<Term>();
     private ArrayList<Term> plusMinTerms = new ArrayList<Term>();

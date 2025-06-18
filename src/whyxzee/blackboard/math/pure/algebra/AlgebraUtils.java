@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
 import whyxzee.blackboard.math.pure.algebra.equations.SolveFor;
+import whyxzee.blackboard.math.pure.combinatorics.CombinatoricsUtils;
 import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
 import whyxzee.blackboard.math.pure.equations.EquationUtils;
 import whyxzee.blackboard.math.pure.equations.MultiplyEQ;
@@ -15,8 +16,11 @@ import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.variables.USub;
 
 /**
+ * A general-use package for Algebra operations.
+ * 
  * <p>
- * The functionality of this class has not been checked.
+ * The functionality of this class has been checked on <b>6/16/2025</b> and
+ * nothing has changed since.
  */
 public class AlgebraUtils {
     /* Variables */
@@ -25,7 +29,7 @@ public class AlgebraUtils {
     ///
     /// Operations
     ///
-    // #region foil
+    // #region Foil
     public static final AdditiveEQ foil(AdditiveEQ one, AdditiveEQ two) {
         ArrayList<Term> outputTerms = new ArrayList<Term>();
         ArrayList<Term> oneArr = one.getTerms();
@@ -56,6 +60,57 @@ public class AlgebraUtils {
         }
         return current;
 
+    }
+    // #endregion
+
+    // #region Binomial Theorem
+    /**
+     * 
+     * @param one
+     * @param two
+     * @param power
+     * @return
+     */
+    public static final AdditiveEQ binomTheorem(Term one, Term two, int power) {
+        // TODO: negative powers?
+        /* Telemetry */
+        if (telemetryOn)
+            System.out.println("----Binomial Theorem with (" + one + " + " + two + ")^(" + power + ")----");
+
+        ArrayList<Term> outputArr = new ArrayList<Term>();
+        for (int k = 0; k <= power; k++) {
+            /* Arithmetic */
+            Term oneFactor = one.clone().toPower(power - k);
+            Term twoFactor = two.clone().toPower(k);
+            BNumber coef = CombinatoricsUtils.combination(power, power - k);
+
+            MultiplyEQ innerEQ = new MultiplyEQ(new PowerTerm(coef), oneFactor, twoFactor);
+            outputArr.add(EquationUtils.simplifyMultiply(innerEQ));
+
+            /* Telemetry */
+            if (telemetryOn) {
+                System.out.println("k = " + k + ", termA: " + oneFactor + " termB: " + twoFactor + " coef: " + coef);
+            }
+        }
+
+        return new AdditiveEQ(outputArr);
+    }
+
+    /**
+     * 
+     * @param one
+     * @param two
+     * @param power
+     * @return
+     */
+    public static final AdditiveEQ binomTheorem(Term one, Term two, BNumber power) {
+        // TODO: non-integer, complex, imaginary implementation
+        if (power.isReal() && power.mod(1).equals(0)) {
+            return binomTheorem(one, two, (int) power.getA());
+        }
+
+        throw new UnsupportedOperationException(
+                "non-integer, complex, and imaginary powers are unimplemented for Binomial Theorem");
     }
     // #endregion
 
@@ -114,7 +169,7 @@ public class AlgebraUtils {
         /* Variables */
         private static ArrayList<BNumber> uniqueRoots = new ArrayList<BNumber>();
 
-        public static final ArrayList<BNumber> performOp(BNumber q, BNumber p) {
+        public static final DefinedList performOp(BNumber q, BNumber p) {
             uniqueRoots = new ArrayList<BNumber>();
             ArrayList<BNumber> qFactors = NumberUtils.Factors.factorsOf(q);
             ArrayList<BNumber> pFactors = NumberUtils.Factors.factorsOf(p);
@@ -132,13 +187,16 @@ public class AlgebraUtils {
                     if (!contains(factor)) {
                         uniqueRoots.add(factor);
                     }
+                    if (!contains(factor.negate())) {
+                        uniqueRoots.add(factor.negate());
+                    }
                 }
             }
 
             if (telemetryOn)
                 System.out.println("combined factors: " + uniqueRoots);
 
-            return uniqueRoots;
+            return new DefinedList("", uniqueRoots);
         }
 
         ///
@@ -159,17 +217,22 @@ public class AlgebraUtils {
     /// Boolean Methods
     ///
     public static final boolean isQuadratic(ArrayList<Term> terms) {
+        // TODO: complex/imaginary numbers?
+        /* Telemetry */
         if (telemetryOn)
             System.out.println("----isQuadratic(" + terms + ")---");
-        // TODO: complex/imaginary numbers?
 
         // quadratics have a maximum of 3 terms
         if (terms.size() > 3) {
+            /* Telemetry */
             if (telemetryOn)
                 System.out.println("Quadratic size too large");
+
+            /* Arithmetic */
             return false;
         }
 
+        // TODO: what if the array has less than 3 terms?
         // quadratics have at least 2 power terms
         BNumber[] powOfTerms = new BNumber[3];
         for (int i = 0; i < 3; i++) {
@@ -193,6 +256,56 @@ public class AlgebraUtils {
             return false;
         }
 
+        return true;
+    }
+
+    public static final boolean isPolynomial(ArrayList<Term> terms) {
+        /* Telemetry */
+        if (telemetryOn)
+            System.out.println("----isQuadratic(" + terms + ")---");
+
+        BNumber[] powOfTerms = new BNumber[terms.size()];
+        int numOfOnePows = 0;
+        for (int i = 0; i < terms.size(); i++) {
+            try {
+                powOfTerms[i] = ((PowerTerm) terms.get(i)).getPower();
+            } catch (java.lang.ClassCastException e) {
+                // could be something like a trig term, but the first one would be a power with
+                // u-sub
+                powOfTerms[i] = new BNumber(1, 0);
+            }
+
+            /* Tracking the number of terms with power of one */
+            if (powOfTerms[i].equals(1)) {
+                numOfOnePows++;
+            }
+            if (numOfOnePows > 1) {
+                // there can only be one term with the power of one
+                /* Telemetry */
+                if (telemetryOn)
+                    System.out.println("More than one term with the power of one.");
+
+                /* Algorithm */
+                return false;
+            }
+        }
+
+        // all powers must be integers.
+        for (BNumber i : powOfTerms) {
+            if (!NumberUtils.isInteger(i)) {
+                /* Telemetry */
+                if (telemetryOn)
+                    System.out.println("One of the powers is not an integer.");
+
+                /* Algorithm */
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static final boolean needsFactoring(ArrayList<Term> terms) {
+        // TODO: needsFactoring()
         return true;
     }
 

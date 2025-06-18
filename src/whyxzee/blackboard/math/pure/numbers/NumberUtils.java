@@ -352,6 +352,10 @@ public class NumberUtils {
         return value % 1 == 0;
     }
 
+    public static final boolean isInteger(BNumber value) {
+        return value.mod(1).equals(0);
+    }
+
     /**
      * Checks if a number is within a range.
      * 

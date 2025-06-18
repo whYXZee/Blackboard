@@ -13,7 +13,7 @@ public class PowerTerm extends Term {
     ///
     /// Constructor Classes
     ///
-    // #region
+    // #region Constructors
     /**
      * Constructor class for a real number term.
      * 
@@ -192,7 +192,11 @@ public class PowerTerm extends Term {
     ///
     /// Boolean Methods
     ///
-
+    /**
+     * A PowerTerm is constant if the power is zero.
+     * 
+     * @return {@code power == 0}
+     */
     public final boolean isConstant() {
         return power.equals(0);
     }

@@ -15,7 +15,7 @@ import javax.swing.JPanel;
  * A package for displaying math functions in Swing.
  * 
  * <p>
- * The functionality of this class has been checked on {@code 5/10/2025}, and
+ * The functionality of this class has been checked on <b>5/10/2025</b>, and
  * nothing has changed.
  */
 public class BlackboardDisplay extends JPanel {
@@ -24,7 +24,6 @@ public class BlackboardDisplay extends JPanel {
     // UI Components
     //
     private final DisplayDaemon DAEMON;
-    private final BlackboardLabel testLabel2 = new BlackboardLabel("line 2: electric boogaloo", .1);
     private final JPanel scriptPanel = new JPanel();
 
     /* Grid */
@@ -55,8 +54,6 @@ public class BlackboardDisplay extends JPanel {
         scriptLabels = new ArrayList<BlackboardLabel>();
 
         /* Adding Display */
-        this.add(testLabel2, grid);
-        grid.gridy++;
         this.add(scriptPanel, grid); // jscrollpane panel for debugging
 
         /* Daemon */
@@ -71,8 +68,6 @@ public class BlackboardDisplay extends JPanel {
         /* Variables */
         int width = (int) dimension.getWidth();
         int height = (int) dimension.getHeight();
-
-        testLabel2.resize(dimension);
 
         /* Script */
         scriptPanel.setPreferredSize(new Dimension((int) (width / 1.25), height / 4));
@@ -114,7 +109,7 @@ public class BlackboardDisplay extends JPanel {
  * relation to the frame.
  * 
  * <p>
- * The functionality of the daemon was checked on {@code 5/9/2025}, and nothing
+ * The functionality of the daemon was checked on <b>5/9/2025</b>, and nothing
  * has changed since then.
  */
 class DisplayDaemon extends Thread {

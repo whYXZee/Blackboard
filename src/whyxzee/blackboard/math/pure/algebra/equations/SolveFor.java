@@ -62,7 +62,6 @@ public class SolveFor {
             multiplication();
             addition();
 
-            System.out.println(somethingPerformed);
             if (somethingPerformed == false) {
                 allSols = powerOps();
                 if (allSols != null) {
@@ -267,13 +266,20 @@ public class SolveFor {
         for (Term i : rightSide) {
             terms.add(i.negate());
         }
-        System.out.println(terms);
 
         if (AlgebraUtils.isQuadratic(terms)) {
             return AlgebraUtils.completeSquare(varToFind, terms, new BNumber(0, 0));
-        } else {
-            return null;
+
+        } else if (AlgebraUtils.isPolynomial(terms)) {
+            // if (AlgebraUtils.needsFactoring(terms)) {
+
+            // }
+            DefinedList list = AlgebraUtils.RationalRoot.performOp(terms.get(0).getCoef(),
+                    terms.get(terms.size() - 1).getCoef());
+            list.setSetName(varToFind);
+            return list;
         }
+        return null;
     }
 
     private static final void setUSubToLSide(Term lTerm) {
