@@ -53,7 +53,7 @@ public class AdditiveEQ extends MathEQ {
         BNumber output = new BNumber(0, 0);
         for (Term i : getTerms()) {
             BNumber addend = i.solve(value);
-            output.add(addend);
+            output = BNumber.add(output, addend);
         }
 
         return output;
@@ -71,20 +71,18 @@ public class AdditiveEQ extends MathEQ {
                 BNumber iNum = new BNumber(0, 0);
                 for (Term j : getTerms()) {
                     if (!j.equals(i)) {
-                        iNum.add(j.getCoef());
+                        iNum = BNumber.add(iNum, j.getCoef());
                     }
                 }
-                BNumber numOne = iNum.clone();
-                numOne.add(i.getCoef());
-                BNumber numTwo = iNum.clone();
-                numTwo.add(i.getCoef().negate());
+                BNumber numOne = BNumber.add(iNum, i.getCoef());
+                BNumber numTwo = BNumber.add(iNum, i.getCoef().negate());
                 numbers.add(numOne);
                 numbers.add(numTwo);
             }
         } else {
             BNumber output = new BNumber(0, 0);
             for (Term i : getTerms()) {
-                output.add(i.getCoef());
+                output = BNumber.add(output, i.getCoef());
             }
             numbers.add(output);
         }

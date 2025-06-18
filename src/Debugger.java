@@ -31,8 +31,8 @@ public class Debugger {
                 Variable yVar = new Variable("y");
                 ArrayList<Term> lTerms = new ArrayList<Term>() {
                         {
-                                add(new PowerTerm(1, xVar, 2));
-                                add(new PowerTerm(4));
+                                add(new PowerTerm(2, xVar, 1 / Math.sqrt(2)));
+                                add(new PowerTerm(32));
                         }
                 };
 
@@ -42,18 +42,18 @@ public class Debugger {
                         }
                 };
 
-                BNumber numOne = new BNumber(-5, 2);
-                BNumber numTwo = new BNumber(3, 1);
-                BNumber dne = new DoesNotExist();
-                BUncountable addend = new Aleph(false, 1);
-                BUncountable uncountable = new Aleph(false, 2);
-                BNumber uncountTwo = BUncountable.createCustomUncountable(addend, uncountable);
-
-                PowerTerm termA = new PowerTerm(1, xVar);
-                PowerTerm termB = new PowerTerm(new BNumber(0, 3));
+                BNumber base = new BNumber(6325, 23);
+                BNumber rInf = new GeneralInfinity(false);
+                BNumber iInf = new BNumber(0, 10);
+                BNumber power;
+                // power = new BNumber(.5, 0);
+                power = BUncountable.createCustomUncountable(rInf, iInf);
+                BNumber num = new BNumber(8.0 / 3, 0);
+                BNumber denom = new BNumber(23, -6);
 
                 display.appendScript(new BlackboardLabel(
-                                BNumber.add(dne)
+                                // SolveFor.performOp("x", new AdditiveEQ(lTerms), new AdditiveEQ(rTerms))
+                                BNumber.divide(num, denom)
                                                 .toString(),
                                 0.05));
 

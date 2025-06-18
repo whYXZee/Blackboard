@@ -180,7 +180,7 @@ public class PowerTerm extends Term {
         }
 
         BNumber factor = BNumber.pow(getVar().solve(value), power);
-        output.multiply(factor);
+        output = BNumber.multiply(output, factor);
 
         /* Telemetry */
         if (telemetryOn) {

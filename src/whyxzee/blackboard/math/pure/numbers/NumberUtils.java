@@ -115,7 +115,8 @@ public class NumberUtils {
         }
 
         /* Turning into fraction was unsuccessful */
-        return new int[2];
+        int[] out = { 1, 1 };
+        return out;
     }
 
     /**
@@ -296,9 +297,6 @@ public class NumberUtils {
 
         for (int i = 0; i < sigFigs; i++) {
             output += charArray[i];
-            if (i == 0 && sigFigs != 1) {
-                output += ".";
-            }
         }
 
         output += "E" + (int) Math.floor(Math.log10(value));
@@ -438,5 +436,10 @@ public class NumberUtils {
     public static final boolean precisionCheck(double value, double desired, int sigFigs) {
         return withinEpsilon(value, desired, Math.pow(10, -2 * sigFigs));
     }
+
+    public static final boolean inOpenRange(double value, double lower, double upper) {
+        return lower < value && value < upper;
+    }
+
     // #endregion
 }

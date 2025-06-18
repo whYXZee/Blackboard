@@ -123,8 +123,7 @@ public class SolveFor {
                 if (rightSide.size() == 1) {
                     rSideNeedsUSub = false;
                 }
-                BNumber newPower = new BNumber(1, 0);
-                newPower.divide(lPower);
+                BNumber newPower = lPower.reciprocal();
                 // TODO: roots of complex number
 
                 if (lPower.mod(2).equals(0)) {

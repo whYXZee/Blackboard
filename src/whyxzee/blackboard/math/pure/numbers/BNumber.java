@@ -27,6 +27,7 @@ public class BNumber {
     private double a; // real part of a number
     private double b; // imaginary part
 
+    // #region Constructors
     /**
      * Constructor for a complex number, formatted in rectangular form
      * ({@code a+bi}).
@@ -64,6 +65,18 @@ public class BNumber {
     public static final BNumber zero() {
         return new BNumber(0, 0);
     }
+
+    /**
+     * Static constructor for a number that is the equivalent of (-1)^power.
+     * 
+     * @param power
+     * @return {@code cis(PI * power)}
+     */
+    public static final BNumber negOneToPower(double power) {
+        return fromPolar(1, Math.PI * power);
+    }
+
+    // #endregion
 
     @Override
     public String toString() {
@@ -112,9 +125,24 @@ public class BNumber {
         return new PowerTerm(this);
     }
 
-    //
-    // Get & Set Methods
-    //
+    ///
+    /// Get & Set Methods
+    ///
+    /**
+     * Sets <b>this</b> to contain the a, b, modulus, and theta of <b>other</b>.
+     * 
+     * @param other
+     */
+    public void copyData(BNumber other) {
+        if (other.isUncountable() || other.isDNE()) {
+            throw new UnsupportedOperationException("Cannot copy Uncountable or DNE into a BNumber.");
+        }
+
+        a = other.getA();
+        b = other.getB();
+        refreshPolar();
+    }
+
     // #region Rectangular
     public final double getA() {
         return a;
@@ -134,6 +162,11 @@ public class BNumber {
     // #endregion
 
     // #region Polar / Exponential
+    public final void refreshPolar() {
+        refreshModulus();
+        refreshTheta();
+    }
+
     public final double getModulus() {
         return modulus;
     }
@@ -602,26 +635,68 @@ public class BNumber {
 
     // #region Powers
     /**
+     * Provides a deep copy of the number as a reciprocal.
      * 
-     * Applies the nth power to a number.
+     * @return {@code 1 / this}
+     */
+    public BNumber reciprocal() {
+        BNumber output = clone();
+        output = BNumber.divide(new BNumber(1, 0), output);
+        return output;
+    }
+
+    /**
+     * 
+     * Applies the nth real power to a complex number.
      * 
      * 
-     * @param power
+     * @param power A real number. Cannot be Double.POSITIVE_INFINITY,
+     *              Double.NEGATIVE_INFINITY, nor Double.NaN.
      * @return
      */
     private final void power(double power) {
-        // the power cannot be an uncountable lol, it accepts a primative and not a
-        // non-primative
+        /* Reciprocate if needed */
+        if (power < 0) {
+            copyData(reciprocal());
+            power *= -1;
+        }
 
         if (isReal()) {
-            if (a < 0) {
-                // negative base
-                setB(Math.pow(-a, power));
-            } else {
+            if (a > 0) {
+                // positive a so no problems :D
                 setA(Math.pow(a, power));
+                refreshPolar();
+                return;
             }
-            refreshModulus();
-            refreshTheta();
+
+            if (!NumberUtils.isRational(power)) {
+                // if the power is irrational
+                copyData(fromPolar(Math.pow(-a, power), (Math.PI * power)));
+                return;
+            }
+
+            if (!NumberUtils.inOpenRange(power, 0, 1)) {
+                // imaginary numbers only crop up if its in (0,1)
+                setA(Math.pow(a, power));
+                refreshPolar();
+                return;
+            }
+
+            int[] ratio = NumberUtils.findRatio(power);
+            if (ratio[1] % 2 == 1) {
+                // negative base doesn't work for some reason
+                setA(-Math.pow(-a, power));
+                refreshPolar();
+                return;
+
+            } else if (ratio[1] == 2) {
+                setB(Math.pow(-a, power));
+                setA(0);
+                refreshPolar();
+                return;
+            }
+
+            copyData(fromPolar(Math.pow(-a, power), Math.PI * power));
 
         } else if (isImaginary() && NumberUtils.isInteger(power)) {
             // multiplying by an imaginary number is rotating the number by PI / 2 rads on
@@ -656,14 +731,10 @@ public class BNumber {
                 setA(modulus * Math.cos(theta));
                 setB(modulus * Math.sin(theta));
 
-            } else {
-                // non-int power of a complex/imaginary number, as well as negative powers
-                BNumber temp = pow(this, new BNumber(power, 0));
-                setModulus(temp.getModulus());
-                setTheta(temp.getTheta());
-                setA(temp.getA());
-                setB(temp.getB());
             }
+
+            // rational and irrational
+            copyData(fromPolar(Math.pow(modulus, power), theta * power));
         }
     }
 
@@ -674,6 +745,7 @@ public class BNumber {
      * power. The following are implemented:
      * <ul>
      * <li>Uncountable power
+     * <li>Irrational powers
      * <li>DNE
      * </ul>
      * 
@@ -682,6 +754,8 @@ public class BNumber {
      * @return
      */
     public static final BNumber pow(double base, BNumber power) {
+        System.out.println("----real^complex (" + base + ")^(" + power + ")----");
+
         /* DNE */
         if (power.isDNE()) {
             return power;
@@ -696,27 +770,27 @@ public class BNumber {
         double aPow = power.getA(), bPow = power.getB();
         double aOut, bOut;
         if (power.isReal()) {
-            if (!(0 < Math.abs(aPow)) || !(Math.abs(aPow) < 1)) {
-                // !(0 < |pow| < 1)
-                return new BNumber(Math.pow(base, aPow), 0);
-            }
-
-            /* 0 < |pow| < 1 */
-            int[] ratio = NumberUtils.findRatio(aPow);
-            if (ratio[1] % 2 == 0 && base < 0) {
-                // imaginary values are needed
-                return new BNumber(0, Math.pow(-base, aPow));
-            }
-            return new BNumber(Math.pow(base, aPow), 0);
+            BNumber baseNum = new BNumber(base, 0);
+            baseNum.power(aPow);
+            return baseNum;
 
         } else if (power.isImaginary()) {
             if (base < 0) {
                 // negative base
                 BNumber output = pow(-base, power);
-                if (Math.pow(-1, bPow) < 0) {
+                if (bPow % 2 == 0) {
+                    // (-1)^2i = 1^i = 1
+                    return output;
+                } else if (bPow % 2 == 1) {
+                    // (-1)^3i = (-1)^i = e^(-pi)
                     output.multiplyScalar(Constants.NumberConstants.NEG_ONE_TO_I);
+                    return output;
+                } else {
+                    // (-1)^ni = (-1^n)^i
+                    BNumber negOneToPow = fromPolar(1, Math.PI * bPow);
+                    negOneToPow = pow(negOneToPow, new BNumber(0, 1));
+                    return BNumber.multiply(output, negOneToPow);
                 }
-                return output;
 
             } else {
                 aOut = Math.cos(bPow * Math.log(base));
@@ -727,15 +801,18 @@ public class BNumber {
         } else {
             // complex power
             if (base < 0) {
+                // TODO: irrational power
+
                 // negative base
                 BNumber output = pow(-base, power);
-                aOut = Math.pow(-1, aPow);
-                bOut = Math.pow(-1, bPow);
-                if (bOut < 0) {
-                    bOut = Constants.NumberConstants.NEG_ONE_TO_I;
-                }
-                output.multiplyScalar(aOut * bOut);
-                return output;
+                BNumber negOneA = negOneToPower(aPow);
+                BNumber negOneB = negOneToPower(bPow);
+                negOneB = pow(negOneB, new BNumber(0, 1));
+
+                System.out.println("(-1)^a = " + negOneA + " (-1)^bi = " + negOneB);
+
+                return multiply(output, negOneA, negOneB);
+
             } else {
                 double tTheta = bPow * Math.log(base); // temp theta
                 double tModulus = Math.exp(aPow * Math.log(base));
@@ -749,6 +826,7 @@ public class BNumber {
      * imaginary, or complex power. The following are implemented:
      * <ul>
      * <li>Uncountable base and/or uncountable power
+     * <li>Irrational numbers
      * <li>DNE
      * </ul>
      * 
@@ -759,6 +837,7 @@ public class BNumber {
     public static final BNumber pow(BNumber base, BNumber power) {
         BNumber baseCopy = base.clone();
         BNumber powerCopy = power.clone();
+        System.out.println("----complex ^ complex: (" + base + ")^(" + power + ")----");
 
         /* DNE */
         if (base.isDNE() || power.isDNE()) {
@@ -774,7 +853,6 @@ public class BNumber {
 
         } else if (base.isUncountable()) {
             return BUncountable.pow((BUncountable) base, power);
-
         }
 
         /* Complex */

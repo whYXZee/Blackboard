@@ -112,7 +112,7 @@ public abstract class Term {
     }
 
     public final void divideCoefBy(BNumber value) {
-        coef.divide(value);
+        coef = BNumber.divide(coef, value);
     }
 
     /**
@@ -152,7 +152,7 @@ public abstract class Term {
                 powTerm = (PowerTerm) this;
 
                 /* Power */
-                powTerm.getPower().multiply(power);
+                powTerm.setPower(BNumber.multiply(powTerm.getPower(), power));
 
                 /* Coefficient */
                 powTerm.setCoef(BNumber.pow(getCoef(), power));

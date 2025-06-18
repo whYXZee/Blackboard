@@ -76,7 +76,7 @@ public class PlusMinusTerm extends Term {
             return output;
         }
 
-        output.multiply(getVar().solve(value));
+        output = BNumber.multiply(output, getVar().solve(value));
         return output;
     }
 
