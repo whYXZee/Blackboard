@@ -489,6 +489,7 @@ public class BUncountable extends BNumber {
      */
     public static final BNumber pow(BUncountable base, BNumber power) {
         if (power.isUncountable()) {
+            // cis(r2 * theta1 * cos(theta2)) = cis(theta1 * b2) = DNE
             return new DoesNotExist();
         }
 

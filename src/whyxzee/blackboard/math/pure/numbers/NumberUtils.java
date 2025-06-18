@@ -347,7 +347,7 @@ public class NumberUtils {
     ///
     /// Boolean Methods
     ///
-    // #region
+    // #region Number Type
     public static final boolean isInteger(double value) {
         return value % 1 == 0;
     }
@@ -355,6 +355,50 @@ public class NumberUtils {
     public static final boolean isInteger(BNumber value) {
         return value.mod(1).equals(0);
     }
+
+    /**
+     * 
+     * @param value
+     * @param sigFigs
+     * @return
+     */
+    public static final boolean isRational(double value, int sigFigs) {
+        /* Variables */
+        double valToFind = Math.abs(value - (int) value);
+        double epsilon = Math.pow(10, -2 * sigFigs);
+
+        for (int i = 2; i < Constants.NumberConstants.MAX_PRIME_NUMBER + 1; i++) {
+            for (int j = 1; j < i; j++) {
+                if (withinEpsilon((double) j / i, valToFind, epsilon)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     * @param value
+     * @return
+     */
+    public static final boolean isRational(double value) {
+        return isRational(value, Constants.NumberConstants.SIG_FIGS);
+    }
+
+    public static final boolean containsDNE(BNumber... numbers) {
+        for (BNumber i : numbers) {
+            if (i.isDNE()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // #endregion
+
+    // #region Range
 
     /**
      * Checks if a number is within a range.
@@ -393,37 +437,6 @@ public class NumberUtils {
      */
     public static final boolean precisionCheck(double value, double desired, int sigFigs) {
         return withinEpsilon(value, desired, Math.pow(10, -2 * sigFigs));
-    }
-
-    /**
-     * 
-     * @param value
-     * @param sigFigs
-     * @return
-     */
-    public static final boolean isRational(double value, int sigFigs) {
-        /* Variables */
-        double valToFind = Math.abs(value - (int) value);
-        double epsilon = Math.pow(10, -2 * sigFigs);
-
-        for (int i = 2; i < Constants.NumberConstants.MAX_PRIME_NUMBER + 1; i++) {
-            for (int j = 1; j < i; j++) {
-                if (withinEpsilon((double) j / i, valToFind, epsilon)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * 
-     * @param value
-     * @return
-     */
-    public static final boolean isRational(double value) {
-        return isRational(value, Constants.NumberConstants.SIG_FIGS);
     }
     // #endregion
 }

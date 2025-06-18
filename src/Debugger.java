@@ -44,6 +44,7 @@ public class Debugger {
 
                 BNumber numOne = new BNumber(-5, 2);
                 BNumber numTwo = new BNumber(3, 1);
+                BNumber dne = new DoesNotExist();
                 BUncountable addend = new Aleph(false, 1);
                 BUncountable uncountable = new Aleph(false, 2);
                 BNumber uncountTwo = BUncountable.createCustomUncountable(addend, uncountable);
@@ -52,7 +53,7 @@ public class Debugger {
                 PowerTerm termB = new PowerTerm(new BNumber(0, 3));
 
                 display.appendScript(new BlackboardLabel(
-                                BNumber.divide(addend, numTwo)
+                                BNumber.add(dne)
                                                 .toString(),
                                 0.05));
 

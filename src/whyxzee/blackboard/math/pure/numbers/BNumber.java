@@ -3,6 +3,7 @@ package whyxzee.blackboard.math.pure.numbers;
 import java.util.Arrays;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.math.pure.numbers.BUncountable.UncountableType;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
 
 /**
@@ -255,6 +256,10 @@ public class BNumber {
     public boolean isUncountable() {
         return false;
     }
+
+    public boolean isDNE() {
+        return false;
+    }
     // #endregion
 
     // #region Zeros
@@ -283,7 +288,6 @@ public class BNumber {
     ///
     /// Operations
     ///
-    // #region
     /**
      * Performs a deep copy of the complex number, and then negates the copy.
      * 
@@ -312,7 +316,7 @@ public class BNumber {
      * method:
      * <ul>
      * <li>Uncountable addition
-     * <li>TODO: DNE
+     * <li>DNE
      * </ul>
      * 
      * @param addends
@@ -323,6 +327,8 @@ public class BNumber {
             return new BNumber(0, 0);
         } else if (addends.length == 1) {
             return addends[0];
+        } else if (NumberUtils.containsDNE(addends)) {
+            return new DoesNotExist();
         }
 
         BNumber output = new BNumber(0, 0);
@@ -409,7 +415,7 @@ public class BNumber {
      * The following are implemented:
      * <ul>
      * <li>Uncountable addition
-     * <li>TODO: DNE
+     * <li>DNE
      * </ul>
      * 
      * @param factors
@@ -421,6 +427,8 @@ public class BNumber {
             return BNumber.zero();
         } else if (factors.length == 1) {
             return factors[0];
+        } else if (NumberUtils.containsDNE(factors)) {
+            return new DoesNotExist();
         }
 
         /* Telemetry */
@@ -471,76 +479,6 @@ public class BNumber {
     // #endregion
 
     // #region Division
-    /**
-     * Divides the divisor by <b>n</b> dividends. The following are implemented:
-     * 
-     * <ul>
-     * <li>Uncountable division
-     * <li>TODO: DNE
-     * </ul>
-     * 
-     * @param divisor
-     * @param dividends
-     * @return
-     */
-    public static final BNumber divide(BNumber divisor, BNumber... dividends) {
-        if (divisor == null || dividends == null || dividends.length == 0) {
-            return BNumber.zero();
-        }
-
-        /* Telemetry */
-        if (TELEMETRY_ON)
-            System.out.println("----Divide " + divisor + " by " + Arrays.toString(dividends) + "----");
-
-        /* Arithmetic */
-        BNumber output = divisor.clone();
-
-        for (BNumber i : dividends) {
-            /* Uncountable Division */
-            if (output.isUncountable()) {
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println(" - output is uncountable, index uncountable: " + i.isUncountable());
-
-                /* Arithmetic */
-                if (i.isUncountable()) {
-                    // infinity / infinity
-                    /* Limit + L'Hospital's */
-                    double multiplier = Math.signum(output.getModulus()) * Math.signum(i.getModulus());
-
-                    /* Solely the cis(theta1 - theta2) */
-                    output = fromPolar(1, output.getTheta());
-                    output.divide(fromPolar(1, i.getTheta()));
-                    output.multiplyScalar(multiplier);
-
-                } else {
-                    // infinity / number
-                    output = BUncountable.divide((BUncountable) output, output.getTheta() - i.getTheta());
-                }
-                continue;
-            }
-
-            /* Complex Division */
-            if (i.isUncountable()) {
-                // number / infinity
-
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println(" - output is not uncountable, index is uncountable.");
-
-                /* Arithmetic */
-                return BNumber.zero();
-            } else {
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println(" - both are complex numbers.");
-
-                output.divide(i);
-            }
-
-        }
-        return output;
-    }
 
     /**
      * Divides <b>this</b> by a dividend.
@@ -587,6 +525,78 @@ public class BNumber {
             refreshModulus();
             refreshTheta();
         }
+    }
+
+    /**
+     * Divides the divisor by <b>n</b> dividends. The following are implemented:
+     * 
+     * <ul>
+     * <li>Uncountable division
+     * <li>DNE
+     * </ul>
+     * 
+     * @param divisor
+     * @param dividends
+     * @return
+     */
+    public static final BNumber divide(BNumber divisor, BNumber... dividends) {
+        if (divisor == null || dividends == null || dividends.length == 0) {
+            return BNumber.zero();
+        } else if (NumberUtils.containsDNE(dividends) || divisor.isDNE()) {
+            return new DoesNotExist();
+        }
+
+        /* Telemetry */
+        if (TELEMETRY_ON)
+            System.out.println("----Divide " + divisor + " by " + Arrays.toString(dividends) + "----");
+
+        /* Arithmetic */
+        BNumber output = divisor.clone();
+        for (BNumber i : dividends) {
+            /* Uncountable Division */
+            if (output.isUncountable()) {
+                /* Telemetry */
+                if (TELEMETRY_ON)
+                    System.out.println(" - output is uncountable, index uncountable: " + i.isUncountable());
+
+                /* Arithmetic */
+                if (i.isUncountable()) {
+                    // infinity / infinity
+                    /* Limit + L'Hospital's */
+                    double multiplier = Math.signum(output.getModulus()) * Math.signum(i.getModulus());
+
+                    /* Solely the cis(theta1 - theta2) */
+                    output = fromPolar(1, output.getTheta());
+                    output.divide(fromPolar(1, i.getTheta()));
+                    output.multiplyScalar(multiplier);
+
+                } else {
+                    // infinity / number
+                    output = BUncountable.divide((BUncountable) output, output.getTheta() - i.getTheta());
+                }
+                continue;
+            }
+
+            /* Complex Division */
+            if (i.isUncountable()) {
+                // number / infinity
+
+                /* Telemetry */
+                if (TELEMETRY_ON)
+                    System.out.println(" - output is not uncountable, index is uncountable.");
+
+                /* Arithmetic */
+                return BNumber.zero();
+            } else {
+                /* Telemetry */
+                if (TELEMETRY_ON)
+                    System.out.println(" - both are complex numbers.");
+
+                output.divide(i);
+            }
+
+        }
+        return output;
     }
     // #endregion
 
@@ -664,7 +674,7 @@ public class BNumber {
      * power. The following are implemented:
      * <ul>
      * <li>Uncountable power
-     * <li>TODO: DNE for the power
+     * <li>DNE
      * </ul>
      * 
      * @param base
@@ -672,10 +682,17 @@ public class BNumber {
      * @return
      */
     public static final BNumber pow(double base, BNumber power) {
+        /* DNE */
+        if (power.isDNE()) {
+            return power;
+        }
+
+        /* Infinity Power */
         if (power.isUncountable()) {
             return BUncountable.pow(base, (BUncountable) power);
         }
 
+        /* Complex Power */
         double aPow = power.getA(), bPow = power.getB();
         double aOut, bOut;
         if (power.isReal()) {
@@ -732,7 +749,7 @@ public class BNumber {
      * imaginary, or complex power. The following are implemented:
      * <ul>
      * <li>Uncountable base and/or uncountable power
-     * <li>TODO: DNE
+     * <li>DNE
      * </ul>
      * 
      * @param base
@@ -743,11 +760,16 @@ public class BNumber {
         BNumber baseCopy = base.clone();
         BNumber powerCopy = power.clone();
 
+        /* DNE */
+        if (base.isDNE() || power.isDNE()) {
+            return new DoesNotExist();
+        }
+
+        /* Uncountable */
         if (power.isUncountable() && base.isReal()) {
             return BUncountable.pow(base.getA(), (BUncountable) power);
 
-        } else if (power.isUncountable() && base.isUncountable()) {
-            // cis(r2 * theta1 * cos(theta2)) is DNE
+        } else if (power.isUncountable()) {
             return new DoesNotExist();
 
         } else if (base.isUncountable()) {

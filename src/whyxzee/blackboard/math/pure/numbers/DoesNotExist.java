@@ -6,4 +6,16 @@ public class DoesNotExist extends BNumber {
         super(Double.NaN, Double.NaN);
     }
 
+    @Override
+    public final String toString() {
+        return "DNE";
+    }
+
+    ///
+    /// Boolean Methods
+    ///
+    @Override
+    public final boolean isDNE() {
+        return true;
+    }
 }
