@@ -60,10 +60,7 @@ public abstract class Term {
         return output;
     }
 
-    //
-    // Get & Set Methods
-    //
-    // #region
+    // #region Term Get/Set
     public final BNumber getCoef() {
         return coef;
     }
@@ -98,10 +95,7 @@ public abstract class Term {
     }
     // #endregion
 
-    //
-    // Arithmetic Methods
-    //
-
+    // #region Arithmetic w/ Coef
     /**
      * Adds the value to the coefficient.
      * 
@@ -121,6 +115,7 @@ public abstract class Term {
      * @return
      */
     public abstract Term negate();
+    // #endregion
 
     /**
      * Inputs a value into the term, as if it was a function.
@@ -131,7 +126,9 @@ public abstract class Term {
     public abstract BNumber solve(BNumber value);
 
     /**
-     * Inputs a real number into the term, as if it was a function.
+     * @deprecated develop multivariate :sob:
+     *             <p>
+     *             Inputs a real number into the term, as if it was a function.
      * 
      * @param value
      * @return
@@ -173,16 +170,28 @@ public abstract class Term {
         return toPower(new BNumber(power, 0));
     }
 
-    //
-    // Boolean Methods
-    //
-    /*
-     * Checks if the term contains the var.
+    // #region Variable Bools
+    /**
+     * @deprecated
+     *             Checks if the term contains the var.
      */
     public final boolean containsVar(String var) {
         return this.var.containsVar(var);
     }
 
+    /**
+     * 
+     * @param var
+     * @return
+     */
+    public final boolean containsVar(Variable var) {
+        // TODO: what if the inner var is there, but it is ie quadratic?
+        // like, if var is (x+3) but the var is (x+3)(x+2) = x^2 + 5x + 6
+        return this.var.equals(var);
+    }
+    // #endregion
+
+    // #region Comparison Bools
     public final boolean isTermType(TermType termType) {
         return this.termType == termType;
     }
@@ -203,4 +212,5 @@ public abstract class Term {
         }
         return getCoef().equals(other.getCoef());
     }
+    // #endregion
 }

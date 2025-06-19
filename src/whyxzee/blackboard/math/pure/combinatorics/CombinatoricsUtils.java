@@ -11,9 +11,7 @@ import whyxzee.blackboard.math.pure.numbers.NumberUtils;
  * nothing has changed since.
  */
 public class CombinatoricsUtils {
-    ///
-    /// Operations
-    ///
+    // #region Factorial / Gamma
     public static final BNumber gammaFunction(double value) {
         throw new UnsupportedOperationException("Gamma function is unimplemented");
     }
@@ -37,9 +35,15 @@ public class CombinatoricsUtils {
     }
 
     public static final BNumber factorial(BNumber value) {
+        if (value.isReal()) {
+            return factorial(value);
+        }
+
         throw new UnsupportedOperationException("Factorial for complex/imaginary numbers is unimplemented.");
     }
+    // #endregion
 
+    // #region Permutations
     /**
      * A permutation is the number of ways <b>r</b> objects can be sorted into
      * <b>n</b> slots. The order does number, so 123 is not the same as 132.
@@ -62,6 +66,9 @@ public class CombinatoricsUtils {
         return new BNumber(output, 0);
     }
 
+    // #endregion
+
+    // #region Combinations
     /**
      * A combination is the amount of ways <b>r</b> objects can be picked out of
      * <b>n</b> objects. The order does not matter, so 123 is the same as 132.
@@ -78,7 +85,7 @@ public class CombinatoricsUtils {
         }
 
         return BNumber.divide(permutation(n, r), factorial(r));
-
     }
+    // #endregion
 
 }

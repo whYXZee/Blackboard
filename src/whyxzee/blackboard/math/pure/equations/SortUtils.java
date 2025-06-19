@@ -7,6 +7,9 @@ import whyxzee.blackboard.math.pure.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
 
+/**
+ * @deprecated
+ */
 public class SortUtils {
     public static final ArrayList<Term> sortTerms(ArrayList<Term> terms, TermType termType) {
         if (terms == null || terms.size() == 0) {

@@ -8,10 +8,7 @@ import whyxzee.blackboard.math.pure.terms.variables.Variable;
  * Maybe this class can be implemented somehow else?
  */
 public class PlusMinusTerm extends Term {
-    ///
-    /// Constructor Methods
-    ///
-    // #region
+    // #region Constructors
     /**
      * Constructor for a plus-or-minus term with a real number.
      * 
@@ -59,14 +56,13 @@ public class PlusMinusTerm extends Term {
         return new PlusMinusTerm(getCoef().clone(), getVar());
     }
 
-    ///
-    /// Arithmetic Methods
-    ///
+    // #region Arithmetic w/ Coef
     @Override
     public Term negate() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'negate'");
     }
+    // #endregion
 
     @Override
     public BNumber solve(BNumber value) {
@@ -80,9 +76,7 @@ public class PlusMinusTerm extends Term {
         return output;
     }
 
-    ///
-    /// Boolean Methods
-    ///
+    // #region Term Bools
     @Override
     public boolean similarTo(Term term) {
         if (!term.isTermType(TermType.PLUS_MINUS)) {
@@ -91,4 +85,5 @@ public class PlusMinusTerm extends Term {
 
         return getVar().equals(term.getVar());
     }
+    // #endregion
 }

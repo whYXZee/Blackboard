@@ -6,9 +6,10 @@ import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
 import whyxzee.blackboard.math.pure.terms.variables.USub;
+import whyxzee.blackboard.utils.Loggy;
 
 public class TermUtils {
-
+    // #region CompareTerms
     public static class CompareTerms {
         /**
          * Checks if the two terms meet the criteria for Power multiplication. This
@@ -26,6 +27,7 @@ public class TermUtils {
             return a.getVar().equals(b.getVar());
         }
     }
+    // #endregion
 
     ///
     /// Operation Methods and Classes
@@ -54,6 +56,7 @@ public class TermUtils {
         };
     }
 
+    // #region AddTerms
     /**
      * A general-use package for adding terms. This package works if the
      * ArrayList<Term> contains varying types of terms.
@@ -79,7 +82,9 @@ public class TermUtils {
 
             /* Algorithm */
             ArrayList<Term> expandedTerms = new ArrayList<Term>();
+            // for (Term i : EquationUtils.deepCopyTerms(terms)) {
             for (Term i : terms) {
+                // unsure if deep copy is needed
                 expandedTerms.addAll(distributeTerm(i));
             }
 
@@ -144,11 +149,13 @@ public class TermUtils {
         /// Boolean Methods
         ///
         private static final boolean contains(Term term) {
-            return getIndexOf(term) != -1;
             // if the index is -1, then the term doesn't exist
+            return getIndexOf(term) != -1;
         }
     }
+    // #endregion
 
+    // #region MultiplyTerms
     /**
      * A general-use package for multiplying terms. This package works if the
      * ArrayList<Term> contains varying types of terms.
@@ -158,7 +165,7 @@ public class TermUtils {
      * nothing has changed since.
      */
     public static class MultiplyTerms {
-        private static final boolean telemetryOn = Constants.TelemetryConstants.MULTIPLY_TERMS_TELEMETRY;
+        private static final Loggy mLoggy = new Loggy(Constants.LoggyConstants.MULTIPLY_TERMS_LOGGY);
         /* Variables */
         private static ArrayList<BNumber> powers = new ArrayList<BNumber>();
         private static ArrayList<Term> mTerms = new ArrayList<Term>();
@@ -178,13 +185,12 @@ public class TermUtils {
                 coef = new BNumber(1, 0);
             }
 
-            if (telemetryOn)
-                System.out.println("----multiplying " + terms + "----");
+            mLoggy.log("----multiplying " + terms + "----");
 
             for (Term i : terms) {
                 powerMode = false;
                 BNumber iPower = new BNumber(1, 0);
-                coef.multiply(i.getCoef());
+                coef = BNumber.multiply(coef, i.getCoef());
                 i.setCoef(1);
 
                 /* Term Specific */
@@ -243,12 +249,8 @@ public class TermUtils {
             /* Variables */
             BNumber oldPower = powers.get(index);
 
-            /* Telemetry */
-            if (telemetryOn)
-                System.out.println("updating " + mTerms.get(index) + " with power of " + oldPower + " by " + power);
-
-            /* Arithmetic */
-            oldPower.add(power);
+            mLoggy.log("updating " + mTerms.get(index) + " with power of " + oldPower + " by " + power);
+            powers.set(index, BNumber.add(oldPower, power));
         }
 
         private static final int getIndexOf(Term term) {
@@ -271,5 +273,10 @@ public class TermUtils {
         private static final boolean isDataEmpty() {
             return powers.isEmpty() && mTerms.isEmpty() && coef.equals(1);
         }
+
+        ///
+        /// Telemetry Methods
+        ///
     }
+    // #endregion
 }

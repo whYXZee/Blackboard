@@ -3,10 +3,7 @@ package whyxzee.blackboard.utils;
 import whyxzee.blackboard.Constants;
 
 public class UnicodeUtils {
-    //
-    // Parsing Methods
-    //
-
+    // #region Superscript
     public static final char superscriptToNum(char input) {
         switch (input) {
             case '\u2070': // 0
@@ -36,7 +33,7 @@ public class UnicodeUtils {
         }
     }
 
-    public static final String stringToNum(String input) {
+    public static final String stringToSuper(String input) {
         String output = "";
         for (char i : input.toCharArray()) {
             output += superscriptToNum(i);
@@ -94,7 +91,9 @@ public class UnicodeUtils {
         }
         return output;
     }
+    // #endregion
 
+    // #region Subscript
     public static final String intToSubscript(int input) {
         String output = "";
         for (char i : Integer.toString(input).toCharArray()) {
@@ -185,4 +184,5 @@ public class UnicodeUtils {
         }
         return output;
     }
+    // #endregion
 }

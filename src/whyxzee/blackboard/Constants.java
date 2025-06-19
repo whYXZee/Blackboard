@@ -4,6 +4,7 @@ import java.awt.Font;
 
 public final class Constants {
 
+    // #region Unicode
     /**
      * A class that stores the information of all unicode characters.
      */
@@ -85,7 +86,9 @@ public final class Constants {
         /* Random */
         public static final char STOPWATCH = '\u23F1';
     }
+    // #endregion
 
+    // #region Display
     public static final class DisplayConstants {
         /* Font */
         public static final double PRINT_WIDTH_PERCENT = 1.0;
@@ -98,7 +101,9 @@ public final class Constants {
         public static final String FONT_NAME = "Noto Sans";
         public static final int FONT_STYLE = Font.PLAIN;
     }
+    // #endregion
 
+    // #region Number
     public static final class NumberConstants {
         public static final int[] PRIME_NUMBERS = {
                 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31
@@ -109,25 +114,26 @@ public final class Constants {
         /* Complex Numbers */
         public static final double NEG_ONE_TO_I = 0.0432139186;
     }
+    // #endregion
 
+    // #region Loggy
     /**
-     * Global constants for activating telemetry in certain aspects of the package.
+     * Global constants for activating loggy in certain aspects of the package.
      * This is only used for debugging and developmental purposes.
      */
-    public static final class TelemetryConstants {
-        /* Arithmetic */
-        public static final boolean SOLVE_FOR_TELEMETRY = false;
-        public static final boolean RATIONAL_ROOT_TELEMETRY = false;
-        public static final boolean MULTIPLY_TERMS_TELEMETRY = false;
-        public static final boolean ALGEBRA_UTILS_TELEMETRY = false;
-
-        /* Equations */
-        public static final boolean SEQ_FUN_TELEMETRY = false;
+    public static final class LoggyConstants {
+        /* Algebra */
+        public static final boolean ALGEBRA_SOLVER_LOGGY = false;
+        public static final boolean RATIONAL_ROOT_LOGGY = false;
+        public static final boolean ALGEBRA_UTILS_LOGGY = false;
 
         /* Numbers */
-        public static final boolean BNUMBER_TELEMETRY = false;
+        public static final boolean BNUMBER_LOGGY = false;
 
         /* Terms */
-        public static final boolean POW_TERM_TELEMETRY = false;
+        public static final boolean TERM_LOGGY = false;
+        public static final boolean POW_TERM_LOGGY = false;
+        public static final boolean MULTIPLY_TERMS_LOGGY = false;
     }
+    // #endregion
 }

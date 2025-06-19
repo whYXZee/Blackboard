@@ -50,9 +50,7 @@ public abstract class MathEQ {
         terms.add(term);
     }
 
-    ///
-    /// Get & Set Methods
-    ///
+    // #region Get/Set
     public final ArrayList<Term> getTerms() {
         return terms;
     }
@@ -71,10 +69,16 @@ public abstract class MathEQ {
                 return null;
         }
     }
+    // #endregion
 
     ///
     /// Arithmetic Methods
     ///
+    /**
+     * @deprecated develop multivariate :sob:
+     * @param value
+     * @return
+     */
     public abstract BNumber solve(BNumber value);
 
     /**

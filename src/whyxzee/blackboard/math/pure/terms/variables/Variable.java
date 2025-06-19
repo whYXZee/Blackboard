@@ -9,7 +9,7 @@ import whyxzee.blackboard.math.pure.terms.Term;
  * the variable x^n.
  * 
  * <p>
- * The functionalityof this class was checked on {@code 5/10/2025}, and nothing
+ * The functionalityof this class was checked on <b>5/10/2025</b>, and nothing
  * has changed since. However, the following remain unimplemented:
  * <ul>
  * <li>simplifyPower() unimplemented
@@ -66,10 +66,6 @@ public class Variable {
         return new Variable(getVar(), getVarType());
     }
 
-    //
-    // Arithmetic Methods
-    //
-
     /**
      * Solves the polynomial.
      * 
@@ -80,9 +76,7 @@ public class Variable {
         return value;
     }
 
-    //
-    // Get & Set Methods
-    //
+    // #region Get/Set Methods
     public final String getVar() {
         return var;
     }
@@ -103,28 +97,15 @@ public class Variable {
         return null;
     }
 
-    //
-    // Boolean Methods
-    //
+    // #endregion
+
+    // #region Comparison Bools
     public boolean containsVar(String var) {
         return this.var.equals(var);
     }
 
-    public boolean needsChainRule() {
-        return false;
-    }
-
     public final boolean isVarType(VarType varType) {
         return this.varType == varType;
-    }
-
-    public final boolean isUSub() {
-        switch (varType) {
-            case VARIABLE:
-                return false;
-            default:
-                return true;
-        }
     }
 
     public boolean equals(Variable other) {
@@ -143,4 +124,20 @@ public class Variable {
 
         return false;
     }
+    // #endregion
+
+    // #region U-Sub Bools
+    public boolean needsChainRule() {
+        return false;
+    }
+
+    public final boolean isUSub() {
+        switch (varType) {
+            case VARIABLE:
+                return false;
+            default:
+                return true;
+        }
+    }
+    // #endregion
 }

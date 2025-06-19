@@ -16,6 +16,7 @@ public class USub extends Variable {
     private MathEQ innerFunction;
     private Term innerTerm;
 
+    // #region Constructors
     public USub(MathEQ innerFunction) {
         super("u", VarType.U_SUB_EQ);
         this.innerFunction = innerFunction;
@@ -27,6 +28,7 @@ public class USub extends Variable {
         this.innerTerm = innerTerm;
         this.innerFunction = null;
     }
+    // #endregion
 
     @Override
     public String toString() {
@@ -52,9 +54,7 @@ public class USub extends Variable {
         }
     }
 
-    //
-    // Get and Set Methods
-    //
+    // #region U-Sub Get/Set
     @Override
     public final MathEQ getInnerFunction() {
         return innerFunction;
@@ -64,6 +64,7 @@ public class USub extends Variable {
     public final Term getInnerTerm() {
         return innerTerm;
     }
+    // #endregion
 
     //
     // Arirthmetic Methods
@@ -80,9 +81,7 @@ public class USub extends Variable {
         }
     }
 
-    //
-    // Boolean Methods
-    //
+    // #region Comparison Bools
     @Override
     public final boolean containsVar(String var) {
         switch (getVarType()) {
@@ -94,9 +93,12 @@ public class USub extends Variable {
                 return false;
         }
     }
+    // #endregion
 
+    // #region U-Sub Bools
     @Override
     public boolean needsChainRule() {
         return true;
     }
+    // #endregion
 }

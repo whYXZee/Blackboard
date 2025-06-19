@@ -3,16 +3,14 @@ package whyxzee.blackboard.math.pure.terms;
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
+import whyxzee.blackboard.utils.Loggy;
 
 public class PowerTerm extends Term {
-    private static final boolean telemetryOn = Constants.TelemetryConstants.POW_TERM_TELEMETRY;
-
     /* Variables */
+    private static final Loggy loggy = new Loggy(
+            Constants.LoggyConstants.POW_TERM_LOGGY || Constants.LoggyConstants.TERM_LOGGY);
     private BNumber power;
 
-    ///
-    /// Constructor Classes
-    ///
     // #region Constructors
     /**
      * Constructor class for a real number term.
@@ -133,9 +131,7 @@ public class PowerTerm extends Term {
         return new PowerTerm(getCoef().clone(), getVar(), power.clone());
     }
 
-    ///
-    /// Get & Set Methods
-    ///
+    // #region PowTerm Get/Set
     public final BNumber getPower() {
         return power;
     }
@@ -157,23 +153,21 @@ public class PowerTerm extends Term {
     public final void setPower(BNumber power) {
         this.power = power;
     }
+    // #endregion
 
-    ///
-    /// Arithmetic Methods
-    ///
+    // #region Arithmetic w/ Coef
     @Override
     public final Term negate() {
         return new PowerTerm(getCoef().negate(), getVar(), power.clone());
     }
+    // #endregion
 
     @Override
     public BNumber solve(BNumber value) {
         BNumber output = getCoef().clone();
-        /* Telemetry */
-        if (telemetryOn) {
-            System.out.println("----solving " + this + " with value " + value + "----");
-            System.out.println("coef: " + output);
-        }
+
+        loggy.logHeader("Solving " + this + " with value " + value);
+        loggy.logVal("coef", output);
 
         if (getVar().equals(Variable.noVar)) {
             return output;
@@ -183,15 +177,12 @@ public class PowerTerm extends Term {
         output = BNumber.multiply(output, factor);
 
         /* Telemetry */
-        if (telemetryOn) {
-            System.out.println(getCoef() + " * " + factor + " = " + output);
-        }
+        loggy.log(getCoef() + " * " + factor + " = " + output);
+
         return output;
     }
 
-    ///
-    /// Boolean Methods
-    ///
+    // #region PowTerm Bools
     /**
      * A PowerTerm is constant if the power is zero.
      * 
@@ -200,7 +191,9 @@ public class PowerTerm extends Term {
     public final boolean isConstant() {
         return power.equals(0);
     }
+    // #endregion
 
+    // #region Term Bools
     @Override
     public boolean similarTo(Term term) {
         if (!term.isTermType(TermType.POWER)) {
@@ -211,4 +204,5 @@ public class PowerTerm extends Term {
         return getVar().equals(powTerm.getVar()) &&
                 power.equals(powTerm.getPower());
     }
+    // #endregion
 }

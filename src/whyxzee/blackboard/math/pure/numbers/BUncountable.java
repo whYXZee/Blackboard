@@ -138,6 +138,7 @@ public class BUncountable extends BNumber {
         return createCustomUncountable(rVal, iVal);
     }
 
+    // #region Strings
     @Override
     public final String toString() {
         if (!isAZero() && isBZero()) {
@@ -170,6 +171,7 @@ public class BUncountable extends BNumber {
         return output;
     }
 
+    @Override
     public final String polarString() {
         String output = "";
         if (!isAZero() && isBZero() && !isRealType(UncountableType.NONE)) {
@@ -189,7 +191,7 @@ public class BUncountable extends BNumber {
 
             if (isEqualOrder(realType, imaginaryType)) {
                 output += realChar;
-                if (isSmallerSize(realSize, imaginarySize)) {
+                if (realSize < imaginarySize) {
                     output += UnicodeUtils.intToSubscript(imaginarySize);
                 } else {
                     output += UnicodeUtils.intToSubscript(realSize);
@@ -203,17 +205,39 @@ public class BUncountable extends BNumber {
         output += "cis(" + NumberUtils.valueToString(getTheta()) + ")";
         return output;
     }
+    // #endregion
 
+    // #region Copying / Cloning
+    /**
+     * Provides a deep copy of a BUncountable.
+     */
     @Override
     public final BUncountable clone() {
         return new BUncountable(getA(), realSize, realType, realChar, getB(), imaginarySize,
                 imaginaryType, imaginaryChar);
     }
 
-    ///
-    /// Get & Set Methods
-    ///
-    // #region Polar / Exponential
+    @Override
+    public final void copyData(BNumber other) {
+        if (other.isDNE() || !other.isUncountable()) {
+            return;
+        }
+
+        /* Uncountable data */
+        BUncountable otherUnc = (BUncountable) other;
+        realSize = otherUnc.getRealSize();
+        realType = otherUnc.getRealType();
+        realChar = otherUnc.getRealChar();
+        imaginarySize = otherUnc.getImaginarySize();
+        imaginaryType = otherUnc.getImaginaryType();
+        imaginaryChar = otherUnc.getImaginaryChar();
+
+        /* Updating polar definition */
+        refreshPolar();
+    }
+    // #endregion
+
+    // #region Polar Get/Set
     /**
      * Returns what the value of a complex uncountable number would be.
      * 
@@ -227,7 +251,6 @@ public class BUncountable extends BNumber {
 
         if (realInf && imInf) {
             // Complex Infinity
-
             theta = Math.atan(Math.signum(b) / Math.signum(a));
             if (b < 0 && a < 0) {
                 // Quadrant three
@@ -255,7 +278,7 @@ public class BUncountable extends BNumber {
     }
     // #endregion
 
-    // #region Uncountable Data
+    // #region Uncountable Get/Set
     public final int getRealSize() {
         return realSize;
     }
@@ -293,7 +316,7 @@ public class BUncountable extends BNumber {
     ///
     /// Boolean Methods
     ///
-    // #region Number Type
+    // #region Number Type Bools
     @Override
     public final boolean isComplex() {
         return false;
@@ -331,46 +354,46 @@ public class BUncountable extends BNumber {
     ///
     /// Operation Methods
     ///
-    // #region Addition & Subtraction
+    // #region Addition
     /**
      * Adds BUncountable to a BNumber or another BUncountable.
      * 
-     * @param a
+     * @param aInf
      * @param b
      * @return a custom BUncountable
      */
-    public static final BNumber add(BUncountable a, BNumber b) {
+    public static final BNumber add(BUncountable aInf, BNumber b) {
         BNumber rVal, iVal;
         if (b.isUncountable()) {
             // both are uncountable
             BUncountable bInf = (BUncountable) b;
 
             /* Real */
-            UncountableType aRType = a.getRealType(), bRType = bInf.getRealType();
+            UncountableType aRType = aInf.getRealType(), bRType = bInf.getRealType();
             if (isSmallerOrder(aRType, bRType)) {
                 rVal = bInf.getRealInf();
             } else if (isEqualOrder(aRType, bRType)) {
                 // (a is smaller than b) ? b real infinity: a real infinity
-                rVal = (isSmallerSize(a.getRealSize(), bInf.getRealSize())) ? bInf.getRealInf() : a.getRealInf();
+                rVal = (aInf.getRealSize() < bInf.getRealSize()) ? bInf.getRealInf() : aInf.getRealInf();
             } else {
-                rVal = a.getRealInf();
+                rVal = aInf.getRealInf();
             }
 
             /* Imaginary */
-            UncountableType aIType = a.getImaginaryType(), bIType = bInf.getImaginaryType();
+            UncountableType aIType = aInf.getImaginaryType(), bIType = bInf.getImaginaryType();
             if (isSmallerOrder(aIType, bIType)) {
                 iVal = bInf.getImaginaryInf();
             } else if (isEqualOrder(aRType, bRType)) {
                 // (a is smaller than b) ? b imaginary infinity: a imaginary infinity
-                iVal = (isSmallerSize(a.getImaginarySize(), bInf.getImaginarySize())) ? bInf.getImaginaryInf()
-                        : a.getImaginaryInf();
+                iVal = (aInf.getImaginarySize() < bInf.getImaginarySize()) ? bInf.getImaginaryInf()
+                        : aInf.getImaginaryInf();
             } else {
-                iVal = a.getImaginaryInf();
+                iVal = aInf.getImaginaryInf();
             }
 
         } else {
-            rVal = (a.isRealType(UncountableType.NONE)) ? new BNumber(b.getA(), 0) : a.getRealInf();
-            iVal = (a.isImaginaryType(UncountableType.NONE)) ? new BNumber(0, b.getB()) : a.getImaginaryInf();
+            rVal = (aInf.isRealType(UncountableType.NONE)) ? new BNumber(b.getA(), 0) : aInf.getRealInf();
+            iVal = (aInf.isImaginaryType(UncountableType.NONE)) ? new BNumber(0, b.getB()) : aInf.getImaginaryInf();
 
         }
 
@@ -397,7 +420,7 @@ public class BUncountable extends BNumber {
     }
     // #endregion
 
-    // #region Divide
+    // #region Division
     /**
      * Multiplies a BUncountable to a BNumber or another BUncountable.
      * 
@@ -489,27 +512,25 @@ public class BUncountable extends BNumber {
      */
     public static final BNumber pow(BUncountable base, BNumber power) {
         if (power.isUncountable()) {
-            // cis(r2 * theta1 * cos(theta2)) = cis(theta1 * b2) = DNE
+            // cis(r2 * theta1 * cos(theta2)) = cis(theta1 * a2) = DNE
+            // r1^(a+bi), b cannot be infinity
             return new DoesNotExist();
         }
 
         /**
-         * e^(-r2 * theta1 * sin(theta2))
+         * e^(-r2 * theta1 * sin(theta2)) = e^(-theta1 * b2)
          */
         double expMod = Math.exp(-power.getModulus() * base.getTheta() * Math.sin(power.getTheta()));
 
         /**
-         * r2 * theta1 * cos(theta2)
+         * r2 * theta1 * cos(theta2) = theta1 * a2
          */
         double theta = power.getModulus() * base.getTheta() * Math.cos(power.getTheta());
         return uncountableCis(new GeneralInfinity(expMod < 0), theta);
     }
     // #endregion
 
-    ///
-    /// Equality and Inequality
-    ///
-    // #region Order
+    // #region Order Comparison
     /**
      * Checks if <b>Uncountable One</b> has the same type of uncountable than
      * <b>Uncountable Two</b>.
@@ -547,7 +568,7 @@ public class BUncountable extends BNumber {
     }
     // #endregion
 
-    // #region Size
+    // #region Size Comparison
     /**
      * Checks if <b>Uncountable One</b> is the same size of uncountable as
      * <b>Uncountable Two</b>.
@@ -556,8 +577,11 @@ public class BUncountable extends BNumber {
      * @param two
      * @return {@code one == two}
      */
-    public static final boolean isEqualSize(int one, int two) {
-        return one == two;
+    public static final boolean isEqualSize(boolean compareReal, BUncountable one, BUncountable two) {
+        if (compareReal) {
+            return one.getRealSize() == two.getRealSize();
+        }
+        return one.getImaginarySize() == two.getImaginarySize();
     }
 
     /**
@@ -568,8 +592,11 @@ public class BUncountable extends BNumber {
      * @param two
      * @return {@code one < two}
      */
-    public static final boolean isSmallerSize(int one, int two) {
-        return one < two;
+    public static final boolean isSmallerSize(boolean compareReal, BUncountable one, BUncountable two) {
+        if (compareReal) {
+            return one.getRealSize() < two.getRealSize();
+        }
+        return one.getImaginarySize() < two.getImaginarySize();
     }
 
     /**
@@ -580,8 +607,11 @@ public class BUncountable extends BNumber {
      * @param two
      * @return {@code one > two}
      */
-    public static final boolean isBiggerSize(int one, int two) {
-        return one > two;
+    public static final boolean isBiggerSize(boolean compareReal, BUncountable one, BUncountable two) {
+        if (compareReal) {
+            return one.getRealSize() > two.getRealSize();
+        }
+        return one.getImaginarySize() > two.getImaginarySize();
     }
     // #endregion
 }

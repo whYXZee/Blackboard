@@ -1,10 +1,8 @@
 package whyxzee.blackboard.math.pure.numbers;
 
-import java.util.Arrays;
-
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.math.pure.numbers.BUncountable.UncountableType;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
+import whyxzee.blackboard.utils.Loggy;
 
 /**
  * A generic package made for real, imaginary, and complex numbers.
@@ -17,7 +15,7 @@ import whyxzee.blackboard.math.pure.terms.PowerTerm;
  * <li>power()
  */
 public class BNumber {
-    private static final boolean TELEMETRY_ON = Constants.TelemetryConstants.BNUMBER_TELEMETRY;
+    private static final Loggy loggy = new Loggy(Constants.LoggyConstants.BNUMBER_LOGGY);
 
     /* Polar Definition of Complex Numbers */
     private double modulus;
@@ -78,6 +76,7 @@ public class BNumber {
 
     // #endregion
 
+    // #region Strings
     @Override
     public String toString() {
         if (isZero()) {
@@ -112,11 +111,12 @@ public class BNumber {
 
         return NumberUtils.valueToString(modulus) + "cis(" + NumberUtils.valueToString(theta) + ")";
     }
+    // #endregion
 
-    @Override
     /**
      * Provides a deep copy of the BNumber.
      */
+    @Override
     public BNumber clone() {
         return new BNumber(a, b);
     }
@@ -125,9 +125,6 @@ public class BNumber {
         return new PowerTerm(this);
     }
 
-    ///
-    /// Get & Set Methods
-    ///
     /**
      * Sets <b>this</b> to contain the a, b, modulus, and theta of <b>other</b>.
      * 
@@ -143,7 +140,7 @@ public class BNumber {
         refreshPolar();
     }
 
-    // #region Rectangular
+    // #region Rectangular Get/Set
     public final double getA() {
         return a;
     }
@@ -161,7 +158,7 @@ public class BNumber {
     }
     // #endregion
 
-    // #region Polar / Exponential
+    // #region Polar Get/Set
     public final void refreshPolar() {
         refreshModulus();
         refreshTheta();
@@ -223,10 +220,7 @@ public class BNumber {
     }
     // #endregion
 
-    ///
-    /// Boolean Methods
-    ///
-    // #region Number Type
+    // #region Number Type Bools
     /**
      * A number is complex if both <b>a</b> and <b>b</b> are non-zero values.
      * 
@@ -295,7 +289,7 @@ public class BNumber {
     }
     // #endregion
 
-    // #region Zeros
+    // #region isZero Bools
     /**
      * Checks if both a and b are zero.
      * 
@@ -330,7 +324,7 @@ public class BNumber {
         return new BNumber(-a, -b);
     }
 
-    // #region Addition & Subtraction
+    // #region Addition
     /**
      * Adds one complex numbers to <b>this</b>. Adds all the real parts
      * together, then all of the imaginary parts together. The following
@@ -422,10 +416,7 @@ public class BNumber {
             double combinedModulus = modulus * factor.getModulus();
             double combinedTheta = theta + factor.getTheta();
 
-            a = combinedModulus * Math.cos(combinedTheta);
-            b = combinedModulus * Math.sin(combinedTheta);
-            refreshModulus();
-            refreshTheta();
+            copyData(fromPolar(combinedModulus, combinedTheta));
         }
     }
 
@@ -438,8 +429,7 @@ public class BNumber {
     public final void multiplyScalar(double value) {
         setA(a * value);
         setB(b * value);
-        refreshModulus();
-        refreshTheta(); // might not be needed, cuz it should be the same ratio
+        refreshPolar();
     }
 
     /**
@@ -464,44 +454,21 @@ public class BNumber {
             return new DoesNotExist();
         }
 
-        /* Telemetry */
-        if (TELEMETRY_ON)
-            System.out.println("----Multiply with " + Arrays.toString(factors) + "----");
-
         BNumber output = factors[0].clone();
         for (int index = 1; index < factors.length; index++) {
             BNumber i = factors[index];
 
-            /* Telemetry */
-            if (TELEMETRY_ON)
-                System.out.println("output: " + output + " index: " + i);
-
             /* Uncountable Multiplication */
             if (output.isUncountable()) {
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println("- Output is uncountable.");
-
-                /* Arithmetic */
                 output = BUncountable.multiply((BUncountable) output, i);
                 continue;
             }
 
             /* Complex Multiplication */
             if (i.isUncountable()) {
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println("- Index is uncountable.");
-
-                /* Arithmetic */
                 output = BUncountable.multiply((BUncountable) i, output);
 
             } else { // checked
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println("- Both are countable.");
-
-                /* Arithmetic */
                 output.multiply(i);
             }
         }
@@ -553,15 +520,13 @@ public class BNumber {
             double combinedModulus = modulus / dividend.getModulus();
             double combinedTheta = theta - dividend.getTheta();
 
-            a = combinedModulus * Math.cos(combinedTheta);
-            b = combinedModulus * Math.sin(combinedTheta);
-            refreshModulus();
-            refreshTheta();
+            copyData(fromPolar(combinedModulus, combinedTheta));
         }
     }
 
     /**
-     * Divides the divisor by <b>n</b> dividends. The following are implemented:
+     * Divides the divisor by <b>n</b> dividends. A deep copy is not required to
+     * call this method. The following are implemented:
      * 
      * <ul>
      * <li>Uncountable division
@@ -579,20 +544,11 @@ public class BNumber {
             return new DoesNotExist();
         }
 
-        /* Telemetry */
-        if (TELEMETRY_ON)
-            System.out.println("----Divide " + divisor + " by " + Arrays.toString(dividends) + "----");
-
         /* Arithmetic */
         BNumber output = divisor.clone();
         for (BNumber i : dividends) {
             /* Uncountable Division */
             if (output.isUncountable()) {
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println(" - output is uncountable, index uncountable: " + i.isUncountable());
-
-                /* Arithmetic */
                 if (i.isUncountable()) {
                     // infinity / infinity
                     /* Limit + L'Hospital's */
@@ -613,18 +569,8 @@ public class BNumber {
             /* Complex Division */
             if (i.isUncountable()) {
                 // number / infinity
-
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println(" - output is not uncountable, index is uncountable.");
-
-                /* Arithmetic */
                 return BNumber.zero();
             } else {
-                /* Telemetry */
-                if (TELEMETRY_ON)
-                    System.out.println(" - both are complex numbers.");
-
                 output.divide(i);
             }
 
@@ -655,6 +601,8 @@ public class BNumber {
      * @return
      */
     private final void power(double power) {
+        loggy.logHeader("complex ^ real: (" + this + ")^(" + power + ")");
+
         /* Reciprocate if needed */
         if (power < 0) {
             copyData(reciprocal());
@@ -724,21 +672,32 @@ public class BNumber {
         } else {
             // imaginary with non-int power / complex
 
-            if (NumberUtils.isInteger(power) && power > 0) {
-                // DeMoivre's Theorem
-                setModulus(Math.pow(modulus, power));
-                setTheta(theta * power);
-                setA(modulus * Math.cos(theta));
-                setB(modulus * Math.sin(theta));
-
-            }
-
-            // rational and irrational
+            // DeMoivre's theorem -> rational or irrational, int power or non
+            // int power
             copyData(fromPolar(Math.pow(modulus, power), theta * power));
         }
     }
 
     // TODO: roots of a complex number
+
+    /**
+     * Gets the complex number of a real, imaginary, or complex base to a real
+     * power. The following are implemented:
+     * <ul>
+     * <li>Uncountable power
+     * <li>Irrational powers
+     * <li>DNE
+     * </ul>
+     * 
+     * @param base
+     * @param power
+     * @return
+     */
+    public static final BNumber pow(BNumber base, double power) {
+        BNumber temp = base.clone();
+        temp.power(power);
+        return temp;
+    }
 
     /**
      * Gets the complex number of a real base to a real, imaginary, or complex
@@ -754,7 +713,7 @@ public class BNumber {
      * @return
      */
     public static final BNumber pow(double base, BNumber power) {
-        System.out.println("----real^complex (" + base + ")^(" + power + ")----");
+        loggy.logHeader("real^complex: (" + base + ")^(" + power + ")");
 
         /* DNE */
         if (power.isDNE()) {
@@ -801,15 +760,11 @@ public class BNumber {
         } else {
             // complex power
             if (base < 0) {
-                // TODO: irrational power
-
                 // negative base
                 BNumber output = pow(-base, power);
                 BNumber negOneA = negOneToPower(aPow);
                 BNumber negOneB = negOneToPower(bPow);
                 negOneB = pow(negOneB, new BNumber(0, 1));
-
-                System.out.println("(-1)^a = " + negOneA + " (-1)^bi = " + negOneB);
 
                 return multiply(output, negOneA, negOneB);
 
@@ -835,9 +790,7 @@ public class BNumber {
      * @return
      */
     public static final BNumber pow(BNumber base, BNumber power) {
-        BNumber baseCopy = base.clone();
-        BNumber powerCopy = power.clone();
-        System.out.println("----complex ^ complex: (" + base + ")^(" + power + ")----");
+        loggy.logHeader("complex ^ complex: (" + base + ")^(" + power + ")");
 
         /* DNE */
         if (base.isDNE() || power.isDNE()) {
@@ -860,6 +813,7 @@ public class BNumber {
             return pow(base.getA(), power);
 
         } else if (power.isReal()) {
+            BNumber baseCopy = base.clone();
             baseCopy.power(power.getA());
             return baseCopy;
 
@@ -907,7 +861,7 @@ public class BNumber {
     ///
     /// Equality & Inequality
     ///
-    // #region
+    // #region Comparison Bools
     public boolean equals(double value) {
         if (isImaginary() || isComplex()) {
             return false;

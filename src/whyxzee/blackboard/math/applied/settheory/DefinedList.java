@@ -9,10 +9,11 @@ import whyxzee.blackboard.math.pure.numbers.BNumber;
  * A package that is a set of numbers.
  * 
  * <p>
- * The functionality of this class has been checked on {@code 6/5/2025} and
+ * The functionality of this class has been checked on <b>6/5/2025</b> and
  * nothing has changed since.
  */
 public class DefinedList extends SetAbstract {
+    /* Variables */
     private ArrayList<BNumber> numbers;
 
     public DefinedList(String setName, ArrayList<BNumber> numbers) {
@@ -20,6 +21,7 @@ public class DefinedList extends SetAbstract {
         this.numbers = numbers;
     }
 
+    // #region Strings
     @Override
     public final String toString() {
         String output = getSetName() + " = ";
@@ -38,7 +40,9 @@ public class DefinedList extends SetAbstract {
     public final String printConsole() {
         return toString();
     }
+    // #endregion
 
+    // #region Conversions
     // @Override
     // public IntervalSet toInterval() {
     // throw new UnsupportedOperationException();
@@ -54,22 +58,22 @@ public class DefinedList extends SetAbstract {
     // throw new UnsupportedOperationException("Unimplemented method
     // 'toDefinedList'");
     // }
+    // #endregion
 
-    //
-    // Get & Set Methods
-    //
-    public final ArrayList<BNumber> getNumbers() {
-        return numbers;
-    }
-
-    //
-    // Arithmetic Methods
-    //
+    // #region Get/Set
     @Override
     public final BNumber cardinality() {
         return new BNumber(numbers.size(), 0);
     }
+    // #endregion
 
+    // #region DefinedList Get/Set
+    public final ArrayList<BNumber> getNumbers() {
+        return numbers;
+    }
+    // #endregion
+
+    // #region Operations
     @Override
     public SetAbstract union(SetAbstract other) {
         // ArrayList<PredicateAbstract> predicates = new ArrayList<PredicateAbstract>();
@@ -139,10 +143,9 @@ public class DefinedList extends SetAbstract {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'complement'");
     }
+    // #endregion
 
-    //
-    // Boolean Methods
-    //
+    // #region Overlap Bools
     @Override
     public boolean inSet(BNumber number) {
         for (BNumber i : numbers) {
@@ -158,9 +161,12 @@ public class DefinedList extends SetAbstract {
     public final boolean isSuperset(SetAbstract other) {
         throw new UnsupportedOperationException();
     }
+    // #endregion
 
+    // #region Comparison Bools
     @Override
     public boolean equals(SetAbstract other) {
         throw new UnsupportedOperationException();
     }
+    // #endregion
 }

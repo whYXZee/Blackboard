@@ -33,6 +33,12 @@ public class EquationUtils {
         return copy;
     }
 
+    /**
+     * Performs a deep copy. TODO: finish writing this
+     * 
+     * @param eq
+     * @return
+     */
     public static final Term simplifyAdditive(AdditiveEQ eq) {
         ArrayList<Term> terms = deepCopyTerms(eq.getTerms());
         terms = TermUtils.AddTerms.performAddition(terms);

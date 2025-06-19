@@ -37,9 +37,9 @@ public class MultiplyEQ extends MathEQ {
     ///
     @Override
     public BNumber solve(BNumber value) {
-        BNumber output = new BNumber(1, 1);
+        BNumber output = new BNumber(1, 0); // needs to be 1 or (1 + i)?
         for (Term i : getTerms()) {
-            output.multiply(i.solve(value));
+            output = BNumber.multiply(output, i.solve(value));
         }
 
         return output;

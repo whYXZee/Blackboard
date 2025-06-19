@@ -29,26 +29,25 @@ public abstract class SetAbstract {
 
     public abstract String printConsole();
 
+    // #region Conversions
     // public abstract IntervalSet toInterval();
 
     public abstract DefinedList toDefinedList();
 
     // public abstract SetBuilder toBuilder();
+    // #endregion
 
-    //
-    // Arithmetic Methods
-    //
-    public abstract BNumber cardinality();
-
+    // #region Operations
     public abstract SetAbstract union(SetAbstract other);
 
     public abstract SetAbstract intersection(SetAbstract other);
 
     public abstract SetAbstract complement(SetAbstract universe);
+    // #endregion
 
-    //
-    // Get & Set Methods
-    //
+    // #region Get / Set
+    public abstract BNumber cardinality();
+
     public final String getSetName() {
         return setName;
     }
@@ -57,17 +56,16 @@ public abstract class SetAbstract {
         this.setName = setName;
     }
 
-    public final SetType getAmbiguousList() {
+    public final SetType getType() {
         return type;
     }
 
     public final void setType(SetType type) {
         this.type = type;
     }
+    // #endregion
 
-    //
-    // Boolean Methods
-    //
+    // #region Overlap Bools
     public abstract boolean inSet(BNumber number);
 
     /**
@@ -91,10 +89,13 @@ public abstract class SetAbstract {
      * @return
      */
     public abstract boolean isSuperset(SetAbstract other);
+    // #endregion
 
+    // #region Comparison Bools
     public final boolean isType(SetType type) {
         return this.type == type;
     }
 
     public abstract boolean equals(SetAbstract other);
+    // #endregion
 }

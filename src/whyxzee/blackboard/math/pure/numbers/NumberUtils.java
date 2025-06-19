@@ -6,9 +6,7 @@ import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.utils.UnicodeUtils;
 
 public class NumberUtils {
-    //
-    // Number Theory
-    //
+    // #region Elementary Num Theory
     /**
      * A triangle number (denoted by T_n) is the sum of all numbers from 1 to
      * <b>n</b>
@@ -44,6 +42,7 @@ public class NumberUtils {
         }
         return output;
     }
+    // #endregion
 
     /**
      * Counts the number of significant figures in <b>value</b>.
@@ -83,6 +82,7 @@ public class NumberUtils {
         return digits;
     }
 
+    // #region Ratio of Numbers
     /**
      * Finds which two numbers makes the ratio.
      * 
@@ -130,7 +130,9 @@ public class NumberUtils {
     public static final int[] findRatio(double ratio) {
         return findRatio(ratio, Constants.NumberConstants.SIG_FIGS);
     }
+    // #endregion
 
+    // #region Factors
     /**
      * <p>
      * The functionality of this class has been checked on <b>6/15/2025</b> and
@@ -149,7 +151,7 @@ public class NumberUtils {
         public static final ArrayList<BNumber> factorsOf(BNumber number) {
             numbers = new ArrayList<BNumber>();
             if (!number.isReal()) {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException("A number can only have factors iff it is an integer");
             }
 
             double a = Math.abs(number.getA());
@@ -185,11 +187,9 @@ public class NumberUtils {
             return false;
         }
     }
+    // #endregion
 
-    ///
-    /// String Optimization
-    ///
-    // #region
+    // #region String Optimization
     /**
      * "Optimizes" a value for user readability through the following criteria:
      * <ul>
@@ -295,7 +295,7 @@ public class NumberUtils {
         }
         char[] charArray = Double.toString(value).toCharArray();
 
-        for (int i = 0; i < sigFigs; i++) {
+        for (int i = 0; i < sigFigs + 2; i++) {
             output += charArray[i];
         }
 
@@ -342,10 +342,7 @@ public class NumberUtils {
     }
     // #endregion
 
-    ///
-    /// Boolean Methods
-    ///
-    // #region Number Type
+    // #region Number Type Bools
     public static final boolean isInteger(double value) {
         return value % 1 == 0;
     }
@@ -386,6 +383,23 @@ public class NumberUtils {
     }
 
     public static final boolean containsDNE(BNumber... numbers) {
+        if (numbers == null) {
+            return false;
+        }
+
+        for (BNumber i : numbers) {
+            if (i.isDNE()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static final boolean containsDNE(ArrayList<BNumber> numbers) {
+        if (numbers == null) {
+            return false;
+        }
+
         for (BNumber i : numbers) {
             if (i.isDNE()) {
                 return true;
