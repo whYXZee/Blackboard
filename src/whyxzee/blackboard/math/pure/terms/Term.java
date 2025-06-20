@@ -7,7 +7,13 @@ import whyxzee.blackboard.math.pure.terms.variables.USub;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 
 /**
- * The abstract class which all term types inherit from.
+ * The abstract class which all term types inherit from. The following have been
+ * implemented:
+ * <ul>
+ * <li>U-Sub
+ * <li>TODO: uncountable coefficient
+ * <li>TODO: DNE coefficient
+ * </ul>
  */
 public abstract class Term {
     /* Logic */
@@ -30,6 +36,7 @@ public abstract class Term {
         SIGNUM
     }
 
+    // #region Constructors
     /**
      * 
      * @param coef     The real constant outside the polynomial, trig, etc.
@@ -48,11 +55,43 @@ public abstract class Term {
         this.var = var;
         this.termType = termType;
     }
+    // #endregion
+
+    // #region String / Display
+    /**
+     * Outputs a String value dependent on the coef and var.
+     * 
+     * @return
+     */
+    public final String coefString() {
+        boolean hasVar = !var.equals(Variable.noVar);
+
+        if (coef.isComplex()) {
+            return "(" + coef + ")";
+        } else if (hasVar && coef.equals(1)) {
+            return "";
+        } else if (hasVar && coef.equals(-1)) {
+            return "-";
+        } else {
+            return coef.toString();
+        }
+    }
+    // #endregion
+
+    // #region Copying / Cloning
+    /**
+     * If <b>this</b> and <b>other</b> are the same TermType, then it copies over
+     * the data from <b>other</b> onto <b>this</b> without affecting <b>other</b>.
+     * 
+     * @param other
+     */
+    public abstract void copy(Term other);
 
     /**
      * Performs a deep copy of the term.
      */
     public abstract Term clone();
+    // #endregion
 
     public final ArrayList<Term> toTermArray() {
         ArrayList<Term> output = new ArrayList<Term>();
@@ -187,7 +226,7 @@ public abstract class Term {
     public final boolean containsVar(Variable var) {
         // TODO: what if the inner var is there, but it is ie quadratic?
         // like, if var is (x+3) but the var is (x+3)(x+2) = x^2 + 5x + 6
-        return this.var.equals(var);
+        return this.var.containsVar(var);
     }
     // #endregion
 
@@ -206,11 +245,26 @@ public abstract class Term {
      */
     public abstract boolean similarTo(Term term);
 
-    public final boolean equals(Term other) {
-        if (!similarTo(other)) {
+    /**
+     * Override equals method for various methods that utilize the equals(Object)
+     * method.
+     * 
+     * @param var1 any type of object
+     * @return
+     */
+    @Override
+    public final boolean equals(Object var1) {
+        if (var1 == null) {
+            return false;
+        } else if (var1 instanceof Term) {
+            Term other = (Term) var1;
+            if (!similarTo(other)) {
+                return false;
+            }
+            return getCoef().equals(other.getCoef());
+        } else {
             return false;
         }
-        return getCoef().equals(other.getCoef());
     }
     // #endregion
 }

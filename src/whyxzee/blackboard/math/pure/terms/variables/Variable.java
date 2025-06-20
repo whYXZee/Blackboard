@@ -28,6 +28,7 @@ public class Variable {
         U_SUB_EQ
     }
 
+    // #region Constructors
     /**
      * The constructor class for a variable with a integer power.
      * 
@@ -51,20 +52,21 @@ public class Variable {
         this.var = var;
         this.varType = varType;
     }
+    // #endregion
 
+    // #region String / Display
     @Override
     public String toString() {
         return var;
     }
+    // #endregion
 
-    public String printConsole() {
-        return var;
-    }
-
+    // #region Copying / Cloning
     @Override
     public Variable clone() {
         return new Variable(getVar(), getVarType());
     }
+    // #endregion
 
     /**
      * Solves the polynomial.
@@ -100,8 +102,58 @@ public class Variable {
     // #endregion
 
     // #region Comparison Bools
+    /**
+     * @deprecated
+     * @param var
+     * @return
+     */
     public boolean containsVar(String var) {
-        return this.var.equals(var);
+        switch (varType) {
+            case U_SUB_EQ:
+                break;
+            case U_SUB_TERM:
+                break;
+            case VARIABLE:
+
+            default:
+                break;
+
+        }
+        return false;
+    }
+
+    /**
+     * 
+     * @param var
+     * @return
+     */
+    public boolean containsVar(Variable var) {
+        switch (varType) {
+            case U_SUB_EQ:
+                if (var.isVarType(VarType.U_SUB_EQ)) {
+                    return VariableUtils.eqContainsEQ(getInnerFunction(), (USub) var);
+                } else if (var.isVarType(VarType.U_SUB_TERM)) {
+                    return VariableUtils.eqContainsTerm(getInnerFunction(), (USub) var);
+                } else {
+                    return VariableUtils.eqContainsVar(getInnerFunction(), var);
+                }
+            case U_SUB_TERM:
+                if (var.isVarType(VarType.U_SUB_EQ)) {
+                    return getInnerTerm().containsVar(var);
+                } else if (var.isVarType(VarType.U_SUB_TERM)) {
+                    return getInnerTerm().containsVar(var);
+                } else {
+                    return getInnerTerm().containsVar(var);
+                }
+            case VARIABLE:
+                if (var.isVarType(VarType.VARIABLE)) {
+                    return this.var.equals(var.getVar());
+                }
+                return false;
+            default:
+                return false;
+
+        }
     }
 
     public final boolean isVarType(VarType varType) {
@@ -114,9 +166,9 @@ public class Variable {
                 case U_SUB_EQ:
                     return getInnerFunction().equals(other.getInnerFunction());
                 case U_SUB_TERM:
-                    return getInnerTerm() == other.getInnerTerm();
+                    return getInnerTerm().equals(other.getInnerTerm());
                 case VARIABLE:
-                    return var == other.getVar();
+                    return var.equals(other.getVar());
                 default:
                     break;
             }
@@ -127,17 +179,12 @@ public class Variable {
     // #endregion
 
     // #region U-Sub Bools
-    public boolean needsChainRule() {
-        return false;
+    public boolean isUSub() {
+        return this instanceof USub;
     }
 
-    public final boolean isUSub() {
-        switch (varType) {
-            case VARIABLE:
-                return false;
-            default:
-                return true;
-        }
+    public final boolean hasInnerTerm() {
+        return false;
     }
     // #endregion
 }

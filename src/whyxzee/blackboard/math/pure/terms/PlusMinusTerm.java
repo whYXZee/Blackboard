@@ -8,6 +8,9 @@ import whyxzee.blackboard.math.pure.terms.variables.Variable;
  * Maybe this class can be implemented somehow else?
  */
 public class PlusMinusTerm extends Term {
+    /* Variables */
+    // private boolean isMinusPlus;
+
     // #region Constructors
     /**
      * Constructor for a plus-or-minus term with a real number.
@@ -46,15 +49,39 @@ public class PlusMinusTerm extends Term {
     }
     // #endregion
 
+    // #region String / Display
     @Override
     public final String toString() {
-        return Constants.Unicode.PLUS_MINUS + " " + getCoef() + getVar();
+        String output = "";
+        output += Constants.Unicode.PLUS_MINUS;
+
+        /* Coefficient */
+        if (getCoef().isZero()) {
+            return "0";
+        }
+        output += coefString();
+        output += getVar();
+
+        return output;
+    }
+    // #endregion
+
+    // #region Copying / Cloning
+    @Override
+    public final void copy(Term other) {
+        if (!other.isTermType(TermType.PLUS_MINUS)) {
+            return;
+        }
+
+        setCoef(other.getCoef().clone());
+        setVar(other.getVar().clone());
     }
 
     @Override
     public final Term clone() {
         return new PlusMinusTerm(getCoef().clone(), getVar());
     }
+    // #endregion
 
     // #region Arithmetic w/ Coef
     @Override
@@ -79,6 +106,8 @@ public class PlusMinusTerm extends Term {
     // #region Term Bools
     @Override
     public boolean similarTo(Term term) {
+        // TODO: this term cannot be combined with others
+        // +- 2 +- 2 is not +- 4, as it can output to 0, +-2, or +-4
         if (!term.isTermType(TermType.PLUS_MINUS)) {
             return false;
         }

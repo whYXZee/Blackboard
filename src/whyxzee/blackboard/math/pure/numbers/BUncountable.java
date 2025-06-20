@@ -21,14 +21,16 @@ public class BUncountable extends BNumber {
     private int realSize;
     private int imaginarySize;
     private UncountableType realType;
+
     private UncountableType imaginaryType;
     private String realChar;
     private String imaginaryChar;
 
     // #region Constructors
     public enum UncountableType {
-        NONE(0),
-        ALEPH(1),
+        INFINITESIMAL(0),
+        NONE(1),
+        ALEPH(2),
         GEN_INFINITY(10);
 
         private final int order;
@@ -101,6 +103,7 @@ public class BUncountable extends BNumber {
             return new BUncountable(realUnc.getA(), realUnc.getRealSize(), realUnc.getRealType(), realUnc.getRealChar(),
                     imaginary.getB(), -1, UncountableType.NONE, "");
         }
+
         BUncountable imagUnc = (BUncountable) imaginary;
         return new BUncountable(real.getA(), -1, UncountableType.NONE, "",
                 imagUnc.getA(), imagUnc.getRealSize(), imagUnc.getRealType(), imagUnc.getRealChar());
@@ -138,25 +141,35 @@ public class BUncountable extends BNumber {
         return createCustomUncountable(rVal, iVal);
     }
 
-    // #region Strings
+    // #region Strings / Display
     @Override
     public final String toString() {
+        String output = "";
         if (!isAZero() && isBZero()) {
             // "Real" infinity
-            return (getA() < 0 ? "-" : "") + realChar + UnicodeUtils.intToSubscript(realSize);
+            output += (getA() < 0 ? "-" : "") + realChar;
+            if (!isRealType(UncountableType.INFINITESIMAL)) {
+                output += UnicodeUtils.intToSubscript(realSize);
+            }
+            return output;
 
         } else if (isAZero() && !isBZero()) {
             // "Imaginary" infinity
-            return (getB() < 0 ? "-" : "") + imaginaryChar + UnicodeUtils.intToSubscript(imaginarySize)
-                    + Constants.Unicode.IMAGINARY_NUMBER;
+            output += (getB() < 0 ? "-" : "") + imaginaryChar;
+            if (!isImaginaryType(UncountableType.INFINITESIMAL)) {
+                output += UnicodeUtils.intToSubscript(imaginarySize);
+            }
+            return output + Constants.Unicode.IMAGINARY_NUMBER;
         }
 
         /* Complex Infinity */
-        String output = "";
         if (isRealType(UncountableType.NONE)) {
             output += NumberUtils.valueToString(getA());
         } else {
-            output += (getA() < 0 ? "-" : "") + realChar + UnicodeUtils.intToSubscript(realSize);
+            output += (getA() < 0 ? "-" : "") + realChar;
+            if (!isRealType(UncountableType.INFINITESIMAL)) {
+                output += UnicodeUtils.intToSubscript(realSize);
+            }
         }
 
         boolean isBNegative = getB() < 0;
@@ -164,7 +177,10 @@ public class BUncountable extends BNumber {
         if (isImaginaryType(UncountableType.NONE)) {
             output += NumberUtils.valueToString(isBNegative ? -getB() : getB());
         } else {
-            output += imaginaryChar + UnicodeUtils.intToSubscript(imaginarySize);
+            output += imaginaryChar;
+            if (!isImaginaryType(UncountableType.INFINITESIMAL)) {
+                output += UnicodeUtils.intToSubscript(imaginarySize);
+            }
         }
         output += Constants.Unicode.IMAGINARY_NUMBER;
 

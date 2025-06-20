@@ -3,8 +3,12 @@ package whyxzee.blackboard.math.pure.numbers.uncountables;
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.numbers.BUncountable;
 
+/**
+ * A package for Aleph, a countable type of infinity.
+ */
 public class Aleph extends BUncountable {
 
+    // #region Constructors
     /**
      * Constructor for an Aleph Naught.
      * 
@@ -24,4 +28,5 @@ public class Aleph extends BUncountable {
         super(isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY, size, UncountableType.ALEPH,
                 Constants.Unicode.ALEPH);
     }
+    // #endregion
 }

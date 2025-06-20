@@ -17,9 +17,14 @@ import whyxzee.blackboard.math.pure.numbers.BUncountable.UncountableType;
 import whyxzee.blackboard.math.pure.numbers.uncountables.*;
 import whyxzee.blackboard.math.pure.terms.*;
 import whyxzee.blackboard.math.pure.terms.variables.*;
+import whyxzee.blackboard.utils.Loggy;
+import whyxzee.blackboard.utils.UnicodeUtils;
 
 @SuppressWarnings("unused")
 public class Debugger {
+        private static final Loggy loggy = new Loggy(true);
+
+        // #region main()
         public static void main(String[] args) throws Exception {
                 /* Frame stuff */
                 JFrame frame = new JFrame();
@@ -27,26 +32,33 @@ public class Debugger {
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
                 /* Math Debugging */
-                Variable xVar = new Variable("x");
-                Variable yVar = new Variable("y");
-                ArrayList<Term> lTerms = new ArrayList<Term>() {
+
+                AdditiveEQ eq = new AdditiveEQ(new PowerTerm(2), new PowerTerm(new BNumber(2, 4), xVar));
+                AdditiveEQ superEQ = new AdditiveEQ(new PowerTerm(2), new PowerTerm(new BNumber(2, 4), xVar),
+                                new PowerTerm(3, xVar, 2));
+
+                ArrayList<Term> pmTerms = new ArrayList<Term>() {
                         {
-                                // add(new PowerTerm(2, xVar, 1 / Math.sqrt(2)));
-                                add(new PowerTerm(new BNumber(1, -3), xVar, 2));
-                                add(new PowerTerm(32));
+                                add(new PlusMinusTerm(3));
+                                add(new PlusMinusTerm(5));
+                                add(new PlusMinusTerm(10));
                         }
                 };
 
-                ArrayList<Term> rTerms = new ArrayList<Term>() {
+                ArrayList<BNumber> nums = new ArrayList<BNumber>() {
                         {
-                                add(new PowerTerm(0));
+                                add(new Infinitesimal("x"));
+                                add(new BNumber(3, 0));
+                                add(new BNumber(2, 5));
+                                add(new BNumber(4, -3));
+                                add(new BNumber(-2, -1));
                         }
                 };
 
-                display.appendScript(new BlackboardLabel(
-                                AlgebraSolver.performOp(xVar, lTerms, rTerms)
-                                                .toString(),
-                                0.05));
+                display.appendScript(
+                                // TermUtils.addConstantPlusMinusTerms(pmTerms),
+                                new BNumber(3, 0).equals(3),
+                                0.05);
 
                 /* Displaying */
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,4 +69,24 @@ public class Debugger {
                 frame.setResizable(true);
                 frame.setContentPane(display);
         }
+        // #endregion
+
+        // #region Variables
+        private static final Variable xVar = new Variable("x");
+        private static final Variable yVar = new Variable("y");
+        private static final ArrayList<Term> lTerms = new ArrayList<Term>() {
+                {
+                        add(new PowerTerm(1, xVar, 4));
+                        add(new PowerTerm(1));
+                }
+        };
+        private static final ArrayList<Term> rTerms = new ArrayList<Term>() {
+                {
+                        add(new PowerTerm(0));
+                }
+        };
+
+        /* BNumbers */
+        private static final Infinitesimal smol = new Infinitesimal("x", true);
+        // #endregion
 }

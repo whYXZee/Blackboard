@@ -80,25 +80,4 @@ public class USub extends Variable {
                 return new BNumber(0, 0);
         }
     }
-
-    // #region Comparison Bools
-    @Override
-    public final boolean containsVar(String var) {
-        switch (getVarType()) {
-            case U_SUB_EQ:
-                return innerFunction.containsVar(var);
-            case U_SUB_TERM:
-                return innerTerm.getVar().containsVar(var);
-            default:
-                return false;
-        }
-    }
-    // #endregion
-
-    // #region U-Sub Bools
-    @Override
-    public boolean needsChainRule() {
-        return true;
-    }
-    // #endregion
 }

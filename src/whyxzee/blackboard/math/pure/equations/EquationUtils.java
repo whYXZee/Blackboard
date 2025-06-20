@@ -6,6 +6,7 @@ import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.TermUtils;
+import whyxzee.blackboard.math.pure.terms.Term.TermType;
 import whyxzee.blackboard.math.pure.terms.variables.USub;
 
 /**
@@ -15,9 +16,6 @@ import whyxzee.blackboard.math.pure.terms.variables.USub;
  * <li>simplifyAdditive()
  */
 public class EquationUtils {
-    ///
-    ///
-    ///
     /**
      * Copies an ArrayList<Term> so the original stays unchanged, while the returned
      * ArrayList<Term> can change.
@@ -87,7 +85,115 @@ public class EquationUtils {
         return new BNumber(1, 0);
     }
 
-    ///
-    /// Boolean Methods
-    ///
+    // #region TermType Getters
+    /**
+     * 
+     * @param terms
+     * @param termType
+     * @return an ArrayList<Term> of the <b>termType</b> with deep copies of the
+     *         terms.
+     */
+    public static final ArrayList<Term> getTermTypeFromArray(ArrayList<Term> terms, TermType termType) {
+        if (terms == null || terms.size() == 0) {
+            return new ArrayList<Term>();
+        }
+
+        ArrayList<Term> output = new ArrayList<Term>();
+        for (Term i : terms) {
+            if (i.isTermType(termType)) {
+                output.add(i.clone());
+            }
+        }
+        return output;
+    }
+
+    /**
+     * 
+     * @param terms
+     * @param termType
+     * @return an ArrayList<Term> without the given <b>termType</b> with deep copies
+     *         of the terms.
+     */
+    public static final ArrayList<Term> getTermsExcludingType(ArrayList<Term> terms, TermType termType) {
+        if (terms == null || terms.size() == 0) {
+            return new ArrayList<Term>();
+        }
+
+        ArrayList<Term> output = new ArrayList<Term>();
+        for (Term i : terms) {
+            if (!i.isTermType(termType)) {
+                output.add(i.clone());
+            }
+        }
+        return output;
+    }
+    // #endregion
+
+    // #region .contains() Bools
+    /**
+     * Utilizes the
+     * {@link whyxzee.blackboard.math.pure.equations.EquationUtils#containsTermType(ArrayList, TermType)}
+     * method to perform the check.
+     * 
+     * @param eq       a Math equation, can be Additive or Multiplicative
+     * @param termType the type of term to look for
+     * @return
+     */
+    public static final boolean containsTermType(MathEQ eq, TermType termType) {
+        return containsTermType(eq.getTerms(), termType);
+    }
+
+    /**
+     * Iterates through an ArrayList<Term> to check if the inputted TermType is
+     * present.
+     * 
+     * @param terms    a set of terms
+     * @param termType the type of term to look for within the terms
+     * @return
+     */
+    public static final boolean containsTermType(ArrayList<Term> terms, TermType termType) {
+        for (Term i : terms) {
+            if (i.isTermType(termType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    // #endregion
+
+    // #region Overlap Bools
+    /**
+     * <em>Assumes that a and b are the same Equation type.</em>
+     * 
+     * <p>
+     * Checks each term to see if <b>a</b> is a superset of <b>b</b>.
+     * 
+     * @param a the tested superset
+     * @param b
+     * @return
+     */
+    public static final boolean isSupersetOf(ArrayList<Term> a, ArrayList<Term> b) {
+        if (b.size() > a.size()) {
+            // A cannot be a superset if B contains more terms
+            return false;
+        }
+
+        for (Term i : b) {
+            boolean containsJ = false;
+            for (Term j : a) {
+                if (j.equals(i)) {
+                    containsJ = true;
+                    break;
+                }
+            }
+
+            if (containsJ == false) {
+                // if one term is not in A, then it is not a superset
+                return false;
+            }
+        }
+        return true;
+
+    }
+    // #endregion
 }

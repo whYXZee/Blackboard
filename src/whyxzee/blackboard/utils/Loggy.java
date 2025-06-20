@@ -1,5 +1,8 @@
 package whyxzee.blackboard.utils;
 
+/**
+ * A general-use package for logging into the console.
+ */
 public class Loggy {
     /* Variables */
     private boolean isTelemetryOn;

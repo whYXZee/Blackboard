@@ -1,5 +1,7 @@
 package whyxzee.blackboard.math.pure.numbers;
 
+import java.util.ArrayList;
+
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
 import whyxzee.blackboard.utils.Loggy;
@@ -15,7 +17,7 @@ import whyxzee.blackboard.utils.Loggy;
  * <li>power()
  */
 public class BNumber {
-    private static final Loggy loggy = new Loggy(Constants.LoggyConstants.BNUMBER_LOGGY);
+    private static final Loggy loggy = new Loggy(Constants.Loggy.BNUMBER_LOGGY);
 
     /* Polar Definition of Complex Numbers */
     private double modulus;
@@ -113,18 +115,7 @@ public class BNumber {
     }
     // #endregion
 
-    /**
-     * Provides a deep copy of the BNumber.
-     */
-    @Override
-    public BNumber clone() {
-        return new BNumber(a, b);
-    }
-
-    public final PowerTerm toTerm() {
-        return new PowerTerm(this);
-    }
-
+    // #region Copying / Cloning
     /**
      * Sets <b>this</b> to contain the a, b, modulus, and theta of <b>other</b>.
      * 
@@ -139,6 +130,27 @@ public class BNumber {
         b = other.getB();
         refreshPolar();
     }
+
+    /**
+     * Provides a deep copy of the BNumber.
+     */
+    @Override
+    public BNumber clone() {
+        return new BNumber(a, b);
+    }
+    // #endregion
+
+    // #region Conversion Methods
+    public final PowerTerm toTerm() {
+        return new PowerTerm(this);
+    }
+
+    public final ArrayList<BNumber> toArrayList() {
+        ArrayList<BNumber> out = new ArrayList<BNumber>();
+        out.add(this);
+        return out;
+    }
+    // #endregion
 
     // #region Rectangular Get/Set
     public final double getA() {
@@ -253,7 +265,7 @@ public class BNumber {
     /**
      * 
      * @param sigFigs the accuracy that should be checked, used for
-     *                {@link whyxzee.blackboard.math.pure.numbers.NumberUtils#withinEpsilon(double, double, double)}.
+     *                {@link whyxzee.blackboard.math.pure.numbers.NumberTheory#withinEpsilon(double, double, double)}.
      * @return {@code false} if the number is imaginary, if the number is complex,
      *         or if it is not rational. {@code true} if otherwise.
      */
@@ -261,19 +273,19 @@ public class BNumber {
         if (isImaginary() || isComplex()) {
             return false;
         }
-        return NumberUtils.isRational(a, sigFigs);
+        return NumberTheory.isRational(getA(), sigFigs);
     }
 
     /**
      * Checks if the number is a rational number using the
-     * {@link whyxzee.blackboard.Constants.NumberConstants#SIG_FIGS} number of sig
+     * {@link whyxzee.blackboard.Constants.Number#SIG_FIGS} number of sig
      * figs.
      * 
      * @return {@code false} if the number is imaginary, if the number is complex,
      *         or if it is not rational. {@code true} if otherwise.
      */
     public boolean isRational() {
-        return isRational(Constants.NumberConstants.SIG_FIGS);
+        return isRational(Constants.Number.SIG_FIGS);
     }
 
     /**
@@ -345,6 +357,8 @@ public class BNumber {
      * <li>Uncountable addition
      * <li>DNE
      * </ul>
+     * <p>
+     * <em>Does not modify any of the addends' data</em>
      * 
      * @param addends
      * @return
@@ -354,7 +368,7 @@ public class BNumber {
             return new BNumber(0, 0);
         } else if (addends.length == 1) {
             return addends[0];
-        } else if (NumberUtils.containsDNE(addends)) {
+        } else if (NumberTheory.containsDNE(addends)) {
             return new DoesNotExist();
         }
 
@@ -450,7 +464,7 @@ public class BNumber {
             return BNumber.zero();
         } else if (factors.length == 1) {
             return factors[0];
-        } else if (NumberUtils.containsDNE(factors)) {
+        } else if (NumberTheory.containsDNE(factors)) {
             return new DoesNotExist();
         }
 
@@ -540,7 +554,7 @@ public class BNumber {
     public static final BNumber divide(BNumber divisor, BNumber... dividends) {
         if (divisor == null || dividends == null || dividends.length == 0) {
             return BNumber.zero();
-        } else if (NumberUtils.containsDNE(dividends) || divisor.isDNE()) {
+        } else if (NumberTheory.containsDNE(dividends) || divisor.isDNE()) {
             return new DoesNotExist();
         }
 
@@ -617,7 +631,7 @@ public class BNumber {
                 return;
             }
 
-            if (!NumberUtils.isRational(power)) {
+            if (!NumberTheory.isRational(power)) {
                 // if the power is irrational
                 copyData(fromPolar(Math.pow(-a, power), (Math.PI * power)));
                 return;
@@ -630,7 +644,7 @@ public class BNumber {
                 return;
             }
 
-            int[] ratio = NumberUtils.findRatio(power);
+            int[] ratio = NumberTheory.findRatio(power);
             if (ratio[1] % 2 == 1) {
                 // negative base doesn't work for some reason
                 setA(-Math.pow(-a, power));
@@ -646,7 +660,7 @@ public class BNumber {
 
             copyData(fromPolar(Math.pow(-a, power), Math.PI * power));
 
-        } else if (isImaginary() && NumberUtils.isInteger(power)) {
+        } else if (isImaginary() && NumberTheory.isInteger(power)) {
             // multiplying by an imaginary number is rotating the number by PI / 2 rads on
             // the imaginary-real axis.
 
@@ -742,7 +756,7 @@ public class BNumber {
                     return output;
                 } else if (bPow % 2 == 1) {
                     // (-1)^3i = (-1)^i = e^(-pi)
-                    output.multiplyScalar(Constants.NumberConstants.NEG_ONE_TO_I);
+                    output.multiplyScalar(Constants.Number.NEG_ONE_TO_I);
                     return output;
                 } else {
                     // (-1)^ni = (-1^n)^i
@@ -858,11 +872,17 @@ public class BNumber {
     }
     // #endregion
 
-    ///
-    /// Equality & Inequality
-    ///
     // #region Comparison Bools
-    public boolean equals(double value) {
+    /**
+     * Checks if BNumber is equal to a real value.
+     * 
+     * <p>
+     * Will return false if <b>this</b> is an imaginary number or a complex number.
+     * 
+     * @param value
+     * @return
+     */
+    private boolean equals(double value) {
         if (isImaginary() || isComplex()) {
             return false;
         }
@@ -870,8 +890,35 @@ public class BNumber {
         return NumberUtils.precisionCheck(a, value) && NumberUtils.precisionCheck(b, 0);
     }
 
-    public boolean equals(BNumber other) {
+    /**
+     * Checks if BNumber is equal to <b>other</b>. Checks if the real components are
+     * equal to each other and then the imaginary components.
+     * 
+     * @param other
+     * @return
+     */
+    private boolean equals(BNumber other) {
         return NumberUtils.precisionCheck(a, other.getA()) && NumberUtils.precisionCheck(b, other.getB());
+    }
+
+    /**
+     * Check if <b>this</b> is equal to any object.
+     * 
+     */
+    @Override
+    public boolean equals(Object var1) {
+        if (var1 == null) {
+            return false;
+        } else if (var1 instanceof Double) {
+            // TODO: fix the "double does seem to relate to BNumber"
+            return equals((double) var1);
+        } else if (var1 instanceof Integer) {
+            // TODO: fix the "integer does seem to relate to BNumber"
+            return equals((int) var1);
+        } else if (var1 instanceof BNumber) {
+            return equals((BNumber) var1);
+        }
+        return false;
     }
 
     /**

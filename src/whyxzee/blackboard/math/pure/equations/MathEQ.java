@@ -6,6 +6,9 @@ import whyxzee.blackboard.math.applied.settheory.DefinedList;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
+import whyxzee.blackboard.math.pure.terms.variables.USub;
+import whyxzee.blackboard.math.pure.terms.variables.Variable;
+import whyxzee.blackboard.math.pure.terms.variables.VariableUtils;
 
 public abstract class MathEQ {
     /* Terms */
@@ -51,6 +54,10 @@ public abstract class MathEQ {
     }
 
     // #region Get/Set
+    public final EQType getType() {
+        return type;
+    }
+
     public final ArrayList<Term> getTerms() {
         return terms;
     }
@@ -71,9 +78,6 @@ public abstract class MathEQ {
     }
     // #endregion
 
-    ///
-    /// Arithmetic Methods
-    ///
     /**
      * @deprecated develop multivariate :sob:
      * @param value
@@ -92,8 +96,10 @@ public abstract class MathEQ {
     ///
     /// Boolean Methods
     ///
+    // #region Comparison Bools
     /**
-     * Checks if the math function contains the given variable.
+     * @deprecated
+     *             Checks if the math function contains the given variable.
      * 
      * @param var
      * @return
@@ -107,7 +113,24 @@ public abstract class MathEQ {
         return false;
     }
 
+    public final boolean containsVar(Variable var) {
+        switch (var.getVarType()) {
+            case U_SUB_EQ:
+                return VariableUtils.eqContainsEQ(this, (USub) var);
+            case U_SUB_TERM:
+                return VariableUtils.eqContainsTerm(this, (USub) var);
+            case VARIABLE:
+                return VariableUtils.eqContainsVar(this, var);
+            default:
+                break;
+
+        }
+        return false;
+
+    }
+
     public final boolean isType(EQType type) {
         return this.type == type;
     }
+    // #endregion
 }

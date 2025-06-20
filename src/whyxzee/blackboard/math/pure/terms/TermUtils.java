@@ -3,6 +3,7 @@ package whyxzee.blackboard.math.pure.terms;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.math.pure.equations.EquationUtils;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
 import whyxzee.blackboard.math.pure.terms.variables.USub;
@@ -60,6 +61,8 @@ public class TermUtils {
     /**
      * A general-use package for adding terms. This package works if the
      * ArrayList<Term> contains varying types of terms.
+     * 
+     * TODO: cannot add PlusMinusTerms
      * 
      * <p>
      * The functionality of this class has been checked on <b>6/14/2025</b> and
@@ -165,7 +168,7 @@ public class TermUtils {
      * nothing has changed since.
      */
     public static class MultiplyTerms {
-        private static final Loggy mLoggy = new Loggy(Constants.LoggyConstants.MULTIPLY_TERMS_LOGGY);
+        private static final Loggy mLoggy = new Loggy(Constants.Loggy.MULTIPLY_TERMS_LOGGY);
         /* Variables */
         private static ArrayList<BNumber> powers = new ArrayList<BNumber>();
         private static ArrayList<Term> mTerms = new ArrayList<Term>();
@@ -273,10 +276,49 @@ public class TermUtils {
         private static final boolean isDataEmpty() {
             return powers.isEmpty() && mTerms.isEmpty() && coef.equals(1);
         }
+    }
+    // #endregion
 
-        ///
-        /// Telemetry Methods
-        ///
+    // #region Plus Minus Addition
+    /**
+     * A recursive function that calculates all the values of multiple constant
+     * {@link whyxzee.blackboard.math.pure.terms.PlusMinusTerm}. The following have
+     * been implemented:
+     * <ul>
+     * <li>TODO: complex numbers
+     * <li>TODO: uncountables
+     * </ul>
+     * 
+     * TODO: write this logic in the journal
+     * 
+     * 
+     * @param pmTerms
+     * @return
+     */
+    public static final ArrayList<BNumber> addConstantPlusMinusTerms(ArrayList<Term> pmTerms) {
+        if (pmTerms == null || pmTerms.size() == 0) {
+            return new ArrayList<BNumber>();
+        }
+
+        ArrayList<BNumber> out = new ArrayList<BNumber>();
+        ArrayList<Term> clonedPmTerms = EquationUtils.deepCopyTerms(pmTerms);
+        BNumber coef = pmTerms.get(0).getCoef();
+        clonedPmTerms.remove(0);
+
+        if (pmTerms.size() == 1) {
+            out.add(coef);
+            out.add(coef.negate());
+            return out;
+        }
+
+        ArrayList<BNumber> nextI = addConstantPlusMinusTerms(clonedPmTerms);
+        for (BNumber i : nextI) {
+            BNumber iNum = BNumber.add(coef, i);
+            if (out.contains(coef))
+                out.add(iNum);
+            out.add(iNum.negate());
+        }
+        return out;
     }
     // #endregion
 }

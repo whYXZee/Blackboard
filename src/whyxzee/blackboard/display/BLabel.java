@@ -14,12 +14,13 @@ import whyxzee.blackboard.Constants;
  * The functionality of this class has been checked on <b>5/10/2025</b>, and
  * nothing has changed since.
  */
-public class BlackboardLabel extends JLabel {
+public class BLabel extends JLabel {
     /* UI */
     private String text;
     private double resizeFactor;
 
-    public BlackboardLabel(String text, double resizeFactor) {
+    // #region Constructors
+    public BLabel(String text, double resizeFactor) {
         /* Initialize label */
         super(text);
 
@@ -28,20 +29,37 @@ public class BlackboardLabel extends JLabel {
         this.resizeFactor = resizeFactor;
     }
 
+    /**
+     * A constructor for a BLabel which does not require a String input.
+     * 
+     * @param <T>          any class
+     * @param obj          performs {@code .toString()} on the object.
+     * @param resizeFactor what the multiplier is on the font height
+     */
+    public <T> BLabel(T obj, double resizeFactor) {
+        /* Initialize label */
+        super(obj.toString());
+
+        /* Set data */
+        this.text = obj.toString();
+        this.resizeFactor = resizeFactor;
+    }
+    // #endregion
+
+    // #region Resizing
     @Override
     public final void resize(Dimension dimension) {
-        super.setFont(new Font(Constants.DisplayConstants.FONT_NAME, Constants.DisplayConstants.FONT_STYLE,
+        super.setFont(new Font(Constants.Display.FONT_NAME, Constants.Display.FONT_STYLE,
                 (int) (dimension.getHeight() * resizeFactor)));
     }
 
     public final void resize(int height) {
-        super.setFont(new Font(Constants.DisplayConstants.FONT_NAME, Constants.DisplayConstants.FONT_STYLE,
+        super.setFont(new Font(Constants.Display.FONT_NAME, Constants.Display.FONT_STYLE,
                 (int) (height * resizeFactor)));
     }
+    // #endregion
 
-    //
-    // Get & Set Methods
-    //
+    // #region Get / Set
     public final String getText() {
         return text;
     }
@@ -58,4 +76,5 @@ public class BlackboardLabel extends JLabel {
     public final void setResizeFactor(double resizeFactor) {
         this.resizeFactor = resizeFactor;
     }
+    // #endregion
 }

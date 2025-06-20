@@ -10,7 +10,7 @@ import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
 import whyxzee.blackboard.math.pure.equations.EquationUtils;
 import whyxzee.blackboard.math.pure.equations.MultiplyEQ;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
-import whyxzee.blackboard.math.pure.numbers.NumberUtils;
+import whyxzee.blackboard.math.pure.numbers.NumberTheory;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.variables.USub;
@@ -26,7 +26,7 @@ import whyxzee.blackboard.utils.Loggy;
  */
 public class AlgebraUtils {
     /* Variables */
-    private static final Loggy loggy = new Loggy(Constants.LoggyConstants.ALGEBRA_UTILS_LOGGY);
+    private static final Loggy loggy = new Loggy(Constants.Loggy.ALGEBRA_UTILS_LOGGY);
 
     ///
     /// Operations
@@ -211,14 +211,14 @@ public class AlgebraUtils {
      * <li>complex/imaginary functionalty?
      */
     public static class RationalRoot {
-        private static final Loggy rLoggy = new Loggy(Constants.LoggyConstants.RATIONAL_ROOT_LOGGY);
+        private static final Loggy rLoggy = new Loggy(Constants.Loggy.RATIONAL_ROOT_LOGGY);
         /* Variables */
         private static ArrayList<BNumber> uniqueRoots = new ArrayList<BNumber>();
 
         public static final DefinedList performOp(BNumber q, BNumber p) {
             uniqueRoots = new ArrayList<BNumber>();
-            ArrayList<BNumber> qFactors = NumberUtils.Factors.factorsOf(q);
-            ArrayList<BNumber> pFactors = NumberUtils.Factors.factorsOf(p);
+            ArrayList<BNumber> qFactors = NumberTheory.Factors.factorsOf(q);
+            ArrayList<BNumber> pFactors = NumberTheory.Factors.factorsOf(p);
 
             rLoggy.logHeader("Rational Root Theorem with q = " + q + " and p = " + p + "\nqFactors: "
                     + qFactors + " p factors: " + pFactors + "");
@@ -226,10 +226,10 @@ public class AlgebraUtils {
             for (BNumber denom : qFactors) {
                 for (BNumber num : pFactors) {
                     BNumber factor = BNumber.divide(num, denom);
-                    if (!contains(factor)) {
+                    if (!uniqueRoots.contains(factor)) {
                         uniqueRoots.add(factor);
                     }
-                    if (!contains(factor.negate())) {
+                    if (!uniqueRoots.contains(factor.negate())) {
                         uniqueRoots.add(factor.negate());
                     }
                 }
@@ -238,18 +238,6 @@ public class AlgebraUtils {
             rLoggy.logVal("combined factors", uniqueRoots);
 
             return new DefinedList("", uniqueRoots);
-        }
-
-        ///
-        /// Boolean Methods
-        ///
-        private static final boolean contains(BNumber root) {
-            for (BNumber i : uniqueRoots) {
-                if (i.equals(root)) {
-                    return true;
-                }
-            }
-            return false;
         }
     }
     // #endregion
@@ -282,7 +270,7 @@ public class AlgebraUtils {
 
         // all powers must be integers.
         for (BNumber i : powOfTerms) {
-            if (!NumberUtils.isInteger(i)) {
+            if (!NumberTheory.isInteger(i)) {
                 loggy.log("One of the powers is not an integer.");
                 return false;
             }

@@ -17,15 +17,18 @@ public class SolutionData {
     /* Variables */
     private Term term; // multivariate
     private DefinedList list;
+    private Variable var;
 
-    public SolutionData(Term term) {
+    public SolutionData(Variable var, Term term) {
+        this.var = var;
         this.term = term;
         list = null;
     }
 
     public SolutionData(Variable var, ArrayList<BNumber> solutions) {
-        list = new DefinedList(var.toString(), solutions);
+        this.var = var;
         term = null;
+        list = new DefinedList(var.toString(), solutions);
     }
 
     @Override
@@ -33,7 +36,7 @@ public class SolutionData {
         if (isList()) {
             return list.toString();
         }
-        return term.toString();
+        return var + " = " + term.toString();
     }
 
     // #region Term

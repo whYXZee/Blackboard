@@ -19,10 +19,9 @@ import javax.swing.JPanel;
  * nothing has changed.
  */
 public class BlackboardDisplay extends JPanel {
-
-    //
-    // UI Components
-    //
+    ///
+    /// UI Components
+    ///
     private final DisplayDaemon DAEMON;
     private final JPanel scriptPanel = new JPanel();
 
@@ -31,8 +30,9 @@ public class BlackboardDisplay extends JPanel {
     private GridBagConstraints scriptGrid;
 
     /* Labels */
-    private ArrayList<BlackboardLabel> scriptLabels;
+    private ArrayList<BLabel> scriptLabels;
 
+    // #region Constructors
     public BlackboardDisplay(JFrame frame) {
         /* Display layout */
         this.setLayout(new GridBagLayout());
@@ -51,7 +51,7 @@ public class BlackboardDisplay extends JPanel {
         scriptGrid.anchor = GridBagConstraints.CENTER;
 
         /* Labels */
-        scriptLabels = new ArrayList<BlackboardLabel>();
+        scriptLabels = new ArrayList<BLabel>();
 
         /* Adding Display */
         this.add(scriptPanel, grid); // jscrollpane panel for debugging
@@ -60,10 +60,9 @@ public class BlackboardDisplay extends JPanel {
         DAEMON = new DisplayDaemon(this, frame);
         DAEMON.start();
     }
+    // #endregion
 
-    //
-    // UI Methods
-    //
+    // #region Resizing
     public void resizeComponents(Dimension dimension) {
         /* Variables */
         int width = (int) dimension.getWidth();
@@ -71,39 +70,64 @@ public class BlackboardDisplay extends JPanel {
 
         /* Script */
         scriptPanel.setPreferredSize(new Dimension((int) (width / 1.25), height / 4));
-        for (BlackboardLabel i : scriptLabels) {
+        for (BLabel i : scriptLabels) {
             i.resize(height);
         }
     }
+    // #endregion
 
+    // #region Script
+    /**
+     * Updates the contents of the script panel.
+     */
     private void updateScriptDisplay() {
         /* Set Up */
         scriptPanel.removeAll();
         scriptGrid.gridx = 0;
 
         /* Adding */
-        for (BlackboardLabel i : scriptLabels) {
+        for (BLabel i : scriptLabels) {
             scriptPanel.add(i);
             scriptGrid.gridx++;
         }
     }
 
-    //
-    // Get, Set, & Append Methods
-    //
-    public void appendScript(BlackboardLabel... labels) {
-        for (BlackboardLabel i : labels) {
+    /**
+     * Appends multiple BLabels to the script panel.
+     * 
+     * @param labels
+     */
+    public void appendScript(BLabel... labels) {
+        for (BLabel i : labels) {
             scriptLabels.add(i);
         }
         updateScriptDisplay();
-
     }
 
+    /**
+     * Appends a String to the script panel.
+     * 
+     * @param text
+     * @param resizeFactor the multiplier of the font height
+     */
     public void appendScript(String text, double resizeFactor) {
-        appendScript(new BlackboardLabel(text, resizeFactor));
+        appendScript(new BLabel(text, resizeFactor));
     }
+
+    /**
+     * Appends a general object to the script panel.
+     * 
+     * @param <T>          any class
+     * @param obj          performs {@code .toString()} on the object
+     * @param resizeFactor the multiplier of the font height
+     */
+    public <T> void appendScript(T obj, double resizeFactor) {
+        appendScript(new BLabel(obj, resizeFactor));
+    }
+    // #endregion
 }
 
+// #region Daemon
 /**
  * The daemon thread is for resizing the components of the math display in
  * relation to the frame.
@@ -142,10 +166,11 @@ class DisplayDaemon extends Thread {
         }
     }
 
-    //
-    // Get & Set Methods
-    //
+    ///
+    /// Get & Set Methods
+    ///
     public void setShouldRun(boolean shouldRun) {
         this.shouldRun = shouldRun;
     }
 }
+// #endregion

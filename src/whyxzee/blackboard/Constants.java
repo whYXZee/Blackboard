@@ -23,6 +23,7 @@ public final class Constants {
         public static final char SUPERSCRIPT_8 = '\u2078';
         public static final char SUPERSCRIPT_9 = '\u2079';
         public static final char SUPERSCRIPT_DASH = '\u207B';
+        public static final char SUPERSCRIPT_DOT = '\u0000'; // TODO: test
         public static final char SUPERSCRIPT_SLASH = '\u2E0D';
         // #endregion
 
@@ -49,6 +50,8 @@ public final class Constants {
         public static final char ELEMENT_OF = '\u2208';
         public static final char NOT_ELEMENT_OF = '\u2209';
         public static final char UNION = '\u222A';
+        public static final char SUPERSET = '\u2283'; // A superset of B
+        public static final char SUBSET = '\u2282'; // A subset of B
         public static final char SET_SUCH_THAT = '|';
         public static final char NULL_SET = '\u2205';
         public static final String NATURAL_SET = "\u2115";
@@ -72,16 +75,19 @@ public final class Constants {
         /* Greek */
         public static final char UPPERCASE_SIGMA = '\u03A3';
         public static final char LOWERCASE_PI = '\u03C0';
+        public static final char LOWERCASE_DELTA = '\u03B4';
 
         /* Infinity */
         public static final String INFINITY = "\u221E";
         public static final String ALEPH = "\u2135";
+        public static final String INFINITESIMAL = "d";
 
         /* General */
         public static final char FRACTION_SLASH = '\u2044';
         public static final char IMAGINARY_NUMBER = 'i';
         public static final char INTEGRAL = '\u222B';
         public static final char PLUS_MINUS = '\u00B1';
+        public static final char THEREFORE = '\u061E';
 
         /* Random */
         public static final char STOPWATCH = '\u23F1';
@@ -89,10 +95,10 @@ public final class Constants {
     // #endregion
 
     // #region Display
-    public static final class DisplayConstants {
+    public static final class Display {
         /* Font */
-        public static final double PRINT_WIDTH_PERCENT = 1.0;
-        public static final double PRINT_HEIGHT_PERCENT = 1.0;
+        public static final double SCRIPT_WIDTH_PERCENT = 1.0;
+        public static final double SCRIPT_HEIGHT_PERCENT = 1.0;
         public static final double SUP_WIDTH_PERCENT = 1.0;
         public static final double SUP_HEIGHT_PERCENT = 1.0;
         public static final double SUB_WIDTH_PERCENT = 1.0;
@@ -104,7 +110,7 @@ public final class Constants {
     // #endregion
 
     // #region Number
-    public static final class NumberConstants {
+    public static final class Number {
         public static final int[] PRIME_NUMBERS = {
                 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31
         };
@@ -112,7 +118,11 @@ public final class Constants {
         public static final int SIG_FIGS = 4;
 
         /* Complex Numbers */
-        public static final double NEG_ONE_TO_I = 0.0432139186;
+        public static final double NEG_ONE_TO_I = 0.0432139186; // e^(-pi)
+
+        /* Infinity */
+        // could be used for derivatives or Reimann sums/integrals maybe?
+        public static final double INFINITESIMAL_VAL = 0.001;
     }
     // #endregion
 
@@ -121,14 +131,17 @@ public final class Constants {
      * Global constants for activating loggy in certain aspects of the package.
      * This is only used for debugging and developmental purposes.
      */
-    public static final class LoggyConstants {
+    public static final class Loggy {
         /* Algebra */
         public static final boolean ALGEBRA_SOLVER_LOGGY = false;
         public static final boolean RATIONAL_ROOT_LOGGY = false;
         public static final boolean ALGEBRA_UTILS_LOGGY = false;
 
         /* Numbers */
-        public static final boolean BNUMBER_LOGGY = false;
+        public static final boolean BNUMBER_LOGGY = true;
+
+        /* Variables */
+        public static final boolean VARIABLE_UTILS_LOGGY = false;
 
         /* Terms */
         public static final boolean TERM_LOGGY = false;

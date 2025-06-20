@@ -1,7 +1,7 @@
 package whyxzee.blackboard.math.pure.combinatorics;
 
 import whyxzee.blackboard.math.pure.numbers.BNumber;
-import whyxzee.blackboard.math.pure.numbers.NumberUtils;
+import whyxzee.blackboard.math.pure.numbers.NumberTheory;
 
 /**
  * A general-use class for combinatorics.
@@ -21,7 +21,7 @@ public class CombinatoricsUtils {
     }
 
     public static final BNumber factorial(double value) {
-        if (NumberUtils.isInteger(value)) {
+        if (NumberTheory.isInteger(value)) {
             return new BNumber(recursiveFactorial((int) value), 0);
         }
         throw new UnsupportedOperationException();

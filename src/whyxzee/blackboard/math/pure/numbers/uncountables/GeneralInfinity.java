@@ -13,6 +13,7 @@ import whyxzee.blackboard.math.pure.numbers.BUncountable;
  */
 public class GeneralInfinity extends BUncountable {
 
+    // #region
     /**
      * Constructor for a general Infinity.
      * 
@@ -32,4 +33,5 @@ public class GeneralInfinity extends BUncountable {
         super(isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY, size, UncountableType.ALEPH,
                 Constants.Unicode.INFINITY);
     }
+    // #endregion
 }

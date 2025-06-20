@@ -5,10 +5,22 @@ import whyxzee.blackboard.math.pure.numbers.BNumber;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 import whyxzee.blackboard.utils.Loggy;
 
+/**
+ * A package for PowerTerms. This package is constructed as an {@code a*x^n}
+ * term. The following have been implemented:
+ * <ul>
+ * <li>Complex powers and coefficients
+ * <li>uncountable power and coefficient
+ * <li>DNE power and coefficient
+ * </ul>
+ * 
+ * <p>
+ * The functionality of this class has not been checked.
+ */
 public class PowerTerm extends Term {
     /* Variables */
     private static final Loggy loggy = new Loggy(
-            Constants.LoggyConstants.POW_TERM_LOGGY || Constants.LoggyConstants.TERM_LOGGY);
+            Constants.Loggy.POW_TERM_LOGGY || Constants.Loggy.TERM_LOGGY);
     private BNumber power;
 
     // #region Constructors
@@ -91,28 +103,23 @@ public class PowerTerm extends Term {
     }
     // #endregion
 
+    // #region String / Display
     @Override
     public final String toString() {
         String output = "";
 
         /* Coefficient */
-        BNumber coef = getCoef();
-        if (coef.isZero()) {
+        if (getCoef().isZero()) {
             return "0";
-        } else if (coef.isComplex()) {
-            output += "(" + coef + ")";
-        } else if (!isConstant() && coef.equals(1)) {
-            output += "";
-        } else if (!isConstant() && coef.equals(-1)) {
-            output += "-";
-        } else {
-            output += coef;
+        } else if (getCoef().isDNE() || getPower().isDNE()) {
+            return "DNE";
         }
+        output += coefString();
 
         /* Variable + power */
-        if (power.equals(new BNumber(1, 0))) {
+        if (power.equals(1)) {
             output += getVar();
-        } else if (!power.equals(new BNumber(0, 0))) {
+        } else if (!power.isZero()) {
             // power not one nor zero
 
             if (getVar().isUSub()) {
@@ -125,11 +132,26 @@ public class PowerTerm extends Term {
 
         return output;
     }
+    // #endregion
+
+    // #region Copying / Cloning
+    @Override
+    public final void copy(Term other) {
+        if (!other.isTermType(TermType.POWER)) {
+            return;
+        }
+
+        PowerTerm oPow = (PowerTerm) other;
+        setCoef(oPow.getCoef().clone());
+        setVar(oPow.getVar().clone());
+        power = oPow.getPower().clone();
+    }
 
     @Override
     public final Term clone() {
         return new PowerTerm(getCoef().clone(), getVar(), power.clone());
     }
+    // #endregion
 
     // #region PowTerm Get/Set
     public final BNumber getPower() {
@@ -182,7 +204,7 @@ public class PowerTerm extends Term {
         return output;
     }
 
-    // #region PowTerm Bools
+    // #region Term Bools
     /**
      * A PowerTerm is constant if the power is zero.
      * 
@@ -191,9 +213,7 @@ public class PowerTerm extends Term {
     public final boolean isConstant() {
         return power.equals(0);
     }
-    // #endregion
 
-    // #region Term Bools
     @Override
     public boolean similarTo(Term term) {
         if (!term.isTermType(TermType.POWER)) {
