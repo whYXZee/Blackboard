@@ -2,8 +2,7 @@ package whyxzee.blackboard.math.pure.terms;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.math.pure.numbers.BNumber;
-import whyxzee.blackboard.math.pure.terms.variables.USub;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 
 /**
@@ -20,8 +19,8 @@ public abstract class Term {
     private TermType termType;
 
     /* Outer Variables */
-    private BNumber coef;
-    private Variable var;
+    private ComplexNum coef;
+    private Variable<?> var;
 
     public static enum TermType {
         POWER,
@@ -44,13 +43,13 @@ public abstract class Term {
      *                 function, etc.
      * @param termType
      */
-    public Term(double coef, Variable var, TermType termType) {
-        this.coef = new BNumber(coef, 0);
+    public Term(double coef, Variable<?> var, TermType termType) {
+        this.coef = new ComplexNum(coef, 0);
         this.var = var;
         this.termType = termType;
     }
 
-    public Term(BNumber coef, Variable var, TermType termType) {
+    public Term(ComplexNum coef, Variable<?> var, TermType termType) {
         this.coef = coef;
         this.var = var;
         this.termType = termType;
@@ -92,7 +91,7 @@ public abstract class Term {
     }
 
     // #region Term Get/Set
-    public final BNumber getCoef() {
+    public final ComplexNum getCoef() {
         return coef;
     }
 
@@ -102,10 +101,10 @@ public abstract class Term {
      * @param coef the real number
      */
     public final void setCoef(double coef) {
-        this.coef = new BNumber(coef, 0);
+        this.coef = new ComplexNum(coef, 0);
     }
 
-    public final void setCoef(BNumber coef) {
+    public final void setCoef(ComplexNum coef) {
         this.coef = coef;
     }
 
@@ -117,11 +116,11 @@ public abstract class Term {
         this.termType = termType;
     }
 
-    public final Variable getVar() {
+    public final Variable<?> getVar() {
         return var;
     }
 
-    public final void setVar(Variable var) {
+    public final void setVar(Variable<?> var) {
         this.var = var;
     }
     // #endregion
@@ -132,12 +131,12 @@ public abstract class Term {
      * 
      * @param value
      */
-    public final void addToCoef(BNumber value) {
-        coef = BNumber.add(coef, value);
+    public final void addToCoef(ComplexNum value) {
+        coef = ComplexNum.add(coef, value);
     }
 
-    public final void divideCoefBy(BNumber value) {
-        coef = BNumber.divide(coef, value);
+    public final void divideCoefBy(ComplexNum value) {
+        coef = ComplexNum.divide(coef, value);
     }
 
     /**
@@ -154,7 +153,7 @@ public abstract class Term {
      * @param value the value of the variable
      * @return
      */
-    public abstract BNumber solve(BNumber value);
+    public abstract ComplexNum solve(ComplexNum value);
 
     /**
      * @deprecated develop multivariate :sob:
@@ -164,8 +163,8 @@ public abstract class Term {
      * @param value
      * @return
      */
-    public final BNumber solve(double value) {
-        return solve(new BNumber(value, 0));
+    public final ComplexNum solve(double value) {
+        return solve(new ComplexNum(value, 0));
     }
 
     /**
@@ -173,32 +172,32 @@ public abstract class Term {
      * @param power
      * @return
      */
-    public final Term toPower(BNumber power) {
+    public final Term toPower(ComplexNum power) {
         PowerTerm powTerm;
         switch (termType) {
             case POWER:
                 powTerm = (PowerTerm) this;
 
                 /* Power */
-                powTerm.setPower(BNumber.multiply(powTerm.getPower(), power));
+                powTerm.setPower(ComplexNum.multiply(powTerm.getPower(), power));
 
                 /* Coefficient */
-                powTerm.setCoef(BNumber.pow(getCoef(), power));
+                powTerm.setCoef(ComplexNum.pow(getCoef(), power));
                 break;
             default:
                 /* Coefficient */
-                BNumber newCoef = BNumber.pow(coef, power);
+                ComplexNum newCoef = ComplexNum.pow(coef, power);
                 setCoef(1);
 
                 /* Power and U-Sub */
-                powTerm = new PowerTerm(newCoef, new USub(this), power);
+                powTerm = new PowerTerm(newCoef, new Variable<Term>(this), power);
                 break;
         }
         return powTerm;
     }
 
     public final Term toPower(double power) {
-        return toPower(new BNumber(power, 0));
+        return toPower(new ComplexNum(power, 0));
     }
 
     // #region Variable Bools
@@ -207,10 +206,10 @@ public abstract class Term {
      * @param var
      * @return
      */
-    public final boolean containsVar(Variable var) {
+    public final boolean containsVar(Variable<?> var) {
         // TODO: what if the inner var is there, but it is ie quadratic?
         // like, if var is (x+3) but the var is (x+3)(x+2) = x^2 + 5x + 6
-        return this.var.containsVar(var);
+        return this.var.contains(var);
     }
     // #endregion
 

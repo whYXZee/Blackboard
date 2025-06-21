@@ -2,8 +2,7 @@ package whyxzee.blackboard.math.pure.terms;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.equations.MathEQ;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
-import whyxzee.blackboard.math.pure.terms.variables.USub;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 import whyxzee.blackboard.utils.Loggy;
 
@@ -23,7 +22,7 @@ public class PowerTerm extends Term {
     /* Variables */
     private static final Loggy loggy = new Loggy(
             Constants.Loggy.POW_TERM_LOGGY || Constants.Loggy.TERM_LOGGY);
-    private BNumber power;
+    private ComplexNum power;
 
     // #region Constructors
     /**
@@ -33,7 +32,7 @@ public class PowerTerm extends Term {
      */
     public PowerTerm(double coef) {
         super(coef, Variable.noVar, TermType.POWER);
-        this.power = new BNumber(0, 0);
+        this.power = new ComplexNum(0, 0);
     }
 
     /**
@@ -41,9 +40,9 @@ public class PowerTerm extends Term {
      * 
      * @param coef
      */
-    public PowerTerm(BNumber coef) {
+    public PowerTerm(ComplexNum coef) {
         super(coef, Variable.noVar, TermType.POWER);
-        this.power = new BNumber(0, 0);
+        this.power = new ComplexNum(0, 0);
     }
 
     /**
@@ -52,9 +51,9 @@ public class PowerTerm extends Term {
      * @param coef
      * @param var
      */
-    public PowerTerm(double coef, Variable var) {
+    public PowerTerm(double coef, Variable<?> var) {
         super(coef, var, TermType.POWER);
-        this.power = new BNumber(1, 0);
+        this.power = new ComplexNum(1, 0);
     }
 
     /**
@@ -63,9 +62,9 @@ public class PowerTerm extends Term {
      * @param coef
      * @param var
      */
-    public PowerTerm(BNumber coef, Variable var) {
+    public PowerTerm(ComplexNum coef, Variable<?> var) {
         super(coef, var, TermType.POWER);
-        this.power = new BNumber(1, 0);
+        this.power = new ComplexNum(1, 0);
     }
 
     /**
@@ -76,9 +75,9 @@ public class PowerTerm extends Term {
      * @param var
      * @param power
      */
-    public PowerTerm(double coef, Variable var, double power) {
+    public PowerTerm(double coef, Variable<?> var, double power) {
         super(coef, var, TermType.POWER);
-        this.power = new BNumber(power, 0);
+        this.power = new ComplexNum(power, 0);
     }
 
     /**
@@ -89,17 +88,17 @@ public class PowerTerm extends Term {
      * @param var
      * @param power real number as a <b>double</b>.
      */
-    public PowerTerm(BNumber coef, Variable var, double power) {
+    public PowerTerm(ComplexNum coef, Variable var, double power) {
         super(coef, var, TermType.POWER);
-        this.power = new BNumber(power, 0);
+        this.power = new ComplexNum(power, 0);
     }
 
-    public PowerTerm(double coef, Variable var, BNumber power) {
+    public PowerTerm(double coef, Variable var, ComplexNum power) {
         super(coef, var, TermType.POWER);
         this.power = power;
     }
 
-    public PowerTerm(BNumber coef, Variable var, BNumber power) {
+    public PowerTerm(ComplexNum coef, Variable var, ComplexNum power) {
         super(coef, var, TermType.POWER);
         this.power = power;
     }
@@ -144,7 +143,7 @@ public class PowerTerm extends Term {
     // #endregion
 
     // #region PowTerm Get/Set
-    public final BNumber getPower() {
+    public final ComplexNum getPower() {
         return power;
     }
 
@@ -154,7 +153,7 @@ public class PowerTerm extends Term {
      * @param power
      */
     public final void setPower(double power) {
-        this.power = new BNumber(power, 0);
+        this.power = new ComplexNum(power, 0);
     }
 
     /**
@@ -162,7 +161,7 @@ public class PowerTerm extends Term {
      * 
      * @param power
      */
-    public final void setPower(BNumber power) {
+    public final void setPower(ComplexNum power) {
         this.power = power;
     }
     // #endregion
@@ -175,8 +174,8 @@ public class PowerTerm extends Term {
     // #endregion
 
     @Override
-    public BNumber solve(BNumber value) {
-        BNumber output = getCoef().clone();
+    public ComplexNum solve(ComplexNum value) {
+        ComplexNum output = getCoef().clone();
 
         loggy.logHeader("Solving " + this + " with value " + value);
         loggy.logVal("coef", output);
@@ -185,8 +184,8 @@ public class PowerTerm extends Term {
             return output;
         }
 
-        BNumber factor = BNumber.pow(getVar().solve(value), power);
-        output = BNumber.multiply(output, factor);
+        ComplexNum factor = ComplexNum.pow(getVar().solve(value), power);
+        output = ComplexNum.multiply(output, factor);
 
         /* Telemetry */
         loggy.log(getCoef() + " * " + factor + " = " + output);
@@ -220,25 +219,13 @@ public class PowerTerm extends Term {
             return false;
         }
 
-        if (var1 instanceof BNumber) {
-            BNumber num = (BNumber) var1;
+        if (var1 instanceof ComplexNum) {
+            ComplexNum num = (ComplexNum) var1;
             return num.equals(getCoef()) || num.equals(getPower());
 
         } else if (var1 instanceof Variable) {
             Variable var = (Variable) var1;
-            switch (var.getVarType()) {
-                case U_SUB_EQ:
-                    return getVar().contains(var);
-                case U_SUB_TERM:
-                    if (equals(var1)) {
-                        return true;
-                    }
-                    return getVar().contains(var);
-                case VARIABLE:
-                    return this.getVar().equals(var);
-                default:
-                    break;
-            }
+            return false;
 
         } else if (var1 instanceof Term) {
             if (equals(var1)) {

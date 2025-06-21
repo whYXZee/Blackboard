@@ -11,38 +11,77 @@ import whyxzee.blackboard.utils.Loggy;
  * The package is built for the polar definition of complex numbers.
  * 
  * <p>
- * The functionality of this class has been checked on <b>6/74/2025</b> and
+ * The functionality of this class has been checked on <b>6/21/2025</b> and
  * the following has changed:
- * <ul>
- * <li>power()
  */
-public class BNumber {
-    private static final Loggy loggy = new Loggy(Constants.Loggy.BNUMBER_LOGGY);
+public class ComplexNum {
+    private static final Loggy loggy = new Loggy(Constants.Loggy.COMPLEX_NUM_LOGGY);
 
     /* Polar Definition of Complex Numbers */
     private double modulus;
     private double theta;
 
     /* Rectangular Definition */
-    private double a; // real part of a number
-    private double b; // imaginary part
+    private Value a; // real part of a number
+    private Value b; // imaginary part
 
     // #region Constructors
     /**
-     * Constructor for a complex number, formatted in rectangular form
+     * Constructor for a DNE.
+     */
+    public ComplexNum() {
+        a = new Value();
+        b = new Value();
+        refreshPolar();
+    }
+
+    /**
+     * Constructor for a complex number, formatted in rectangular form.
      * ({@code a+bi}).
      * 
      * @param a the "real part" of a number
      * @param b the "imaginary part" of a number
      */
-    public BNumber(double a, double b) {
+    public ComplexNum(double a, double b) {
+        /* Rectangular Definition */
+        this.a = new Value(a);
+        this.b = new Value(b);
+
+        /* Polar Definition */
+        refreshPolar();
+    }
+
+    public ComplexNum(Value a, Value b) {
         /* Rectangular Definition */
         this.a = a;
         this.b = b;
 
         /* Polar Definition */
-        refreshModulus();
-        refreshTheta();
+        refreshPolar();
+    }
+
+    public ComplexNum(Object a, Object b) {
+        if (a instanceof Value) {
+            this.a = (Value) a;
+        } else if (a instanceof Double) {
+            this.a = new Value((double) a);
+        } else if (a instanceof Integer) {
+            this.a = new Value((int) a);
+        } else {
+            this.a = new Value();
+        }
+
+        if (b instanceof Value) {
+            this.b = (Value) b;
+        } else if (b instanceof Double) {
+            this.b = new Value((double) b);
+        } else if (b instanceof Integer) {
+            this.b = new Value((int) b);
+        } else {
+            this.b = new Value();
+        }
+
+        refreshPolar();
     }
 
     /**
@@ -53,8 +92,37 @@ public class BNumber {
      * @param theta
      * @return
      */
-    public static final BNumber fromPolar(double modulus, double theta) {
-        return new BNumber(modulus * Math.cos(theta), modulus * Math.sin(theta));
+    public static final ComplexNum fromPolar(double modulus, double theta) {
+        return new ComplexNum(modulus * Math.cos(theta), modulus * Math.sin(theta));
+    }
+
+    /**
+     * Static constructor for a complex number with modulus infinity. Formatted in
+     * the polar form.
+     * 
+     * @return
+     */
+    private static final ComplexNum uncountableCis(Value inf, double theta) {
+        Value a, b;
+
+        /* Real Component */
+        double cosVal = Math.cos(theta);
+        if (!NumberUtils.precisionCheck(cosVal, 0)) {
+            a = inf.clone();
+            a.multiply(Math.signum(cosVal));
+        } else {
+            a = new Value(0);
+        }
+
+        /* Imaginary Component */
+        double sinVal = Math.sin(theta);
+        if (!NumberUtils.precisionCheck(sinVal, 0)) {
+            b = inf.clone();
+            b.multiply(Math.signum(sinVal));
+        } else {
+            b = new Value(0);
+        }
+        return new ComplexNum(a, b);
     }
 
     /**
@@ -62,8 +130,8 @@ public class BNumber {
      * 
      * @return
      */
-    public static final BNumber zero() {
-        return new BNumber(0, 0);
+    public static final ComplexNum zero() {
+        return new ComplexNum(0, 0);
     }
 
     /**
@@ -72,28 +140,30 @@ public class BNumber {
      * @param power
      * @return {@code cis(PI * power)}
      */
-    public static final BNumber negOneToPower(double power) {
+    public static final ComplexNum negOneToPower(double power) {
         return fromPolar(1, Math.PI * power);
     }
 
     // #endregion
 
-    // #region Strings
+    // #region String/Display
     @Override
     public String toString() {
         if (isZero()) {
             return "0";
+        } else if (a.isDNE() || b.isDNE()) {
+            return "DNE";
         } else if (isReal()) {
-            return NumberUtils.valueToString(a);
+            return a.toString();
         } else if (isImaginary()) {
-            return NumberUtils.valueToString(b) + Constants.Unicode.IMAGINARY_NUMBER;
+            return b.toString() + Constants.Unicode.IMAGINARY_NUMBER;
         }
 
         /* Complex */
         String output = "";
-        output += NumberUtils.valueToString(a);
-        output += (b < 0) ? " - " : " + ";
-        output += NumberUtils.valueToString((b < 0) ? -b : b);
+        output += a.toString();
+        output += (b.isNegative()) ? " - " : " + ";
+        output += b.isNegative() ? b.negate().toString() : b.toString();
         output += Constants.Unicode.IMAGINARY_NUMBER;
         return output;
     }
@@ -121,11 +191,7 @@ public class BNumber {
      * 
      * @param other
      */
-    public void copyData(BNumber other) {
-        if (other.isUncountable() || other.isDNE()) {
-            throw new UnsupportedOperationException("Cannot copy Uncountable or DNE into a BNumber.");
-        }
-
+    public void copy(ComplexNum other) {
         a = other.getA();
         b = other.getB();
         refreshPolar();
@@ -135,8 +201,8 @@ public class BNumber {
      * Provides a deep copy of the BNumber.
      */
     @Override
-    public BNumber clone() {
-        return new BNumber(a, b);
+    public ComplexNum clone() {
+        return new ComplexNum(a, b);
     }
     // #endregion
 
@@ -145,27 +211,40 @@ public class BNumber {
         return new PowerTerm(this);
     }
 
-    public final ArrayList<BNumber> toArrayList() {
-        ArrayList<BNumber> out = new ArrayList<BNumber>();
+    public final ArrayList<ComplexNum> toArrayList() {
+        ArrayList<ComplexNum> out = new ArrayList<ComplexNum>();
         out.add(this);
         return out;
     }
     // #endregion
 
     // #region Rectangular Get/Set
-    public final double getA() {
+    public final Value getA() {
         return a;
     }
 
+    /**
+     * Sets the real component of a complex number to a value.
+     * 
+     * @param a
+     */
     public final void setA(double a) {
+        this.a = new Value(a);
+    }
+
+    public final void setA(Value a) {
         this.a = a;
     }
 
-    public final double getB() {
+    public final Value getB() {
         return b;
     }
 
     public final void setB(double b) {
+        this.b = new Value(b);
+    }
+
+    public final void setB(Value b) {
         this.b = b;
     }
     // #endregion
@@ -185,17 +264,22 @@ public class BNumber {
     }
 
     public final void refreshModulus() {
-        if (Double.isInfinite(a) || Double.isInfinite(b)) {
+        if (a.isDNE() || b.isDNE()) {
+            modulus = Double.NaN;
+            return;
+        }
+
+        if (a.isInfinity() || b.isInfinity()) {
             modulus = Double.POSITIVE_INFINITY;
             return;
         }
 
-        if (a == 0) {
-            modulus = Math.abs(b);
-        } else if (b == 0) {
-            modulus = Math.abs(a);
+        if (a.equals(0)) {
+            modulus = b.abs();
+        } else if (b.equals(0)) {
+            modulus = a.abs();
         } else {
-            modulus = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+            modulus = Math.sqrt(Math.pow(a.getValue(), 2) + Math.pow(b.getValue(), 2));
         }
     }
 
@@ -212,23 +296,68 @@ public class BNumber {
      * numbers by normalizing the theta.
      */
     public final void refreshTheta() {
-        if (Double.isInfinite(a) || Double.isInfinite(b)) {
-            theta = BUncountable.thetaWithInfinity(a, b);
+        /* DNE */
+        if (a.isDNE() || b.isDNE()) {
+            theta = Double.NaN;
+        }
+
+        /* Values */
+        double aVal = a.getValue(), bVal = b.getValue();
+        if (a.hasValue() && b.hasValue()) {
+            if (!NumberUtils.precisionCheck(aVal, 0.0)) {
+                theta = Math.atan(bVal / aVal);
+                if (b.isNegative() && a.isNegative()) {
+                    // Quadrant three
+                    theta += Math.PI;
+                } else if (a.isNegative()) {
+                    // Quadrant two
+                    theta -= Math.PI;
+                }
+            } else {
+                theta = b.signum() * Math.PI / 2;
+            }
             return;
         }
 
-        if (!NumberUtils.precisionCheck(getA(), 0.0)) {
-            theta = Math.atan(b / a);
-            if (b < 0 && a < 0) {
+        /* Infinity */
+        boolean realInf = a.isInfinity(), imInf = b.isInfinity();
+        // infinitesimals would make it approach 0 or infinity faster
+        if (realInf && imInf) {
+            // Complex Infinity
+            theta = Math.atan(b.signum() / a.signum());
+            if (b.isNegative() && a.isNegative()) {
                 // Quadrant three
                 theta += Math.PI;
-            } else if (a < 0) {
+            } else if (a.isNegative()) {
                 // Quadrant two
                 theta -= Math.PI;
             }
-        } else {
-            theta = Math.signum(b) * Math.PI / 2;
+            return;
+
+        } else if (realInf) {
+            // Only Real Infinity
+            theta = 0;
+            if (a.isNegative()) {
+                theta += Math.PI;
+            }
+            return;
+
+        } else if (imInf) {
+            // Only Imaginary Infinity
+            theta = b.signum() * Math.PI / 2;
+            return;
         }
+
+        /* Infinitesimals */
+        boolean realDx = a.isInfinitesimal(), imDx = b.isInfinitesimal();
+        if (realDx && imDx) {
+            theta = Math.PI / 4;
+        } else if (realDx) {
+            theta = b.signum() * Math.PI / 2;
+        } else if (imDx) {
+            theta = 0;
+        }
+
     }
     // #endregion
 
@@ -239,7 +368,7 @@ public class BNumber {
      * @return
      */
     public boolean isComplex() {
-        return !isAZero() && !isBZero();
+        return !a.isZero() && !b.isZero();
     }
 
     /**
@@ -249,7 +378,7 @@ public class BNumber {
      * @return {@code a == 0 && b != 0}
      */
     public boolean isImaginary() {
-        return isAZero() && !isBZero();
+        return a.isZero() && !b.isZero();
     }
 
     /**
@@ -259,7 +388,7 @@ public class BNumber {
      * @return {@code a != 0 && b == 0};
      */
     public boolean isReal() {
-        return !isAZero() && isBZero();
+        return !a.isZero() && b.isZero();
     }
 
     /**
@@ -273,7 +402,7 @@ public class BNumber {
         if (isImaginary() || isComplex()) {
             return false;
         }
-        return NumberTheory.isRational(getA(), sigFigs);
+        return a.isRational(sigFigs);
     }
 
     /**
@@ -292,12 +421,12 @@ public class BNumber {
      * 
      * @return
      */
-    public boolean isUncountable() {
-        return false;
+    public boolean hasUncountable() {
+        return !a.hasValue() || !b.hasValue();
     }
 
     public boolean isDNE() {
-        return false;
+        return a.isDNE() || b.isDNE();
     }
     // #endregion
 
@@ -307,46 +436,37 @@ public class BNumber {
      * 
      * @return
      */
-    public boolean isZero() {
-        return isAZero() && isBZero();
+    public final boolean isZero() {
+        return a.isZero() && b.isZero();
     }
 
     public final boolean isAZero() {
-        return NumberUtils.precisionCheck(a, 0);
+        return a.isZero();
     }
 
     public final boolean isBZero() {
-        return NumberUtils.precisionCheck(b, 0);
+        return b.isZero();
     }
     // #endregion
 
     public final boolean isNegative() {
-        return lessThan(new BNumber(0, 0));
+        // TODO: rework
+        return lessThan(new ComplexNum(0, 0));
     }
 
-    ///
-    /// Operations
-    ///
     /**
      * Performs a deep copy of the complex number, and then negates the copy.
      * 
      * @return
      */
-    public final BNumber negate() {
-        return new BNumber(-a, -b);
+    public final ComplexNum negate() {
+        return new ComplexNum(a.negate(), b.negate());
     }
 
     // #region Addition
-    /**
-     * Adds one complex numbers to <b>this</b>. Adds all the real parts
-     * together, then all of the imaginary parts together. The following
-     * is implemented into the method:
-     * 
-     * @param addend a BNumber.
-     */
-    private final void add(BNumber addend) {
-        a += addend.getA();
-        b += addend.getB();
+    private final void add(ComplexNum other) {
+        a.add(other.getA());
+        b.add(other.getB());
     }
 
     /**
@@ -363,29 +483,18 @@ public class BNumber {
      * @param addends
      * @return
      */
-    public static final BNumber add(BNumber... addends) {
+    public static final ComplexNum add(ComplexNum... addends) {
         if (addends == null || addends.length == 0) {
-            return new BNumber(0, 0);
+            return new ComplexNum(0, 0);
         } else if (addends.length == 1) {
             return addends[0];
-        } else if (NumberTheory.containsDNE(addends)) {
-            return new DoesNotExist();
+        } else if (NumberUtils.containsDNE(addends)) {
+            return new ComplexNum();
         }
 
-        BNumber output = new BNumber(0, 0);
-        for (BNumber i : addends) {
-            /* Uncountable Addition */
-            if (output.isUncountable()) {
-                output = BUncountable.add((BUncountable) output, i);
-                continue;
-            }
-
-            /* Normal Addition */
-            if (i.isUncountable()) {
-                output = BUncountable.add((BUncountable) i, output);
-            } else {
-                output.add(i);
-            }
+        ComplexNum output = addends[0];
+        for (int i = 1; i < addends.length; i++) {
+            output.add(addends[i]);
         }
 
         /* Ensure correct Polar Form data */
@@ -414,23 +523,31 @@ public class BNumber {
      * 
      * @param factors a list of BNumbers.
      */
-    private final void multiply(BNumber factor) {
-        if (factor.isReal() && isReal()) {
-            setA(a * factor.getA());
-            refreshModulus();
+    private final void multiply(ComplexNum factor) {
+        double cTheta = getTheta() + factor.getTheta(); // combinedTheta
+
+        /* Uncountable */
+        if (hasUncountable() || factor.hasUncountable()) {
+            // TODO: get highest infinity
+            copy(uncountableCis(Value.infinity(false, 1), cTheta));
+            return;
+        }
+
+        /* Real */
+        if (isReal() && factor.isReal()) {
+            a.multiply(factor.getA());
+            refreshPolar();
 
         } else if (factor.isImaginary() && isImaginary()) {
-            setA(-1 * b * factor.getB());
+            setA(-1 * b.getValue() * factor.getB().getValue());
             setB(0);
-            refreshModulus();
-            setTheta(0);
+            refreshPolar();
 
         } else {
             // mismatch / one is complex
             double combinedModulus = modulus * factor.getModulus();
-            double combinedTheta = theta + factor.getTheta();
 
-            copyData(fromPolar(combinedModulus, combinedTheta));
+            copy(fromPolar(combinedModulus, cTheta));
         }
     }
 
@@ -441,8 +558,8 @@ public class BNumber {
      * @param value
      */
     public final void multiplyScalar(double value) {
-        setA(a * value);
-        setB(b * value);
+        a.multiply(value);
+        b.multiply(value);
         refreshPolar();
     }
 
@@ -458,33 +575,18 @@ public class BNumber {
      * @param factors
      * @return
      */
-    public static final BNumber multiply(BNumber... factors) {
-
+    public static final ComplexNum multiply(ComplexNum... factors) {
         if (factors == null || factors.length == 0) {
-            return BNumber.zero();
+            return ComplexNum.zero();
         } else if (factors.length == 1) {
             return factors[0];
-        } else if (NumberTheory.containsDNE(factors)) {
-            return new DoesNotExist();
+        } else if (NumberUtils.containsDNE(factors)) {
+            return new ComplexNum();
         }
 
-        BNumber output = factors[0].clone();
+        ComplexNum output = factors[0].clone();
         for (int index = 1; index < factors.length; index++) {
-            BNumber i = factors[index];
-
-            /* Uncountable Multiplication */
-            if (output.isUncountable()) {
-                output = BUncountable.multiply((BUncountable) output, i);
-                continue;
-            }
-
-            /* Complex Multiplication */
-            if (i.isUncountable()) {
-                output = BUncountable.multiply((BUncountable) i, output);
-
-            } else { // checked
-                output.multiply(i);
-            }
+            output.multiply(factors[index]);
         }
 
         return output;
@@ -510,31 +612,41 @@ public class BNumber {
      * 
      * @param factors a list of BNumbers.
      */
-    private final void divide(BNumber dividend) {
+    private final void divide(ComplexNum dividend) {
         if (isZero()) {
             return;
-        }
-
-        if (dividend.isZero()) {
+        } else if (dividend.isZero()) {
             return;
         }
 
+        /* Variables */
+        double cTheta = getTheta() - dividend.getTheta(); // combinedTheta
+
+        /* Uncountables */
+        if (hasUncountable()) {
+            // TODO: get highest infinity
+            copy(uncountableCis(Value.infinity(false, 1), cTheta));
+            return;
+        } else if (dividend.hasUncountable()) {
+            copy(new ComplexNum(0, 0));
+            return;
+        }
+
+        /* Values */
         if (dividend.isReal() && isReal()) {
-            a = a / dividend.getA();
-            refreshModulus();
+            a.divide(dividend.getA());
+            refreshPolar();
 
         } else if (dividend.isImaginary() && isImaginary()) {
-            a = b / dividend.getB();
-            b = 0;
-            refreshModulus();
-            theta = 0;
+            setA(b.getValue() / dividend.getB().getValue());
+            setB(0);
+            refreshPolar();
 
         } else {
             // mismatch / one is complex
             double combinedModulus = modulus / dividend.getModulus();
-            double combinedTheta = theta - dividend.getTheta();
 
-            copyData(fromPolar(combinedModulus, combinedTheta));
+            copy(fromPolar(combinedModulus, cTheta));
         }
     }
 
@@ -551,43 +663,17 @@ public class BNumber {
      * @param dividends
      * @return
      */
-    public static final BNumber divide(BNumber divisor, BNumber... dividends) {
+    public static final ComplexNum divide(ComplexNum divisor, ComplexNum... dividends) {
         if (divisor == null || dividends == null || dividends.length == 0) {
-            return BNumber.zero();
-        } else if (NumberTheory.containsDNE(dividends) || divisor.isDNE()) {
-            return new DoesNotExist();
+            return ComplexNum.zero();
+        } else if (NumberUtils.containsDNE(dividends) || divisor.isDNE()) {
+            return new ComplexNum();
         }
 
         /* Arithmetic */
-        BNumber output = divisor.clone();
-        for (BNumber i : dividends) {
-            /* Uncountable Division */
-            if (output.isUncountable()) {
-                if (i.isUncountable()) {
-                    // infinity / infinity
-                    /* Limit + L'Hospital's */
-                    double multiplier = Math.signum(output.getModulus()) * Math.signum(i.getModulus());
-
-                    /* Solely the cis(theta1 - theta2) */
-                    output = fromPolar(1, output.getTheta());
-                    output.divide(fromPolar(1, i.getTheta()));
-                    output.multiplyScalar(multiplier);
-
-                } else {
-                    // infinity / number
-                    output = BUncountable.divide((BUncountable) output, output.getTheta() - i.getTheta());
-                }
-                continue;
-            }
-
-            /* Complex Division */
-            if (i.isUncountable()) {
-                // number / infinity
-                return BNumber.zero();
-            } else {
-                output.divide(i);
-            }
-
+        ComplexNum output = divisor.clone();
+        for (ComplexNum i : dividends) {
+            output.divide(i);
         }
         return output;
     }
@@ -599,9 +685,9 @@ public class BNumber {
      * 
      * @return {@code 1 / this}
      */
-    public BNumber reciprocal() {
-        BNumber output = clone();
-        output = BNumber.divide(new BNumber(1, 0), output);
+    public ComplexNum reciprocal() {
+        ComplexNum output = clone();
+        output = ComplexNum.divide(new ComplexNum(1, 0), output);
         return output;
     }
 
@@ -619,27 +705,27 @@ public class BNumber {
 
         /* Reciprocate if needed */
         if (power < 0) {
-            copyData(reciprocal());
+            copy(reciprocal());
             power *= -1;
         }
 
         if (isReal()) {
-            if (a > 0) {
+            if (!a.isNegative()) {
                 // positive a so no problems :D
-                setA(Math.pow(a, power));
+                a.power(power);
                 refreshPolar();
                 return;
             }
 
             if (!NumberTheory.isRational(power)) {
                 // if the power is irrational
-                copyData(fromPolar(Math.pow(-a, power), (Math.PI * power)));
+                copy(fromPolar(Math.pow(-a.getValue(), power), (Math.PI * power)));
                 return;
             }
 
             if (!NumberUtils.inOpenRange(power, 0, 1)) {
                 // imaginary numbers only crop up if its in (0,1)
-                setA(Math.pow(a, power));
+                a.power(power);
                 refreshPolar();
                 return;
             }
@@ -647,18 +733,18 @@ public class BNumber {
             int[] ratio = NumberTheory.findRatio(power);
             if (ratio[1] % 2 == 1) {
                 // negative base doesn't work for some reason
-                setA(-Math.pow(-a, power));
+                setA(-Math.pow(-a.getValue(), power));
                 refreshPolar();
                 return;
 
             } else if (ratio[1] == 2) {
-                setB(Math.pow(-a, power));
+                setB(Math.pow(-a.getValue(), power));
                 setA(0);
                 refreshPolar();
                 return;
             }
 
-            copyData(fromPolar(Math.pow(-a, power), Math.PI * power));
+            copy(fromPolar(Math.pow(-a.getValue(), power), Math.PI * power));
 
         } else if (isImaginary() && NumberTheory.isInteger(power)) {
             // multiplying by an imaginary number is rotating the number by PI / 2 rads on
@@ -666,19 +752,19 @@ public class BNumber {
 
             if (power % 4 == 0) {
                 // double check this
-                setA(Math.pow(b, power));
+                setA(Math.pow(b.getValue(), power));
                 setB(0);
 
             } else if (power % 2 == 0) {
-                setA(-Math.pow(b, power));
+                setA(-Math.pow(b.getValue(), power));
                 setB(0);
 
             } else if (power % 4 == 3) {
                 setA(0);
-                setB(-Math.pow(b, power));
+                setB(-Math.pow(b.getValue(), power));
 
             } else {
-                setB(Math.pow(b, power));
+                b.power(power);
             }
             refreshModulus();
             refreshTheta();
@@ -688,7 +774,7 @@ public class BNumber {
 
             // DeMoivre's theorem -> rational or irrational, int power or non
             // int power
-            copyData(fromPolar(Math.pow(modulus, power), theta * power));
+            copy(fromPolar(Math.pow(modulus, power), theta * power));
         }
     }
 
@@ -707,8 +793,8 @@ public class BNumber {
      * @param power
      * @return
      */
-    public static final BNumber pow(BNumber base, double power) {
-        BNumber temp = base.clone();
+    public static final ComplexNum pow(ComplexNum base, double power) {
+        ComplexNum temp = base.clone();
         temp.power(power);
         return temp;
     }
@@ -726,7 +812,7 @@ public class BNumber {
      * @param power
      * @return
      */
-    public static final BNumber pow(double base, BNumber power) {
+    public static final ComplexNum pow(double base, ComplexNum power) {
         loggy.logHeader("real^complex: (" + base + ")^(" + power + ")");
 
         /* DNE */
@@ -735,22 +821,22 @@ public class BNumber {
         }
 
         /* Infinity Power */
-        if (power.isUncountable()) {
-            return BUncountable.pow(base, (BUncountable) power);
+        if (power.hasUncountable()) {
+            return NumberUtils.powWithInf(base, power);
         }
 
         /* Complex Power */
-        double aPow = power.getA(), bPow = power.getB();
+        double aPow = power.getA().getValue(), bPow = power.getB().getValue();
         double aOut, bOut;
         if (power.isReal()) {
-            BNumber baseNum = new BNumber(base, 0);
+            ComplexNum baseNum = new ComplexNum(base, 0);
             baseNum.power(aPow);
             return baseNum;
 
         } else if (power.isImaginary()) {
             if (base < 0) {
                 // negative base
-                BNumber output = pow(-base, power);
+                ComplexNum output = pow(-base, power);
                 if (bPow % 2 == 0) {
                     // (-1)^2i = 1^i = 1
                     return output;
@@ -760,25 +846,25 @@ public class BNumber {
                     return output;
                 } else {
                     // (-1)^ni = (-1^n)^i
-                    BNumber negOneToPow = fromPolar(1, Math.PI * bPow);
-                    negOneToPow = pow(negOneToPow, new BNumber(0, 1));
-                    return BNumber.multiply(output, negOneToPow);
+                    ComplexNum negOneToPow = fromPolar(1, Math.PI * bPow);
+                    negOneToPow = pow(negOneToPow, new ComplexNum(0, 1));
+                    return ComplexNum.multiply(output, negOneToPow);
                 }
 
             } else {
                 aOut = Math.cos(bPow * Math.log(base));
                 bOut = Math.sin(bPow * Math.log(base));
-                return new BNumber(aOut, bOut);
+                return new ComplexNum(aOut, bOut);
             }
 
         } else {
             // complex power
             if (base < 0) {
                 // negative base
-                BNumber output = pow(-base, power);
-                BNumber negOneA = negOneToPower(aPow);
-                BNumber negOneB = negOneToPower(bPow);
-                negOneB = pow(negOneB, new BNumber(0, 1));
+                ComplexNum output = pow(-base, power);
+                ComplexNum negOneA = negOneToPower(aPow);
+                ComplexNum negOneB = negOneToPower(bPow);
+                negOneB = pow(negOneB, new ComplexNum(0, 1));
 
                 return multiply(output, negOneA, negOneB);
 
@@ -803,37 +889,52 @@ public class BNumber {
      * @param power
      * @return
      */
-    public static final BNumber pow(BNumber base, BNumber power) {
+    public static final ComplexNum pow(ComplexNum base, ComplexNum power) {
         loggy.logHeader("complex ^ complex: (" + base + ")^(" + power + ")");
 
         /* DNE */
         if (base.isDNE() || power.isDNE()) {
-            return new DoesNotExist();
+            return new ComplexNum();
         }
 
         /* Uncountable */
-        if (power.isUncountable() && base.isReal()) {
-            return BUncountable.pow(base.getA(), (BUncountable) power);
+        if (power.hasUncountable() && base.isReal()) {
+            return NumberUtils.powWithInf(base.getA().getValue(), power);
 
-        } else if (power.isUncountable()) {
-            return new DoesNotExist();
+        } else if (power.hasUncountable()) {
+            return new ComplexNum();
 
-        } else if (base.isUncountable()) {
-            return BUncountable.pow((BUncountable) base, power);
+        } else if (base.hasUncountable()) {
+            if (power.hasUncountable()) {
+                // cis(r2 * theta1 * cos(theta2)) = cis(theta1 * a2) = DNE
+                // r1^(a+bi), b cannot be infinity
+                return new ComplexNum();
+            }
+
+            /**
+             * e^(-r2 * theta1 * sin(theta2)) = e^(-theta1 * b2)
+             */
+            double expMod = Math.exp(-power.getModulus() * base.getTheta() * Math.sin(power.getTheta()));
+
+            /**
+             * r2 * theta1 * cos(theta2) = theta1 * a2
+             */
+            double theta = power.getModulus() * base.getTheta() * Math.cos(power.getTheta());
+            return uncountableCis(Value.infinity(expMod < 0, 1), theta);
         }
 
         /* Complex */
         if (base.isReal()) {
-            return pow(base.getA(), power);
+            return pow(base.getA().getValue(), power);
 
         } else if (power.isReal()) {
-            BNumber baseCopy = base.clone();
-            baseCopy.power(power.getA());
+            ComplexNum baseCopy = base.clone();
+            baseCopy.power(power.getA().getValue());
             return baseCopy;
 
         } else {
             // (complex or imaginary) ^ (complex or imaginary)
-            BNumber modOneToPow = pow(base.getModulus(), power);
+            ComplexNum modOneToPow = pow(base.getModulus(), power);
             /**
              * e^(-theta1 * r2 * sin(theta2))
              */
@@ -843,28 +944,28 @@ public class BNumber {
              * r2 * cos(theta2) * theta 1
              */
             double cisTheta = power.getModulus() * Math.cos(power.getTheta()) * base.getTheta();
-            BNumber cisToPow = fromPolar(cisMod, cisTheta);
-            return BNumber.multiply(modOneToPow, cisToPow);
+            ComplexNum cisToPow = fromPolar(cisMod, cisTheta);
+            return ComplexNum.multiply(modOneToPow, cisToPow);
         }
     }
     // #endregion
 
     // #region Modulus
-    public final BNumber mod(double modulo) {
+    public final ComplexNum mod(double modulo) {
         if (isZero()) {
             return this;
         }
 
         if (isReal()) {
-            return new BNumber(a % modulo, 0);
+            return new ComplexNum(a.mod(modulo), 0);
         }
         throw new UnsupportedOperationException("Number " + this
                 + " is not a real number, and I have yet to figure out mod with imaginary and complex numbers.");
     }
 
-    public final BNumber mod(BNumber modulo) {
+    public final ComplexNum mod(ComplexNum modulo) {
         if (isReal() && modulo.isReal()) {
-            return new BNumber(a % modulo.getA(), 0);
+            return new ComplexNum(a.mod(modulo.getA().getValue()), 0);
         }
 
         throw new UnsupportedOperationException();
@@ -887,18 +988,7 @@ public class BNumber {
             return false;
         }
 
-        return NumberUtils.precisionCheck(a, value) && NumberUtils.precisionCheck(b, 0);
-    }
-
-    /**
-     * Checks if BNumber is equal to <b>other</b>. Checks if the real components are
-     * equal to each other and then the imaginary components.
-     * 
-     * @param other
-     * @return
-     */
-    private boolean equals(BNumber other) {
-        return NumberUtils.precisionCheck(a, other.getA()) && NumberUtils.precisionCheck(b, other.getB());
+        return NumberUtils.precisionCheck(a.getValue(), value) && NumberUtils.precisionCheck(b.getValue(), 0);
     }
 
     /**
@@ -906,17 +996,23 @@ public class BNumber {
      * 
      */
     @Override
-    public boolean equals(Object var1) {
-        if (var1 == null) {
+    public boolean equals(Object arg) {
+        if (arg == null) {
             return false;
-        } else if (var1 instanceof Double) {
+        } else if (arg instanceof Double) {
             // TODO: fix the "double does seem to relate to BNumber"
-            return equals((double) var1);
-        } else if (var1 instanceof Integer) {
+            return equals((double) arg);
+        } else if (arg instanceof Integer) {
             // TODO: fix the "integer does seem to relate to BNumber"
-            return equals((int) var1);
-        } else if (var1 instanceof BNumber) {
-            return equals((BNumber) var1);
+            return equals((int) arg);
+        } else if (arg instanceof ComplexNum) {
+            /**
+             * Checks if the real components are equal to each other and then the imaginary
+             * components.
+             */
+            ComplexNum other = (ComplexNum) arg;
+            return NumberUtils.precisionCheck(a.getValue(), other.getA().getValue())
+                    && NumberUtils.precisionCheck(b.getValue(), other.getB().getValue());
         }
         return false;
     }
@@ -927,36 +1023,36 @@ public class BNumber {
      * @param other
      * @return
      */
-    public boolean lessThan(BNumber other) {
+    public boolean lessThan(ComplexNum other) {
         if (other.isComplex() || isComplex()) {
             // TODO: learn lexicographical ordering
         }
 
-        return a < other.getA();
+        return a.compareTo(other.getA()) < 0;
     }
 
-    public boolean lessThanEqual(BNumber other) {
+    public boolean lessThanEqual(ComplexNum other) {
         if (other.isComplex() || isComplex()) {
             // TODO: learn lexicographical ordering
         }
 
-        return a <= other.getA();
+        return a.compareTo(other.getA()) <= 0;
     }
 
-    public boolean greaterThan(BNumber other) {
+    public boolean greaterThan(ComplexNum other) {
         if (other.isComplex() || isComplex()) {
             // TODO: learn lexicographical ordering
         }
 
-        return a > other.getA();
+        return a.compareTo(other.getA()) > 0;
     }
 
-    public boolean greaterThanEqual(BNumber other) {
+    public boolean greaterThanEqual(ComplexNum other) {
         if (other.isComplex() || isComplex()) {
             // TODO: learn lexicographical ordering
         }
 
-        return a >= other.getA();
+        return a.compareTo(other.getA()) >= 0;
     }
     // #endregion
 }

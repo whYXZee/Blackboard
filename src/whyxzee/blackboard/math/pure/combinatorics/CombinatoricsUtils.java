@@ -1,6 +1,6 @@
 package whyxzee.blackboard.math.pure.combinatorics;
 
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.numbers.NumberTheory;
 
 /**
@@ -12,17 +12,17 @@ import whyxzee.blackboard.math.pure.numbers.NumberTheory;
  */
 public class CombinatoricsUtils {
     // #region Factorial / Gamma
-    public static final BNumber gammaFunction(double value) {
+    public static final ComplexNum gammaFunction(double value) {
         throw new UnsupportedOperationException("Gamma function is unimplemented");
     }
 
-    public static final BNumber gammaFunction(BNumber value) {
+    public static final ComplexNum gammaFunction(ComplexNum value) {
         throw new UnsupportedOperationException("Gamma function is unimplemented");
     }
 
-    public static final BNumber factorial(double value) {
+    public static final ComplexNum factorial(double value) {
         if (NumberTheory.isInteger(value)) {
-            return new BNumber(recursiveFactorial((int) value), 0);
+            return new ComplexNum(recursiveFactorial((int) value), 0);
         }
         throw new UnsupportedOperationException();
     }
@@ -34,7 +34,7 @@ public class CombinatoricsUtils {
         return number * recursiveFactorial(number - 1);
     }
 
-    public static final BNumber factorial(BNumber value) {
+    public static final ComplexNum factorial(ComplexNum value) {
         if (value.isReal()) {
             return factorial(value);
         }
@@ -52,7 +52,7 @@ public class CombinatoricsUtils {
      * @param r real and positive integer
      * @return a real value
      */
-    public static final BNumber permutation(int n, int r) {
+    public static final ComplexNum permutation(int n, int r) {
         if (r > n) {
             throw new ArithmeticException("Value " + r + " is greater than value " + n + " for permutations.");
         } else if (r == n) {
@@ -63,7 +63,7 @@ public class CombinatoricsUtils {
         for (int i = n; i > (n - r); i--) {
             output *= i;
         }
-        return new BNumber(output, 0);
+        return new ComplexNum(output, 0);
     }
 
     // #endregion
@@ -77,14 +77,14 @@ public class CombinatoricsUtils {
      * @param r real and positive integer
      * @return a real value.
      */
-    public static final BNumber combination(int n, int r) {
+    public static final ComplexNum combination(int n, int r) {
         if (r > n) {
             throw new ArithmeticException("Value " + r + " is greater than value " + n + " for combinations.");
         } else if (r == n || r == 0) {
-            return new BNumber(1, 0);
+            return new ComplexNum(1, 0);
         }
 
-        return BNumber.divide(permutation(n, r), factorial(r));
+        return ComplexNum.divide(permutation(n, r), factorial(r));
     }
     // #endregion
 

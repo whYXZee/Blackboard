@@ -3,7 +3,6 @@ package whyxzee.blackboard.math.pure.numbers;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.utils.UnicodeUtils;
 
 public class NumberTheory {
     // #region Elementary Num Theory
@@ -104,7 +103,7 @@ public class NumberTheory {
      */
     public static class Factors {
         /* Variables */
-        private static ArrayList<BNumber> numbers = new ArrayList<BNumber>();
+        private static ArrayList<ComplexNum> numbers = new ArrayList<ComplexNum>();
 
         /**
          * Gets all of the factors of the <b>number</b>.
@@ -112,16 +111,16 @@ public class NumberTheory {
          * @param number Must be an integer.
          * @return
          */
-        public static final ArrayList<BNumber> factorsOf(BNumber number) {
-            numbers = new ArrayList<BNumber>();
+        public static final ArrayList<ComplexNum> factorsOf(ComplexNum number) {
+            numbers = new ArrayList<ComplexNum>();
             if (!number.isReal()) {
                 throw new UnsupportedOperationException("A number can only have factors iff it is an integer");
             }
 
-            double a = Math.abs(number.getA());
+            double a = number.getA().abs();
             for (int i = 1; i <= a / 2; i++) {
                 if ((a / i) % 1 == 0) {
-                    add(new BNumber(a / i, 0), new BNumber(i, 0));
+                    add(new ComplexNum(a / i, 0), new ComplexNum(i, 0));
                 }
             }
 
@@ -131,8 +130,8 @@ public class NumberTheory {
         ///
         /// Get & Set Methods
         ///
-        private static final void add(BNumber... factors) {
-            for (BNumber i : factors) {
+        private static final void add(ComplexNum... factors) {
+            for (ComplexNum i : factors) {
                 if (!numbers.contains(i)) {
                     numbers.add(i);
                 }
@@ -146,7 +145,7 @@ public class NumberTheory {
         return value % 1 == 0;
     }
 
-    public static final boolean isInteger(BNumber value) {
+    public static final boolean isInteger(ComplexNum value) {
         return value.mod(1).equals(0);
     }
 
@@ -180,32 +179,5 @@ public class NumberTheory {
     public static final boolean isRational(double value) {
         return isRational(value, Constants.Number.SIG_FIGS);
     }
-
-    public static final boolean containsDNE(BNumber... numbers) {
-        if (numbers == null) {
-            return false;
-        }
-
-        for (BNumber i : numbers) {
-            if (i.isDNE()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static final boolean containsDNE(ArrayList<BNumber> numbers) {
-        if (numbers == null) {
-            return false;
-        }
-
-        for (BNumber i : numbers) {
-            if (i.isDNE()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     // #endregion
 }

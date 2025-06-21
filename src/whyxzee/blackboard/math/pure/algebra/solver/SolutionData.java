@@ -3,7 +3,7 @@ package whyxzee.blackboard.math.pure.algebra.solver;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 
@@ -25,7 +25,7 @@ public class SolutionData {
         list = null;
     }
 
-    public SolutionData(Variable var, ArrayList<BNumber> solutions) {
+    public SolutionData(Variable var, ArrayList<ComplexNum> solutions) {
         this.var = var;
         term = null;
         list = new DefinedList(var.toString(), solutions);

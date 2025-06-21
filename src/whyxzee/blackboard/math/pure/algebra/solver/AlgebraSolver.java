@@ -7,13 +7,12 @@ import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
 import whyxzee.blackboard.math.pure.equations.EquationUtils;
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.MathEQ.EQType;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.PlusMinusTerm;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.TermUtils;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
-import whyxzee.blackboard.math.pure.terms.variables.USub;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 import whyxzee.blackboard.utils.Loggy;
 
@@ -109,7 +108,7 @@ public class AlgebraSolver {
         switch (lTerm.getTermType()) {
             case POWER:
                 PowerTerm powTerm = (PowerTerm) lTerm;
-                BNumber lPower = powTerm.getPower();
+                ComplexNum lPower = powTerm.getPower();
                 if (lPower.equals(-1)) {
                     loggy.logDetail("power of -1");
 
@@ -120,11 +119,11 @@ public class AlgebraSolver {
 
                 boolean rSideNeedsUSub = true;
                 USub rSideVar = new USub(new AdditiveEQ(rSide));
-                BNumber constantVal = rSide.get(0).getCoef();
+                ComplexNum constantVal = rSide.get(0).getCoef();
                 if (rSide.size() == 1) {
                     rSideNeedsUSub = false;
                 }
-                BNumber newPower = lPower.reciprocal();
+                ComplexNum newPower = lPower.reciprocal();
 
                 // TODO: roots of complex number
 
@@ -135,7 +134,7 @@ public class AlgebraSolver {
                         USub powUSub = new USub(new PowerTerm(1, rSideVar, newPower));
                         newRight.add(new PlusMinusTerm(1, powUSub));
                     } else {
-                        newRight.add(new PlusMinusTerm(BNumber.pow(constantVal, newPower)));
+                        newRight.add(new PlusMinusTerm(ComplexNum.pow(constantVal, newPower)));
                     }
                 } else {
                     loggy.logDetail("non even power");
@@ -143,7 +142,7 @@ public class AlgebraSolver {
                     if (rSideNeedsUSub) {
                         newRight.add(new PowerTerm(1, rSideVar, newPower));
                     } else {
-                        newRight.add(new PowerTerm(BNumber.pow(constantVal, newPower)));
+                        newRight.add(new PowerTerm(ComplexNum.pow(constantVal, newPower)));
                     }
                 }
 
@@ -310,14 +309,14 @@ public class AlgebraSolver {
      * @param rightSide
      * @return
      */
-    private static final ArrayList<BNumber> getSolutions(ArrayList<Term> rightSide) {
+    private static final ArrayList<ComplexNum> getSolutions(ArrayList<Term> rightSide) {
         /* Term Types */
         ArrayList<Term> pmTerms = EquationUtils.getTermTypeFromArray(rightSide, TermType.PLUS_MINUS);
         ArrayList<Term> otherTerms = EquationUtils.getTermsExcludingType(rightSide, TermType.PLUS_MINUS);
 
-        BNumber total = new BNumber(0, 0);
+        ComplexNum total = new ComplexNum(0, 0);
         for (Term i : otherTerms) {
-            total = BNumber.add(total, i.getCoef());
+            total = ComplexNum.add(total, i.getCoef());
         }
 
         if (pmTerms.size() == 0) {
@@ -325,11 +324,11 @@ public class AlgebraSolver {
         }
 
         /* Plus Minus specifics */
-        ArrayList<BNumber> output = new ArrayList<BNumber>();
-        BNumber staticCoef = pmTerms.get(0).getCoef(); // the coef which will be unchanged
+        ArrayList<ComplexNum> output = new ArrayList<ComplexNum>();
+        ComplexNum staticCoef = pmTerms.get(0).getCoef(); // the coef which will be unchanged
         if (pmTerms.size() == 1) {
-            output.add(BNumber.add(total, staticCoef));
-            output.add(BNumber.add(total, staticCoef.negate()));
+            output.add(ComplexNum.add(total, staticCoef));
+            output.add(ComplexNum.add(total, staticCoef.negate()));
 
         } else {
             // for (int i = 0; i < )
@@ -340,8 +339,8 @@ public class AlgebraSolver {
 
     }
 
-    private static final ArrayList<BNumber> extraneousSolutions(ArrayList<Term> left, ArrayList<Term> right) {
-        ArrayList<BNumber> potentialSols = new AdditiveEQ(rSide).solutions().getNumbers();
+    private static final ArrayList<ComplexNum> extraneousSolutions(ArrayList<Term> left, ArrayList<Term> right) {
+        ArrayList<ComplexNum> potentialSols = new AdditiveEQ(rSide).solutions().getNumbers();
         loggy.logHeader("---- Extraneous Solutions ----");
         loggy.logVal("potential solutions", potentialSols);
 
@@ -349,10 +348,10 @@ public class AlgebraSolver {
         AdditiveEQ lEQ = new AdditiveEQ(left);
         AdditiveEQ rEQ = new AdditiveEQ(right);
 
-        ArrayList<BNumber> actualSols = new ArrayList<BNumber>();
-        for (BNumber i : potentialSols) {
-            BNumber lSol = lEQ.solve(i);
-            BNumber rSol = rEQ.solve(i);
+        ArrayList<ComplexNum> actualSols = new ArrayList<ComplexNum>();
+        for (ComplexNum i : potentialSols) {
+            ComplexNum lSol = lEQ.solve(i);
+            ComplexNum rSol = rEQ.solve(i);
 
             if (lSol.equals(rSol)) {
                 actualSols.add(i);

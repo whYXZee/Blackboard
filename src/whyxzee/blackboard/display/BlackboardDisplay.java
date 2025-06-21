@@ -117,11 +117,10 @@ public class BlackboardDisplay extends JPanel {
     /**
      * Appends a general object to the script panel.
      * 
-     * @param <T>          any class
      * @param obj          performs {@code .toString()} on the object
      * @param resizeFactor the multiplier of the font height
      */
-    public <T> void appendScript(T obj, double resizeFactor) {
+    public void appendScript(Object obj, double resizeFactor) {
         appendScript(new BLabel(obj, resizeFactor));
     }
     // #endregion

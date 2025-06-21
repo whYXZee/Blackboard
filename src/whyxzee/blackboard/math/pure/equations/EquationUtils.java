@@ -2,12 +2,11 @@ package whyxzee.blackboard.math.pure.equations;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.TermUtils;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
-import whyxzee.blackboard.math.pure.terms.variables.USub;
 
 /**
  * The functionality of this class has been checked on <b>6/16/2025</b> and the
@@ -56,7 +55,7 @@ public class EquationUtils {
         }
 
         // brings out the coefficient
-        BNumber coef = findMultiplyConstant(terms);
+        ComplexNum coef = findMultiplyConstant(terms);
         return new PowerTerm(coef, new USub(new MultiplyEQ(terms)));
     }
 
@@ -67,7 +66,7 @@ public class EquationUtils {
      * @param terms
      * @return
      */
-    public static final BNumber findMultiplyConstant(ArrayList<Term> terms) {
+    public static final ComplexNum findMultiplyConstant(ArrayList<Term> terms) {
         for (Term i : terms) {
             switch (i.getTermType()) {
                 case POWER:
@@ -82,7 +81,7 @@ public class EquationUtils {
                     break;
             }
         }
-        return new BNumber(1, 0);
+        return new ComplexNum(1, 0);
     }
 
     // #region TermType Getters

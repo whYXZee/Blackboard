@@ -3,7 +3,7 @@ package whyxzee.blackboard.math.pure.equations;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.Term;
 
 public class MultiplyEQ extends MathEQ {
@@ -36,10 +36,10 @@ public class MultiplyEQ extends MathEQ {
     /// Arithmetic Methods
     ///
     @Override
-    public BNumber solve(BNumber value) {
-        BNumber output = new BNumber(1, 0); // needs to be 1 or (1 + i)?
+    public ComplexNum solve(ComplexNum value) {
+        ComplexNum output = new ComplexNum(1, 0); // needs to be 1 or (1 + i)?
         for (Term i : getTerms()) {
-            output = BNumber.multiply(output, i.solve(value));
+            output = ComplexNum.multiply(output, i.solve(value));
         }
 
         return output;
@@ -47,7 +47,7 @@ public class MultiplyEQ extends MathEQ {
 
     @Override
     public DefinedList solutions() {
-        ArrayList<BNumber> sols = new ArrayList<BNumber>();
+        ArrayList<ComplexNum> sols = new ArrayList<ComplexNum>();
 
         throw new UnsupportedOperationException();
         // return new DefinedList("", sols);

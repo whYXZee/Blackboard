@@ -18,6 +18,12 @@ public class Loggy {
         }
     }
 
+    public final void log(Object obj) {
+        if (isTelemetryOn) {
+            System.out.println(obj.toString());
+        }
+    }
+
     public final void logHeader(String msg) {
         log("---- " + msg + " ----");
     }
@@ -26,7 +32,7 @@ public class Loggy {
         log("- " + msg);
     }
 
-    public final <T> void logVal(String valueName, T value) {
+    public final void logVal(String valueName, Object value) {
         // <T> declared the general type
         log(valueName + ": " + value.toString());
     }

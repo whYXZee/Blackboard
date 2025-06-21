@@ -1,7 +1,7 @@
 package whyxzee.blackboard.math.pure.terms;
 
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 
 /**
@@ -23,7 +23,7 @@ public class PlusMinusTerm extends Term {
      * 
      * @param coef
      */
-    public PlusMinusTerm(BNumber coef) {
+    public PlusMinusTerm(ComplexNum coef) {
         super(coef, Variable.noVar, TermType.PLUS_MINUS);
     }
 
@@ -41,7 +41,7 @@ public class PlusMinusTerm extends Term {
      * 
      * @param coef
      */
-    public PlusMinusTerm(BNumber coef, Variable var) {
+    public PlusMinusTerm(ComplexNum coef, Variable var) {
         super(coef, var, TermType.PLUS_MINUS);
     }
     // #endregion
@@ -79,14 +79,14 @@ public class PlusMinusTerm extends Term {
     // #endregion
 
     @Override
-    public BNumber solve(BNumber value) {
-        BNumber output = getCoef().clone();
+    public ComplexNum solve(ComplexNum value) {
+        ComplexNum output = getCoef().clone();
 
-        if (getVar().getVar().equals("")) {
+        if (getVar().equals("")) {
             return output;
         }
 
-        output = BNumber.multiply(output, getVar().solve(value));
+        output = ComplexNum.multiply(output, getVar().solve(value));
         return output;
     }
 
@@ -101,5 +101,12 @@ public class PlusMinusTerm extends Term {
 
         return getVar().equals(term.getVar());
     }
+
+    @Override
+    public boolean contains(Object var1) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'contains'");
+    }
     // #endregion
+
 }

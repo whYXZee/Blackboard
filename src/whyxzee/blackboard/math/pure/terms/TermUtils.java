@@ -4,9 +4,8 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.equations.EquationUtils;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
-import whyxzee.blackboard.math.pure.terms.variables.USub;
 import whyxzee.blackboard.utils.Loggy;
 
 public class TermUtils {
@@ -48,7 +47,7 @@ public class TermUtils {
         Term real = term.clone();
         real.setCoef(term.getCoef().getA());
         Term imaginary = term.clone();
-        imaginary.setCoef(new BNumber(0, term.getCoef().getB()));
+        imaginary.setCoef(new ComplexNum(0, term.getCoef().getB()));
         return new ArrayList<Term>() {
             {
                 add(real);
@@ -92,7 +91,7 @@ public class TermUtils {
             }
 
             for (Term i : expandedTerms) {
-                BNumber coef = i.getCoef();
+                ComplexNum coef = i.getCoef();
 
                 if (contains(i)) {
                     update(i, coef);
@@ -144,7 +143,7 @@ public class TermUtils {
          * @param term   the term that should be changed
          * @param addend how much should be added to the coefficient
          */
-        private static final void update(Term term, BNumber newCoef) {
+        private static final void update(Term term, ComplexNum newCoef) {
             addedTerms.get(getIndexOf(term)).addToCoef(newCoef);
         }
 
@@ -170,9 +169,9 @@ public class TermUtils {
     public static class MultiplyTerms {
         private static final Loggy mLoggy = new Loggy(Constants.Loggy.MULTIPLY_TERMS_LOGGY);
         /* Variables */
-        private static ArrayList<BNumber> powers = new ArrayList<BNumber>();
+        private static ArrayList<ComplexNum> powers = new ArrayList<ComplexNum>();
         private static ArrayList<Term> mTerms = new ArrayList<Term>();
-        private static BNumber coef = new BNumber(1, 0);
+        private static ComplexNum coef = new ComplexNum(1, 0);
         private static boolean powerMode = false;
 
         public static final ArrayList<Term> performMultiply(ArrayList<Term> terms) {
@@ -183,17 +182,17 @@ public class TermUtils {
             }
 
             if (!isDataEmpty()) {
-                powers = new ArrayList<BNumber>();
+                powers = new ArrayList<ComplexNum>();
                 mTerms = new ArrayList<Term>();
-                coef = new BNumber(1, 0);
+                coef = new ComplexNum(1, 0);
             }
 
             mLoggy.log("----multiplying " + terms + "----");
 
             for (Term i : terms) {
                 powerMode = false;
-                BNumber iPower = new BNumber(1, 0);
-                coef = BNumber.multiply(coef, i.getCoef());
+                ComplexNum iPower = new ComplexNum(1, 0);
+                coef = ComplexNum.multiply(coef, i.getCoef());
                 i.setCoef(1);
 
                 /* Term Specific */
@@ -227,7 +226,7 @@ public class TermUtils {
             ArrayList<Term> output = new ArrayList<Term>();
 
             for (int i = 0; i < mTerms.size(); i++) {
-                BNumber iPow = powers.get(i);
+                ComplexNum iPow = powers.get(i);
                 Term iTerm = mTerms.get(i);
                 if (iTerm.isTermType(TermType.POWER)) {
                     PowerTerm powTerm = (PowerTerm) iTerm;
@@ -248,12 +247,12 @@ public class TermUtils {
             return output;
         }
 
-        private static final void update(int index, BNumber power) {
+        private static final void update(int index, ComplexNum power) {
             /* Variables */
-            BNumber oldPower = powers.get(index);
+            ComplexNum oldPower = powers.get(index);
 
             mLoggy.log("updating " + mTerms.get(index) + " with power of " + oldPower + " by " + power);
-            powers.set(index, BNumber.add(oldPower, power));
+            powers.set(index, ComplexNum.add(oldPower, power));
         }
 
         private static final int getIndexOf(Term term) {
@@ -295,14 +294,14 @@ public class TermUtils {
      * @param pmTerms
      * @return
      */
-    public static final ArrayList<BNumber> addConstantPlusMinusTerms(ArrayList<Term> pmTerms) {
+    public static final ArrayList<ComplexNum> addConstantPlusMinusTerms(ArrayList<Term> pmTerms) {
         if (pmTerms == null || pmTerms.size() == 0) {
-            return new ArrayList<BNumber>();
+            return new ArrayList<ComplexNum>();
         }
 
-        ArrayList<BNumber> out = new ArrayList<BNumber>();
+        ArrayList<ComplexNum> out = new ArrayList<ComplexNum>();
         ArrayList<Term> clonedPmTerms = EquationUtils.deepCopyTerms(pmTerms);
-        BNumber coef = pmTerms.get(0).getCoef();
+        ComplexNum coef = pmTerms.get(0).getCoef();
         clonedPmTerms.remove(0);
 
         if (pmTerms.size() == 1) {
@@ -311,9 +310,9 @@ public class TermUtils {
             return out;
         }
 
-        ArrayList<BNumber> nextI = addConstantPlusMinusTerms(clonedPmTerms);
-        for (BNumber i : nextI) {
-            BNumber iNum = BNumber.add(coef, i);
+        ArrayList<ComplexNum> nextI = addConstantPlusMinusTerms(clonedPmTerms);
+        for (ComplexNum i : nextI) {
+            ComplexNum iNum = ComplexNum.add(coef, i);
             if (out.contains(coef))
                 out.add(iNum);
             out.add(iNum.negate());

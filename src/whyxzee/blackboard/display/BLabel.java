@@ -32,11 +32,10 @@ public class BLabel extends JLabel {
     /**
      * A constructor for a BLabel which does not require a String input.
      * 
-     * @param <T>          any class
      * @param obj          performs {@code .toString()} on the object.
      * @param resizeFactor what the multiplier is on the font height
      */
-    public <T> BLabel(T obj, double resizeFactor) {
+    public BLabel(Object obj, double resizeFactor) {
         /* Initialize label */
         super(obj.toString());
 

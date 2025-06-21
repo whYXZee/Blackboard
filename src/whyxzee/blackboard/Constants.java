@@ -123,6 +123,11 @@ public final class Constants {
         /* Infinity */
         // could be used for derivatives or Reimann sums/integrals maybe?
         public static final double INFINITESIMAL_VAL = 0.001;
+        public static final short DNE_ORDER = -1;
+        public static final short INFINITESIMAL_ORDER = 0;
+        public static final short VALUE_ORDER = 1;
+        public static final short ALEPH_ORDER = 2;
+        public static final short GENERAL_INFINITY_ORDER = 3;
     }
     // #endregion
 
@@ -138,9 +143,10 @@ public final class Constants {
         public static final boolean ALGEBRA_UTILS_LOGGY = false;
 
         /* Numbers */
-        public static final boolean BNUMBER_LOGGY = true;
+        public static final boolean COMPLEX_NUM_LOGGY = true;
 
         /* Variables */
+        public static final boolean VARIABLE_LOGGY = false;
         public static final boolean VARIABLE_UTILS_LOGGY = false;
 
         /* Terms */

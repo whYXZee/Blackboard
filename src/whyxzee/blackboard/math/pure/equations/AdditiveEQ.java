@@ -3,7 +3,7 @@ package whyxzee.blackboard.math.pure.equations;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.TermUtils;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
@@ -49,11 +49,11 @@ public class AdditiveEQ extends MathEQ {
     /// Arithmetic Methods
     ///
     @Override
-    public final BNumber solve(BNumber value) {
-        BNumber output = new BNumber(0, 0);
+    public final ComplexNum solve(ComplexNum value) {
+        ComplexNum output = new ComplexNum(0, 0);
         for (Term i : getTerms()) {
-            BNumber addend = i.solve(value);
-            output = BNumber.add(output, addend);
+            ComplexNum addend = i.solve(value);
+            output = ComplexNum.add(output, addend);
         }
 
         return output;
@@ -63,26 +63,26 @@ public class AdditiveEQ extends MathEQ {
     public final DefinedList solutions() {
         // TODO: complex/imaginary numbers?
 
-        ArrayList<BNumber> numbers = new ArrayList<BNumber>();
+        ArrayList<ComplexNum> numbers = new ArrayList<ComplexNum>();
         ArrayList<Term> plusMin = getTermArr(TermType.PLUS_MINUS);
 
         if (plusMin.size() != 0) {
             for (Term i : plusMin) {
-                BNumber iNum = new BNumber(0, 0);
+                ComplexNum iNum = new ComplexNum(0, 0);
                 for (Term j : getTerms()) {
                     if (!j.equals(i)) {
-                        iNum = BNumber.add(iNum, j.getCoef());
+                        iNum = ComplexNum.add(iNum, j.getCoef());
                     }
                 }
-                BNumber numOne = BNumber.add(iNum, i.getCoef());
-                BNumber numTwo = BNumber.add(iNum, i.getCoef().negate());
+                ComplexNum numOne = ComplexNum.add(iNum, i.getCoef());
+                ComplexNum numTwo = ComplexNum.add(iNum, i.getCoef().negate());
                 numbers.add(numOne);
                 numbers.add(numTwo);
             }
         } else {
-            BNumber output = new BNumber(0, 0);
+            ComplexNum output = new ComplexNum(0, 0);
             for (Term i : getTerms()) {
-                output = BNumber.add(output, i.getCoef());
+                output = ComplexNum.add(output, i.getCoef());
             }
             numbers.add(output);
         }

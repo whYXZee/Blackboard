@@ -13,8 +13,6 @@ import whyxzee.blackboard.math.pure.algebra.solver.AlgebraSolver;
 import whyxzee.blackboard.math.pure.combinatorics.CombinatoricsUtils;
 import whyxzee.blackboard.math.pure.equations.*;
 import whyxzee.blackboard.math.pure.numbers.*;
-import whyxzee.blackboard.math.pure.numbers.BUncountable.UncountableType;
-import whyxzee.blackboard.math.pure.numbers.uncountables.*;
 import whyxzee.blackboard.math.pure.terms.*;
 import whyxzee.blackboard.math.pure.terms.variables.*;
 import whyxzee.blackboard.utils.Loggy;
@@ -26,40 +24,21 @@ public class Debugger {
 
         // #region main()
         public static void main(String[] args) throws Exception {
+
                 /* Frame stuff */
                 JFrame frame = new JFrame();
                 BlackboardDisplay display = new BlackboardDisplay(frame);
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
                 /* Math Debugging */
+                ComplexNum[] nums = {
+                                new ComplexNum(1, 5),
+                                new ComplexNum(-5, 3),
 
-                AdditiveEQ eq = new AdditiveEQ(new PowerTerm(2), new PowerTerm(new BNumber(2, 4), xVar));
-                AdditiveEQ superEQ = new AdditiveEQ(new PowerTerm(2), new PowerTerm(new BNumber(2, 4), xVar),
-                                new PowerTerm(3, xVar, 2));
-
-                ArrayList<Term> pmTerms = new ArrayList<Term>() {
-                        {
-                                add(new PlusMinusTerm(3));
-                                add(new PlusMinusTerm(5));
-                                add(new PlusMinusTerm(10));
-                        }
                 };
 
-                ArrayList<BNumber> nums = new ArrayList<BNumber>() {
-                        {
-                                add(new Infinitesimal("x"));
-                                add(new BNumber(3, 0));
-                                add(new BNumber(2, 5));
-                                add(new BNumber(4, -3));
-                                add(new BNumber(-2, -1));
-                        }
-                };
-
-                Variable uSub = new USub(new PowerTerm(5));
-                loggy.logArray(uSub.getClass().getMethods());
                 display.appendScript(
-                                // TermUtils.addConstantPlusMinusTerms(pmTerms),
-                                "Check Loggy",
+                                ComplexNum.divide(new ComplexNum(0, Value.infinity(true, 0)), nums),
                                 0.05);
 
                 /* Displaying */
@@ -74,8 +53,8 @@ public class Debugger {
         // #endregion
 
         // #region Variables
-        private static final Variable xVar = new Variable("x");
-        private static final Variable yVar = new Variable("y");
+        private static final Variable<String> xVar = new Variable<String>("x");
+        private static final Variable<String> yVar = new Variable<String>("y");
         private static final ArrayList<Term> lTerms = new ArrayList<Term>() {
                 {
                         add(new PowerTerm(1, xVar, 4));
@@ -89,6 +68,7 @@ public class Debugger {
         };
 
         /* BNumbers */
-        private static final Infinitesimal smol = new Infinitesimal("x", true);
+        private static final Value smol = Value.infinitesimal("dx");
+        private static final Value aleph = Value.aleph(true, 0);
         // #endregion
 }

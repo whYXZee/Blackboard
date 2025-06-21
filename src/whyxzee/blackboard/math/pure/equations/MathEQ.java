@@ -3,10 +3,9 @@ package whyxzee.blackboard.math.pure.equations;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.terms.Term;
 import whyxzee.blackboard.math.pure.terms.Term.TermType;
-import whyxzee.blackboard.math.pure.terms.variables.USub;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 import whyxzee.blackboard.math.pure.terms.variables.VariableUtils;
 
@@ -83,7 +82,7 @@ public abstract class MathEQ {
      * @param value
      * @return
      */
-    public abstract BNumber solve(BNumber value);
+    public abstract ComplexNum solve(ComplexNum value);
 
     /**
      * Should only be used for equations that do not have any variables in them, but

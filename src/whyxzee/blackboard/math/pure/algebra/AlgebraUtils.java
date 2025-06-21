@@ -9,11 +9,10 @@ import whyxzee.blackboard.math.pure.combinatorics.CombinatoricsUtils;
 import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
 import whyxzee.blackboard.math.pure.equations.EquationUtils;
 import whyxzee.blackboard.math.pure.equations.MultiplyEQ;
-import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.numbers.NumberTheory;
 import whyxzee.blackboard.math.pure.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.terms.Term;
-import whyxzee.blackboard.math.pure.terms.variables.USub;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 import whyxzee.blackboard.utils.Loggy;
 
@@ -82,7 +81,7 @@ public class AlgebraUtils {
             /* Arithmetic */
             Term oneFactor = one.clone().toPower(power - k);
             Term twoFactor = two.clone().toPower(k);
-            BNumber coef = CombinatoricsUtils.combination(power, power - k);
+            ComplexNum coef = CombinatoricsUtils.combination(power, power - k);
 
             MultiplyEQ innerEQ = new MultiplyEQ(new PowerTerm(coef), oneFactor, twoFactor);
             outputArr.add(EquationUtils.simplifyMultiply(innerEQ));
@@ -100,7 +99,7 @@ public class AlgebraUtils {
      * @param power
      * @return
      */
-    public static final AdditiveEQ binomTheorem(Term one, Term two, BNumber power) {
+    public static final AdditiveEQ binomTheorem(Term one, Term two, ComplexNum power) {
         // TODO: non-integer, complex, imaginary implementation
         if (power.isReal() && power.mod(1).equals(0)) {
             return binomTheorem(one, two, (int) power.getA());
@@ -126,29 +125,30 @@ public class AlgebraUtils {
      * @param rightSide
      * @return
      */
-    public static final SolutionData completeSquare(Variable varToSolve, ArrayList<Term> leftSide, BNumber rightSide) {
+    public static final SolutionData completeSquare(Variable varToSolve, ArrayList<Term> leftSide,
+            ComplexNum rightSide) {
         /* Initializing variables */
-        BNumber a = leftSide.get(0).getCoef(); // first term is highest power
+        ComplexNum a = leftSide.get(0).getCoef(); // first term is highest power
         Term term = leftSide.get(1);
-        BNumber b = term.getCoef();
-        BNumber c = leftSide.get(2).getCoef();
-        BNumber square;
-        BNumber rightAddend;
+        ComplexNum b = term.getCoef();
+        ComplexNum c = leftSide.get(2).getCoef();
+        ComplexNum square;
+        ComplexNum rightAddend;
 
         if (a.equals(1)) {
             square = b.clone();
             square.multiplyScalar(0.5);
-            rightAddend = BNumber.pow(square.clone(), 2);
+            rightAddend = ComplexNum.pow(square.clone(), 2);
 
         } else {
-            BNumber bPrime = BNumber.divide(b.clone(), a);
+            ComplexNum bPrime = ComplexNum.divide(b.clone(), a);
             square = bPrime.clone();
             square.multiplyScalar(0.5);
-            rightAddend = BNumber.pow(square.clone(), 2);
-            rightAddend = BNumber.multiply(rightAddend, a);
+            rightAddend = ComplexNum.pow(square.clone(), 2);
+            rightAddend = ComplexNum.multiply(rightAddend, a);
         }
 
-        BNumber rSide = BNumber.add(rightSide, c.negate(), rightAddend);
+        ComplexNum rSide = ComplexNum.add(rightSide, c.negate(), rightAddend);
         term.setCoef(1);
         AdditiveEQ binom = new AdditiveEQ(term, new PowerTerm(square));
 
@@ -173,14 +173,14 @@ public class AlgebraUtils {
 
         // TODO: what if the array has less than 3 terms?
         // quadratics have at least 2 power terms
-        BNumber[] powOfTerms = new BNumber[3];
+        ComplexNum[] powOfTerms = new ComplexNum[3];
         for (int i = 0; i < 3; i++) {
             try {
                 powOfTerms[i] = ((PowerTerm) terms.get(i)).getPower();
             } catch (java.lang.ClassCastException e) {
                 // could be something like a trig term, but the first one would be a power with
                 // u-sub
-                powOfTerms[i] = new BNumber(1, 0);
+                powOfTerms[i] = new ComplexNum(1, 0);
             }
         }
         if (!powOfTerms[2].equals(0)) {
@@ -191,7 +191,7 @@ public class AlgebraUtils {
         // TODO: what if it is 1 + 2x^(-1) + x^(-2)?
 
         // the power of term 1 must be two times the power of the second
-        if (!BNumber.divide(powOfTerms[0], powOfTerms[1]).equals(2)) {
+        if (!ComplexNum.divide(powOfTerms[0], powOfTerms[1]).equals(2)) {
             return false;
         }
 
@@ -213,19 +213,19 @@ public class AlgebraUtils {
     public static class RationalRoot {
         private static final Loggy rLoggy = new Loggy(Constants.Loggy.RATIONAL_ROOT_LOGGY);
         /* Variables */
-        private static ArrayList<BNumber> uniqueRoots = new ArrayList<BNumber>();
+        private static ArrayList<ComplexNum> uniqueRoots = new ArrayList<ComplexNum>();
 
-        public static final DefinedList performOp(BNumber q, BNumber p) {
-            uniqueRoots = new ArrayList<BNumber>();
-            ArrayList<BNumber> qFactors = NumberTheory.Factors.factorsOf(q);
-            ArrayList<BNumber> pFactors = NumberTheory.Factors.factorsOf(p);
+        public static final DefinedList performOp(ComplexNum q, ComplexNum p) {
+            uniqueRoots = new ArrayList<ComplexNum>();
+            ArrayList<ComplexNum> qFactors = NumberTheory.Factors.factorsOf(q);
+            ArrayList<ComplexNum> pFactors = NumberTheory.Factors.factorsOf(p);
 
             rLoggy.logHeader("Rational Root Theorem with q = " + q + " and p = " + p + "\nqFactors: "
                     + qFactors + " p factors: " + pFactors + "");
 
-            for (BNumber denom : qFactors) {
-                for (BNumber num : pFactors) {
-                    BNumber factor = BNumber.divide(num, denom);
+            for (ComplexNum denom : qFactors) {
+                for (ComplexNum num : pFactors) {
+                    ComplexNum factor = ComplexNum.divide(num, denom);
                     if (!uniqueRoots.contains(factor)) {
                         uniqueRoots.add(factor);
                     }
@@ -246,7 +246,7 @@ public class AlgebraUtils {
     public static final boolean isPolynomial(ArrayList<Term> terms) {
         loggy.logHeader("isPolynomial(" + terms + ")---");
 
-        BNumber[] powOfTerms = new BNumber[terms.size()];
+        ComplexNum[] powOfTerms = new ComplexNum[terms.size()];
         int numOfOnePows = 0;
         for (int i = 0; i < terms.size(); i++) {
             try {
@@ -254,7 +254,7 @@ public class AlgebraUtils {
             } catch (java.lang.ClassCastException e) {
                 // could be something like a trig term, but the first one would be a power with
                 // u-sub
-                powOfTerms[i] = new BNumber(1, 0);
+                powOfTerms[i] = new ComplexNum(1, 0);
             }
 
             /* Tracking the number of terms with power of one */
@@ -269,7 +269,7 @@ public class AlgebraUtils {
         }
 
         // all powers must be integers.
-        for (BNumber i : powOfTerms) {
+        for (ComplexNum i : powOfTerms) {
             if (!NumberTheory.isInteger(i)) {
                 loggy.log("One of the powers is not an integer.");
                 return false;
