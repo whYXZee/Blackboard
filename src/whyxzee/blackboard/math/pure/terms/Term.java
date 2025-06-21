@@ -80,14 +80,6 @@ public abstract class Term {
 
     // #region Copying / Cloning
     /**
-     * If <b>this</b> and <b>other</b> are the same TermType, then it copies over
-     * the data from <b>other</b> onto <b>this</b> without affecting <b>other</b>.
-     * 
-     * @param other
-     */
-    public abstract void copy(Term other);
-
-    /**
      * Performs a deep copy of the term.
      */
     public abstract Term clone();
@@ -211,14 +203,6 @@ public abstract class Term {
 
     // #region Variable Bools
     /**
-     * @deprecated
-     *             Checks if the term contains the var.
-     */
-    public final boolean containsVar(String var) {
-        return this.var.containsVar(var);
-    }
-
-    /**
      * 
      * @param var
      * @return
@@ -266,5 +250,9 @@ public abstract class Term {
             return false;
         }
     }
+    // #endregion
+
+    // #region Overlap Bools
+    public abstract boolean contains(Object var1);
     // #endregion
 }

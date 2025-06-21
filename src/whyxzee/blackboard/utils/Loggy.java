@@ -31,5 +31,12 @@ public class Loggy {
         log(valueName + ": " + value.toString());
     }
 
+    public final <T> void logArray(T[] arr) {
+        log("-- Contents of Array --");
+        for (T i : arr) {
+            logDetail(i.toString());
+        }
+    }
+
     // #endregion
 }

@@ -8,9 +8,6 @@ import whyxzee.blackboard.math.pure.terms.variables.Variable;
  * Maybe this class can be implemented somehow else?
  */
 public class PlusMinusTerm extends Term {
-    /* Variables */
-    // private boolean isMinusPlus;
-
     // #region Constructors
     /**
      * Constructor for a plus-or-minus term with a real number.
@@ -67,16 +64,6 @@ public class PlusMinusTerm extends Term {
     // #endregion
 
     // #region Copying / Cloning
-    @Override
-    public final void copy(Term other) {
-        if (!other.isTermType(TermType.PLUS_MINUS)) {
-            return;
-        }
-
-        setCoef(other.getCoef().clone());
-        setVar(other.getVar().clone());
-    }
-
     @Override
     public final Term clone() {
         return new PlusMinusTerm(getCoef().clone(), getVar());

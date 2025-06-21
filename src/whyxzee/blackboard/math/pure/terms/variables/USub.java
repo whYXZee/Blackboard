@@ -43,7 +43,7 @@ public class USub extends Variable {
     }
 
     @Override
-    public USub clone() {
+    public final USub clone() {
         switch (getVarType()) {
             case U_SUB_EQ:
                 return new USub(innerFunction);
@@ -66,9 +66,6 @@ public class USub extends Variable {
     }
     // #endregion
 
-    //
-    // Arirthmetic Methods
-    //
     @Override
     public BNumber solve(BNumber value) {
         switch (getVarType()) {
@@ -80,4 +77,16 @@ public class USub extends Variable {
                 return new BNumber(0, 0);
         }
     }
+
+    // #region USub Bools
+    @Override
+    public final boolean hasInnerTerm() {
+        return innerTerm != null;
+    }
+
+    @Override
+    public final boolean hasInnerFunction() {
+        return innerFunction != null;
+    }
+    // #endregion
 }

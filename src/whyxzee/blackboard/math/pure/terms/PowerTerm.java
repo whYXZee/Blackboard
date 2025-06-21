@@ -1,7 +1,9 @@
 package whyxzee.blackboard.math.pure.terms;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.numbers.BNumber;
+import whyxzee.blackboard.math.pure.terms.variables.USub;
 import whyxzee.blackboard.math.pure.terms.variables.Variable;
 import whyxzee.blackboard.utils.Loggy;
 
@@ -136,18 +138,6 @@ public class PowerTerm extends Term {
 
     // #region Copying / Cloning
     @Override
-    public final void copy(Term other) {
-        if (!other.isTermType(TermType.POWER)) {
-            return;
-        }
-
-        PowerTerm oPow = (PowerTerm) other;
-        setCoef(oPow.getCoef().clone());
-        setVar(oPow.getVar().clone());
-        power = oPow.getPower().clone();
-    }
-
-    @Override
     public final Term clone() {
         return new PowerTerm(getCoef().clone(), getVar(), power.clone());
     }
@@ -223,6 +213,44 @@ public class PowerTerm extends Term {
         PowerTerm powTerm = (PowerTerm) term;
         return getVar().equals(powTerm.getVar()) &&
                 power.equals(powTerm.getPower());
+    }
+
+    public final boolean contains(Object var1) {
+        if (var1 == null) {
+            return false;
+        }
+
+        if (var1 instanceof BNumber) {
+            BNumber num = (BNumber) var1;
+            return num.equals(getCoef()) || num.equals(getPower());
+
+        } else if (var1 instanceof Variable) {
+            Variable var = (Variable) var1;
+            switch (var.getVarType()) {
+                case U_SUB_EQ:
+                    return getVar().contains(var);
+                case U_SUB_TERM:
+                    if (equals(var1)) {
+                        return true;
+                    }
+                    return getVar().contains(var);
+                case VARIABLE:
+                    return this.getVar().equals(var);
+                default:
+                    break;
+            }
+
+        } else if (var1 instanceof Term) {
+            if (equals(var1)) {
+                return true;
+            }
+            return getVar().contains(var1);
+
+        } else if (var1 instanceof MathEQ) {
+            return getVar().contains(var1);
+        }
+
+        return false;
     }
     // #endregion
 }

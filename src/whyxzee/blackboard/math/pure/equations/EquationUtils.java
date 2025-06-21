@@ -160,40 +160,4 @@ public class EquationUtils {
         return false;
     }
     // #endregion
-
-    // #region Overlap Bools
-    /**
-     * <em>Assumes that a and b are the same Equation type.</em>
-     * 
-     * <p>
-     * Checks each term to see if <b>a</b> is a superset of <b>b</b>.
-     * 
-     * @param a the tested superset
-     * @param b
-     * @return
-     */
-    public static final boolean isSupersetOf(ArrayList<Term> a, ArrayList<Term> b) {
-        if (b.size() > a.size()) {
-            // A cannot be a superset if B contains more terms
-            return false;
-        }
-
-        for (Term i : b) {
-            boolean containsJ = false;
-            for (Term j : a) {
-                if (j.equals(i)) {
-                    containsJ = true;
-                    break;
-                }
-            }
-
-            if (containsJ == false) {
-                // if one term is not in A, then it is not a superset
-                return false;
-            }
-        }
-        return true;
-
-    }
-    // #endregion
 }

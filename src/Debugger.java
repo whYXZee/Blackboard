@@ -55,9 +55,11 @@ public class Debugger {
                         }
                 };
 
+                Variable uSub = new USub(new PowerTerm(5));
+                loggy.logArray(uSub.getClass().getMethods());
                 display.appendScript(
                                 // TermUtils.addConstantPlusMinusTerms(pmTerms),
-                                new BNumber(3, 0).equals(3),
+                                "Check Loggy",
                                 0.05);
 
                 /* Displaying */

@@ -69,7 +69,7 @@ public class Variable {
     // #endregion
 
     /**
-     * Solves the polynomial.
+     * Solves the variable.
      * 
      * @param value
      * @return
@@ -78,7 +78,7 @@ public class Variable {
         return value;
     }
 
-    // #region Get/Set Methods
+    // #region Var Get/Set
     public final String getVar() {
         return var;
     }
@@ -90,7 +90,9 @@ public class Variable {
     public final VarType getVarType() {
         return varType;
     }
+    // #endregion
 
+    // #region U-Sub Get/Set
     public MathEQ getInnerFunction() {
         return null;
     }
@@ -103,26 +105,6 @@ public class Variable {
 
     // #region Comparison Bools
     /**
-     * @deprecated
-     * @param var
-     * @return
-     */
-    public boolean containsVar(String var) {
-        switch (varType) {
-            case U_SUB_EQ:
-                break;
-            case U_SUB_TERM:
-                break;
-            case VARIABLE:
-
-            default:
-                break;
-
-        }
-        return false;
-    }
-
-    /**
      * 
      * @param var
      * @return
@@ -130,21 +112,9 @@ public class Variable {
     public boolean containsVar(Variable var) {
         switch (varType) {
             case U_SUB_EQ:
-                if (var.isVarType(VarType.U_SUB_EQ)) {
-                    return VariableUtils.eqContainsEQ(getInnerFunction(), (USub) var);
-                } else if (var.isVarType(VarType.U_SUB_TERM)) {
-                    return VariableUtils.eqContainsTerm(getInnerFunction(), (USub) var);
-                } else {
-                    return VariableUtils.eqContainsVar(getInnerFunction(), var);
-                }
+                return getInnerFunction().contains(var);
             case U_SUB_TERM:
-                if (var.isVarType(VarType.U_SUB_EQ)) {
-                    return getInnerTerm().containsVar(var);
-                } else if (var.isVarType(VarType.U_SUB_TERM)) {
-                    return getInnerTerm().containsVar(var);
-                } else {
-                    return getInnerTerm().containsVar(var);
-                }
+                return getInnerTerm().contains(var);
             case VARIABLE:
                 if (var.isVarType(VarType.VARIABLE)) {
                     return this.var.equals(var.getVar());
@@ -160,21 +130,38 @@ public class Variable {
         return this.varType == varType;
     }
 
-    public boolean equals(Variable other) {
-        if (varType == other.getVarType()) {
-            switch (varType) {
-                case U_SUB_EQ:
-                    return getInnerFunction().equals(other.getInnerFunction());
-                case U_SUB_TERM:
-                    return getInnerTerm().equals(other.getInnerTerm());
-                case VARIABLE:
-                    return var.equals(other.getVar());
-                default:
-                    break;
-            }
+    @Override
+    public boolean equals(Object var1) {
+        if (var1 == null || !(var1 instanceof Variable)) {
+            return false;
+        }
+
+        Variable other = (Variable) var1;
+        if (varType != other.getVarType()) {
+            return false;
+        }
+
+        switch (varType) {
+            case U_SUB_EQ:
+                return getInnerFunction().equals(other.getInnerFunction());
+            case U_SUB_TERM:
+                return getInnerTerm().equals(other.getInnerTerm());
+            case VARIABLE:
+                return var.equals(other.getVar());
+            default:
+                return false;
+        }
+    }
+    // #endregion
+
+    // #region Overlap Bools
+    public final boolean contains(Object var1) {
+        if (var1 == null) {
+            return false;
         }
 
         return false;
+
     }
     // #endregion
 
@@ -183,7 +170,11 @@ public class Variable {
         return this instanceof USub;
     }
 
-    public final boolean hasInnerTerm() {
+    public boolean hasInnerTerm() {
+        return false;
+    }
+
+    public boolean hasInnerFunction() {
         return false;
     }
     // #endregion
