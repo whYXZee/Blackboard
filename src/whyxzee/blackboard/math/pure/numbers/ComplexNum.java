@@ -3,7 +3,7 @@ package whyxzee.blackboard.math.pure.numbers;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.math.pure.terms.PowerTerm;
+import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
 import whyxzee.blackboard.utils.Loggy;
 
 /**
@@ -202,11 +202,26 @@ public class ComplexNum {
      */
     @Override
     public ComplexNum clone() {
-        return new ComplexNum(a, b);
+        return new ComplexNum(a.clone(), b.clone());
     }
     // #endregion
 
     // #region Conversion Methods
+    public static final ComplexNum fromObj(Object arg) {
+        if (arg instanceof Value) {
+            return new ComplexNum((Value) arg, new Value(0));
+        } else if (arg instanceof ComplexNum) {
+            return (ComplexNum) arg;
+        } else if (arg instanceof Double) {
+            return new ComplexNum((double) arg, new Value(0));
+        } else if (arg instanceof Integer) {
+            return new ComplexNum((int) arg, new Value(0));
+        }
+
+        /* DNE */
+        return new ComplexNum();
+    }
+
     public final PowerTerm toTerm() {
         return new PowerTerm(this);
     }
@@ -685,7 +700,7 @@ public class ComplexNum {
      * 
      * @return {@code 1 / this}
      */
-    public ComplexNum reciprocal() {
+    public final ComplexNum reciprocal() {
         ComplexNum output = clone();
         output = ComplexNum.divide(new ComplexNum(1, 0), output);
         return output;
@@ -807,6 +822,9 @@ public class ComplexNum {
      * <li>Irrational powers
      * <li>DNE
      * </ul>
+     * 
+     * <p>
+     * <em>Calling pow() does not affect the data of <b>power</b></em>.
      * 
      * @param base
      * @param power
@@ -969,6 +987,15 @@ public class ComplexNum {
         }
 
         throw new UnsupportedOperationException();
+
+    }
+    // #endregion
+
+    // #region Trigonometry
+    /**
+     * 
+     */
+    public final void sin() {
 
     }
     // #endregion

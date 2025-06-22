@@ -7,13 +7,11 @@ import whyxzee.blackboard.math.applied.settheory.DefinedList;
 import whyxzee.blackboard.math.pure.algebra.solver.*;
 import whyxzee.blackboard.math.pure.combinatorics.CombinatoricsUtils;
 import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
-import whyxzee.blackboard.math.pure.equations.EquationUtils;
 import whyxzee.blackboard.math.pure.equations.MultiplyEQ;
+import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
+import whyxzee.blackboard.math.pure.equations.variables.Variable;
 import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 import whyxzee.blackboard.math.pure.numbers.NumberTheory;
-import whyxzee.blackboard.math.pure.terms.PowerTerm;
-import whyxzee.blackboard.math.pure.terms.Term;
-import whyxzee.blackboard.math.pure.terms.variables.Variable;
 import whyxzee.blackboard.utils.Loggy;
 
 /**

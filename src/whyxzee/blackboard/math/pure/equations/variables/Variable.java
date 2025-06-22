@@ -1,8 +1,8 @@
-package whyxzee.blackboard.math.pure.terms.variables;
+package whyxzee.blackboard.math.pure.equations.variables;
 
 import whyxzee.blackboard.math.pure.equations.MathEQ;
+import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.numbers.ComplexNum;
-import whyxzee.blackboard.math.pure.terms.Term;
 
 /**
  * The package for a polynomial variable. The variable class is modeled after
@@ -19,6 +19,7 @@ import whyxzee.blackboard.math.pure.terms.Term;
  * <li>simplifyPower() unimplemented
  */
 public class Variable<T> {
+    /* General-use : static */
     public static final Variable<String> noVar = new Variable<String>("");
 
     /* Variable Identification */
@@ -58,7 +59,7 @@ public class Variable<T> {
      */
     public final boolean validClass(Object obj) {
         return obj instanceof MathEQ
-                || obj instanceof Term
+                || obj instanceof PowerTerm
                 || obj instanceof String;
     }
     // #endregion
@@ -71,28 +72,37 @@ public class Variable<T> {
     // #endregion
 
     // // #region Copying / Cloning
-    // @Override
-    // public Variable<T> clone() {
-    // // TODO: how to clone T?
-    // return new Variable<T>(var);
-    // }
+    @Override
+    public Variable<?> clone() {
+        if (inner instanceof String) {
+            return new Variable<String>((String) inner);
+        } else if (inner instanceof PowerTerm) {
+            return new Variable<PowerTerm>(((PowerTerm) inner).clone());
+        } else if (inner instanceof MathEQ) {
+            return new Variable<MathEQ>(((MathEQ) inner).clone());
+        }
+        return new Variable<T>(inner);
+    }
     // #endregion
 
-    /**
-     * Solves the variable.
-     * 
-     * @param value
-     * @return
-     */
-    public ComplexNum solve(ComplexNum value) {
-        if (inner instanceof MathEQ) {
-            return ((MathEQ) inner).solve(value);
-        } else if (inner instanceof Term) {
-            return ((Term) inner).solve(value);
+    // #region Solve
+    public final PowerTerm solve(String variable, ComplexNum value) {
+        if (inner instanceof String) {
+            // String var = (String) inner; // dunno if this is needed
+            if (inner.equals(variable)) {
+                return new PowerTerm(value);
+            } else {
+                return new PowerTerm(1, this);
+            }
+        } else if (inner instanceof MathEQ) {
+            return ((MathEQ) inner).solve(variable, value);
+        } else if (inner instanceof PowerTerm) {
+            return ((PowerTerm) inner).solve(variable, value);
         }
 
-        return value;
+        return null;
     }
+    // #endregion
 
     // #region Get/Set
     public final T getInner() {
@@ -103,26 +113,30 @@ public class Variable<T> {
         return inner.getClass();
     }
 
+    public final void setInner(T inner) {
+        this.inner = inner;
+    }
+
     // #endregion
 
     // #region Comparison Bools
     @Override
-    public boolean equals(Object var1) {
-        if (var1 == null) {
+    public boolean equals(Object arg) {
+        if (arg == null) {
             return false;
         }
 
-        if (var1 instanceof Variable) {
+        if (arg instanceof Variable) {
             // the question mark means any class
-            Variable<?> other = (Variable<?>) var1;
+            Variable<?> other = (Variable<?>) arg;
             if (getInnerClass() != other.getInnerClass()) {
                 return false;
             }
 
             return getInner().equals(other.getInner());
-        } else if (validClass(var1)) {
+        } else if (validClass(arg)) {
             // if object is an acceptable class of the inner
-            return getInner().equals(var1);
+            return getInner().equals(arg);
         }
         return false;
 
@@ -130,38 +144,21 @@ public class Variable<T> {
     // #endregion
 
     // #region Overlap Bools
-    /**
-     * Checks if an object is inside of a variable
-     * 
-     * @param var1
-     * @return
-     */
-    public final boolean contains(Object var1) {
-        if (var1 == null) {
-            return false;
+    public final boolean containsVar(String var) {
+        if (inner instanceof String) {
+            return inner.equals(var);
+        } else if (inner instanceof PowerTerm) {
+            return ((PowerTerm) inner).containsVar(var);
+        } else if (inner instanceof MathEQ) {
+            return ((MathEQ) inner).getTerms().containsVar(var);
         }
-
-        if (var1 instanceof Variable || validClass(var1)) {
-            if (this.equals(var1)) {
-                // checked if it's a string
-                return true;
-            }
-
-            /* Check the inner */
-            if (inner instanceof Term) {
-                return ((Term) inner).contains(var1);
-            } else if (inner instanceof MathEQ) {
-                return ((MathEQ) inner).contains(var1);
-            }
-        }
-
         return false;
     }
     // #endregion
 
     // #region U-Sub Bools
-    public boolean isUSub() {
-        return inner instanceof Term || inner instanceof MathEQ;
+    public final boolean isUSub() {
+        return inner instanceof PowerTerm || inner instanceof MathEQ;
     }
     // #endregion
 }

@@ -12,11 +12,11 @@ import whyxzee.blackboard.math.pure.algebra.AlgebraUtils;
 import whyxzee.blackboard.math.pure.algebra.solver.AlgebraSolver;
 import whyxzee.blackboard.math.pure.combinatorics.CombinatoricsUtils;
 import whyxzee.blackboard.math.pure.equations.*;
+import whyxzee.blackboard.math.pure.equations.terms.*;
+import whyxzee.blackboard.math.pure.equations.terms.TrigTerm.TrigType;
+import whyxzee.blackboard.math.pure.equations.variables.Variable;
 import whyxzee.blackboard.math.pure.numbers.*;
-import whyxzee.blackboard.math.pure.terms.*;
-import whyxzee.blackboard.math.pure.terms.variables.*;
-import whyxzee.blackboard.utils.Loggy;
-import whyxzee.blackboard.utils.UnicodeUtils;
+import whyxzee.blackboard.utils.*;
 
 @SuppressWarnings("unused")
 public class Debugger {
@@ -31,14 +31,16 @@ public class Debugger {
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
                 /* Math Debugging */
-                ComplexNum[] nums = {
-                                new ComplexNum(1, 5),
-                                new ComplexNum(-5, 3),
-
-                };
+                TermArray terms = new TermArray(
+                                new PowerTerm(3, yVar, 2),
+                                new PowerTerm(5, xVar),
+                                new PowerTerm(3),
+                                new PowerTerm(2),
+                                new PlusMinusTerm(1));
 
                 display.appendScript(
-                                ComplexNum.divide(new ComplexNum(0, Value.infinity(true, 0)), nums),
+                                // TermUtils.AddTerms.add(termOne, termTwo, termThree, termFour),
+                                terms.getTermsExcluding(PlusMinusTerm.class),
                                 0.05);
 
                 /* Displaying */
@@ -55,17 +57,7 @@ public class Debugger {
         // #region Variables
         private static final Variable<String> xVar = new Variable<String>("x");
         private static final Variable<String> yVar = new Variable<String>("y");
-        private static final ArrayList<Term> lTerms = new ArrayList<Term>() {
-                {
-                        add(new PowerTerm(1, xVar, 4));
-                        add(new PowerTerm(1));
-                }
-        };
-        private static final ArrayList<Term> rTerms = new ArrayList<Term>() {
-                {
-                        add(new PowerTerm(0));
-                }
-        };
+        private static final Variable<String> zVar = new Variable<String>("z");
 
         /* BNumbers */
         private static final Value smol = Value.infinitesimal("dx");

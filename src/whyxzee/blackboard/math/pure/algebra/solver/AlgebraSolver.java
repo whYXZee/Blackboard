@@ -4,16 +4,14 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
-import whyxzee.blackboard.math.pure.equations.EquationUtils;
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.MathEQ.EQType;
+import whyxzee.blackboard.math.pure.equations.TermArray;
+import whyxzee.blackboard.math.pure.equations.terms.PlusMinusTerm;
+import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
+import whyxzee.blackboard.math.pure.equations.terms.TermUtils;
+import whyxzee.blackboard.math.pure.equations.variables.Variable;
 import whyxzee.blackboard.math.pure.numbers.ComplexNum;
-import whyxzee.blackboard.math.pure.terms.PlusMinusTerm;
-import whyxzee.blackboard.math.pure.terms.PowerTerm;
-import whyxzee.blackboard.math.pure.terms.Term;
-import whyxzee.blackboard.math.pure.terms.TermUtils;
-import whyxzee.blackboard.math.pure.terms.Term.TermType;
-import whyxzee.blackboard.math.pure.terms.variables.Variable;
 import whyxzee.blackboard.utils.Loggy;
 
 /**
@@ -34,9 +32,9 @@ public class AlgebraSolver {
     private static final Loggy loggy = new Loggy(Constants.Loggy.ALGEBRA_SOLVER_LOGGY);
     private static int maxIterations = 10;
 
-    private static ArrayList<Term> lSide; // will contain the info for the var
-    private static ArrayList<Term> rSide;
-    private static Variable varToSolve; // for now, assume normal var
+    private static TermArray lSide; // will contain the info for the var
+    private static TermArray rSide;
+    private static String varToSolve;
     private static boolean opPerformed = false;
     private static boolean areSidesSwapped = false;
 
@@ -49,15 +47,16 @@ public class AlgebraSolver {
      * @param rightSide the ArrayList<Term> of an AdditiveEQ.
      * @return
      */
-    public static final SolutionData performOp(Variable var, ArrayList<Term> leftSide, ArrayList<Term> rightSide) {
+    public static final SolutionData performOp(String var, TermArray leftSide,
+            TermArray rightSide) {
         /* Variables */
-        lSide = EquationUtils.deepCopyTerms(leftSide);
-        rSide = EquationUtils.deepCopyTerms(rightSide);
+        lSide = leftSide.clone();
+        rSide = rightSide.clone();
         varToSolve = var;
 
         /* Swap Sides if Needed */
         if (!sideContainsVar(leftSide) && sideContainsVar(rightSide)) {
-            ArrayList<Term> temp = lSide;
+            TermArray temp = lSide;
             lSide = rSide;
             rSide = temp;
             areSidesSwapped = true;
@@ -97,14 +96,14 @@ public class AlgebraSolver {
             return;
         }
 
-        Term lTerm = lSide.get(0);
+        PowerTerm lTerm = lSide.get(0);
         if (!lTerm.containsVar(varToSolve) || !lTerm.getCoef().equals(1)) {
             return;
         }
 
         opPerformed = true;
         // ArrayList<Term> newLeft = new ArrayList<Term>();
-        ArrayList<Term> newRight = new ArrayList<Term>();
+        ArrayList<PowerTerm> newRight = new ArrayList<PowerTerm>();
         switch (lTerm.getTermType()) {
             case POWER:
                 PowerTerm powTerm = (PowerTerm) lTerm;
@@ -174,7 +173,7 @@ public class AlgebraSolver {
             return;
         }
 
-        Term lTerm = lSide.get(0);
+        PowerTerm lTerm = lSide.get(0);
         if (!lTerm.containsVar(varToSolve) || lTerm.getCoef().equals(1)) {
             return;
         }
@@ -182,7 +181,7 @@ public class AlgebraSolver {
         /* Right Side */
         opPerformed = true;
         if (rSide.size() == 1) {
-            Term rTerm = rSide.get(0);
+            PowerTerm rTerm = rSide.get(0);
 
             // TODO: what if the divisor is another var?
 
@@ -190,7 +189,7 @@ public class AlgebraSolver {
             rTerm.divideCoefBy(lTerm.getCoef());
 
         } else {
-            for (Term r : rSide) {
+            for (PowerTerm r : rSide) {
                 // TODO: what if the divisor is another var?
 
                 /* Division of Coef */
@@ -231,10 +230,10 @@ public class AlgebraSolver {
             }
         }
 
-        ArrayList<Term> newLeft = new ArrayList<Term>();
-        ArrayList<Term> newRight = new ArrayList<Term>();
+        TermArray newLeft = new TermArray();
+        TermArray newRight = new TermArray();
 
-        for (Term i : rSide) {
+        for (PowerTerm i : rSide.getArr()) {
             if (i.containsVar(varToSolve)) {
                 newLeft.add(i.negate());
             } else {
@@ -242,7 +241,7 @@ public class AlgebraSolver {
             }
         }
 
-        for (Term i : lSide) {
+        for (PowerTerm i : lSide.getArr()) {
             if (i.containsVar(varToSolve)) {
                 newLeft.add(i);
             } else {
@@ -256,11 +255,13 @@ public class AlgebraSolver {
         }
         opPerformed = true;
 
-        lSide = TermUtils.AddTerms.performAddition(newLeft);
-        rSide = TermUtils.AddTerms.performAddition(newRight);
+        newLeft.add();
+        newRight.add();
+
+        lSide = newLeft;
+        rSide = newRight;
 
         loggy.logDetail("addition");
-        // loggy.logDetail("newLeft: " + newLeft + " newRight: " + newRight);
         logSides();
     }
 
@@ -273,31 +274,22 @@ public class AlgebraSolver {
      * 
      * @param lTerm
      */
-    private static final void setUSubToLSide(Term lTerm) {
-        switch (lTerm.getVar().getVarType()) {
-            case U_SUB_EQ:
-                MathEQ inner = lTerm.getVar().getInnerFunction();
-                // if (varToSolve.isVarType(VarType.U_SUB_EQ)) {
+    private static final void setUSubToLSide(PowerTerm lTerm) {
+        Object inner = lTerm.getVar().getInner();
 
-                // } else {
-                if (inner.isType(EQType.ADDITIVE)) {
-                    lSide = inner.getTerms();
-                } else {
-                    // TODO: foil instead?
-                    USub uSub = new USub(lTerm);
-                    lSide = new PowerTerm(1, uSub).toTermArray();
-                }
-                // }
-                break;
-            case U_SUB_TERM:
-                Term innerTerm = lTerm.getVar().getInnerTerm();
-                lSide = innerTerm.toTermArray();
-                break;
-            default:
-                lSide = lTerm.toTermArray();
-                break;
+        if (inner instanceof MathEQ) {
+            MathEQ eq = (MathEQ) inner;
+            if (eq.isType(EQType.ADDITIVE)) {
+                lSide = eq.getTerms();
+            } else {
+                // TODO: foil instead?
+                lSide = eq.toTerm().toTermArray();
+            }
+        } else if (inner instanceof PowerTerm) {
+            lSide = ((PowerTerm) inner).toTermArray();
+        } else if (inner instanceof String) {
+            lSide = lTerm.toTermArray();
         }
-
     }
     // #endregion
 
@@ -309,17 +301,17 @@ public class AlgebraSolver {
      * @param rightSide
      * @return
      */
-    private static final ArrayList<ComplexNum> getSolutions(ArrayList<Term> rightSide) {
+    private static final ArrayList<ComplexNum> getSolutions(TermArray rightSide) {
         /* Term Types */
-        ArrayList<Term> pmTerms = EquationUtils.getTermTypeFromArray(rightSide, TermType.PLUS_MINUS);
-        ArrayList<Term> otherTerms = EquationUtils.getTermsExcludingType(rightSide, TermType.PLUS_MINUS);
+        TermArray pmTerms = rightSide.getTermsUnion(PlusMinusTerm.class);
+        TermArray otherTerms = rightSide.getTermsExcluding(PlusMinusTerm.class);
 
         ComplexNum total = new ComplexNum(0, 0);
-        for (Term i : otherTerms) {
+        for (PowerTerm i : otherTerms.getArr()) {
             total = ComplexNum.add(total, i.getCoef());
         }
 
-        if (pmTerms.size() == 0) {
+        if (pmTerms.isEmpty()) {
             return total.toArrayList();
         }
 
@@ -339,8 +331,9 @@ public class AlgebraSolver {
 
     }
 
-    private static final ArrayList<ComplexNum> extraneousSolutions(ArrayList<Term> left, ArrayList<Term> right) {
-        ArrayList<ComplexNum> potentialSols = new AdditiveEQ(rSide).solutions().getNumbers();
+    private static final ArrayList<ComplexNum> extraneousSolutions(ArrayList<PowerTerm> left,
+            ArrayList<PowerTerm> right) {
+        ArrayList<ComplexNum> potentialSols = getSolutions(rSide);
         loggy.logHeader("---- Extraneous Solutions ----");
         loggy.logVal("potential solutions", potentialSols);
 
@@ -350,8 +343,8 @@ public class AlgebraSolver {
 
         ArrayList<ComplexNum> actualSols = new ArrayList<ComplexNum>();
         for (ComplexNum i : potentialSols) {
-            ComplexNum lSol = lEQ.solve(i);
-            ComplexNum rSol = rEQ.solve(i);
+            PowerTerm lSol = lEQ.solve(varToSolve, i);
+            PowerTerm rSol = rEQ.solve(varToSolve, i);
 
             if (lSol.equals(rSol)) {
                 actualSols.add(i);
@@ -380,24 +373,20 @@ public class AlgebraSolver {
         if (lSide.size() != 1) {
             return false;
         }
-        Term term = lSide.get(0);
+        PowerTerm term = lSide.get(0);
 
         // TODO: what if the var is usub?
 
         /* If actual var */
-        if (!term.isTermType(TermType.POWER)) {
+        if (term.getClass() != PowerTerm.class || !term.getPower().equals(1) || !term.getCoef().equals(1)) {
             return false;
         }
 
-        PowerTerm powTerm = (PowerTerm) term;
-        if (!powTerm.getPower().equals(1) || !powTerm.getCoef().equals(1)) {
-            return false;
-        }
         return true;
     }
 
-    private static final boolean isMultivariate(ArrayList<Term> rightSide) {
-        for (Term i : rightSide) {
+    private static final boolean isMultivariate(TermArray rightSide) {
+        for (PowerTerm i : rightSide.getArr()) {
             if (!i.containsVar(Variable.noVar)) {
                 return true;
             }
@@ -405,8 +394,8 @@ public class AlgebraSolver {
         return false;
     }
 
-    private static final boolean sideContainsVar(ArrayList<Term> terms) {
-        for (Term i : terms) {
+    private static final boolean sideContainsVar(TermArray terms) {
+        for (PowerTerm i : terms.getArr()) {
             if (i.containsVar(varToSolve)) {
                 return true;
             }

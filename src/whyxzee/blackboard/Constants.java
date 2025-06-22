@@ -143,15 +143,15 @@ public final class Constants {
         public static final boolean ALGEBRA_UTILS_LOGGY = false;
 
         /* Numbers */
-        public static final boolean COMPLEX_NUM_LOGGY = true;
+        public static final boolean COMPLEX_NUM_LOGGY = false;
 
         /* Variables */
         public static final boolean VARIABLE_LOGGY = false;
         public static final boolean VARIABLE_UTILS_LOGGY = false;
 
         /* Terms */
-        public static final boolean TERM_LOGGY = false;
-        public static final boolean POW_TERM_LOGGY = false;
+        public static final boolean POW_TERM_LOGGY = true;
+        public static final boolean ADD_TERMS_LOGGY = false;
         public static final boolean MULTIPLY_TERMS_LOGGY = false;
     }
     // #endregion
