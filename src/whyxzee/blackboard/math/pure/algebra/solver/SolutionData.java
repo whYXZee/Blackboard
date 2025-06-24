@@ -4,8 +4,7 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
-import whyxzee.blackboard.math.pure.equations.variables.Variable;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.numbers.Complex;
 
 /**
  * A class which contains data for the solutions to an algebraic solver.
@@ -17,18 +16,18 @@ public class SolutionData {
     /* Variables */
     private PowerTerm term; // multivariate
     private DefinedList list;
-    private Variable<?> var;
+    private String var;
 
-    public SolutionData(Variable<?> var, PowerTerm term) {
+    public SolutionData(String var, PowerTerm term) {
         this.var = var;
         this.term = term;
         list = null;
     }
 
-    public SolutionData(Variable<?> var, ArrayList<ComplexNum> solutions) {
+    public SolutionData(String var, ArrayList<Complex> solutions) {
         this.var = var;
         term = null;
-        list = new DefinedList(var.toString(), solutions);
+        list = new DefinedList(var, solutions);
     }
 
     @Override

@@ -114,20 +114,8 @@ public final class Constants {
         public static final int[] PRIME_NUMBERS = {
                 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31
         };
-        public static final int MAX_PRIME_NUMBER = 17;
+        public static final int MAX_PRIME_NUMBER = 29;
         public static final int SIG_FIGS = 4;
-
-        /* Complex Numbers */
-        public static final double NEG_ONE_TO_I = 0.0432139186; // e^(-pi)
-
-        /* Infinity */
-        // could be used for derivatives or Reimann sums/integrals maybe?
-        public static final double INFINITESIMAL_VAL = 0.001;
-        public static final short DNE_ORDER = -1;
-        public static final short INFINITESIMAL_ORDER = 0;
-        public static final short VALUE_ORDER = 1;
-        public static final short ALEPH_ORDER = 2;
-        public static final short GENERAL_INFINITY_ORDER = 3;
     }
     // #endregion
 
@@ -138,21 +126,17 @@ public final class Constants {
      */
     public static final class Loggy {
         /* Algebra */
-        public static final boolean ALGEBRA_SOLVER_LOGGY = false;
+        public static final boolean ALGEBRA_SOLVER_LOGGY = true;
         public static final boolean RATIONAL_ROOT_LOGGY = false;
         public static final boolean ALGEBRA_UTILS_LOGGY = false;
 
         /* Numbers */
         public static final boolean COMPLEX_NUM_LOGGY = false;
 
-        /* Variables */
+        /* Equations */
         public static final boolean VARIABLE_LOGGY = false;
-        public static final boolean VARIABLE_UTILS_LOGGY = false;
 
-        /* Terms */
-        public static final boolean POW_TERM_LOGGY = true;
-        public static final boolean ADD_TERMS_LOGGY = false;
-        public static final boolean MULTIPLY_TERMS_LOGGY = false;
+        public static final boolean POW_TERM_LOGGY = false;
     }
     // #endregion
 }

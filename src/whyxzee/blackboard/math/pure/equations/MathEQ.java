@@ -3,7 +3,6 @@ package whyxzee.blackboard.math.pure.equations;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 
 public abstract class MathEQ {
     /* Terms */
@@ -45,6 +44,11 @@ public abstract class MathEQ {
     // #endregion
 
     // #region Copying/Cloning
+    /**
+     * Creates a deep copy of <b>this</b>.
+     * 
+     * @return
+     */
     public abstract MathEQ clone();
     // #endregion
 
@@ -80,12 +84,16 @@ public abstract class MathEQ {
     }
     // #endregion
 
+    // #region Solve
     /**
-     * @param variable
+     * Plugs in a term in place of the variable.
+     * 
+     * @param variable the variable to replace.
      * @param value
      * @return
      */
-    public abstract PowerTerm solve(String variable, ComplexNum value);
+    public abstract PowerTerm solve(String variable, PowerTerm value);
+    // #endregion
 
     // /**
     // * Should only be used for equations that do not have any variables in them,
@@ -99,23 +107,6 @@ public abstract class MathEQ {
     // #region Comparison Bools
     public final boolean isType(EQType type) {
         return this.type == type;
-    }
-    // #endregion
-
-    // #region Overlap Bools
-    /**
-     * *
-     * Checks each term to see if <b>this</b> is a superset of <b>other</b>.
-     * 
-     * @param other
-     * @return
-     */
-    public final boolean isSupersetOfEQ(MathEQ other) {
-        if (other.getClass() != this.getClass()) {
-            return false;
-        }
-
-        return terms.isSupersetOf(other.getTerms());
     }
     // #endregion
 }

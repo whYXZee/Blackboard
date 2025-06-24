@@ -10,8 +10,8 @@ import whyxzee.blackboard.math.pure.equations.TermArray;
 import whyxzee.blackboard.math.pure.equations.terms.PlusMinusTerm;
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.equations.terms.TermUtils;
-import whyxzee.blackboard.math.pure.equations.variables.Variable;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.numbers.Complex;
+import whyxzee.blackboard.math.utils.pure.NumberUtils;
 import whyxzee.blackboard.utils.Loggy;
 
 /**
@@ -39,16 +39,13 @@ public class AlgebraSolver {
     private static boolean areSidesSwapped = false;
 
     /**
-     * TODO: what if the varToSolve is an additive EQ, and is equal to the left
-     * side? (turn ArrayList<Term> -> PowerTerm to not confuse the program)
      * 
      * @param var       the variable that should be found
-     * @param leftSide  the ArrayList<Term> of an AdditiveEQ.
-     * @param rightSide the ArrayList<Term> of an AdditiveEQ.
+     * @param leftSide  the TermArray of an AdditiveEQ.
+     * @param rightSide the TermArray of an AdditiveEQ.
      * @return
      */
-    public static final SolutionData performOp(String var, TermArray leftSide,
-            TermArray rightSide) {
+    public static final SolutionData performOp(String var, TermArray leftSide, TermArray rightSide) {
         /* Variables */
         lSide = leftSide.clone();
         rSide = rightSide.clone();
@@ -82,12 +79,19 @@ public class AlgebraSolver {
             }
         }
 
-        if (!areSidesSwapped && isMultivariate(rightSide)) {
-            return new SolutionData(var, EquationUtils.simplifyAdditive(new AdditiveEQ(rSide)));
-        } else if (areSidesSwapped && isMultivariate(leftSide)) {
-            return new SolutionData(var, EquationUtils.simplifyAdditive(new AdditiveEQ(lSide)));
+        TermArray otherTerms = rSide.getTermsExcluding(PlusMinusTerm.class); // all terms except plus-minus
+        otherTerms.addition(); // ngl idk if this is needed
+
+        if (!otherTerms.areAllConstants()) {
+            if (!areSidesSwapped && isMultivariate(rightSide)) {
+                return new SolutionData(var, new AdditiveEQ(rSide).toTerm());
+            } else {
+                // (areSidesSwapped && isMultivariate(leftSide))
+                return new SolutionData(var, new AdditiveEQ(lSide).toTerm());
+            }
+        } else {
+            return new SolutionData(var, extraneousSolutions(leftSide, rightSide));
         }
-        return new SolutionData(var, extraneousSolutions(leftSide, rightSide));
     }
 
     // #region inverse()
@@ -102,59 +106,12 @@ public class AlgebraSolver {
         }
 
         opPerformed = true;
-        // ArrayList<Term> newLeft = new ArrayList<Term>();
-        ArrayList<PowerTerm> newRight = new ArrayList<PowerTerm>();
-        switch (lTerm.getTermType()) {
-            case POWER:
-                PowerTerm powTerm = (PowerTerm) lTerm;
-                ComplexNum lPower = powTerm.getPower();
-                if (lPower.equals(-1)) {
-                    loggy.logDetail("power of -1");
 
-                    /* Arithmetic */
-                    // TODO: inverse later
-                    break;
-                }
+        /* Right Side */
+        rSide = lTerm.applyInverseTo(new AdditiveEQ(rSide)).toTermArray();
 
-                boolean rSideNeedsUSub = true;
-                USub rSideVar = new USub(new AdditiveEQ(rSide));
-                ComplexNum constantVal = rSide.get(0).getCoef();
-                if (rSide.size() == 1) {
-                    rSideNeedsUSub = false;
-                }
-                ComplexNum newPower = lPower.reciprocal();
-
-                // TODO: roots of complex number
-
-                if (lPower.mod(2).equals(0)) {
-                    loggy.logDetail("even power");
-
-                    if (rSideNeedsUSub) {
-                        USub powUSub = new USub(new PowerTerm(1, rSideVar, newPower));
-                        newRight.add(new PlusMinusTerm(1, powUSub));
-                    } else {
-                        newRight.add(new PlusMinusTerm(ComplexNum.pow(constantVal, newPower)));
-                    }
-                } else {
-                    loggy.logDetail("non even power");
-
-                    if (rSideNeedsUSub) {
-                        newRight.add(new PowerTerm(1, rSideVar, newPower));
-                    } else {
-                        newRight.add(new PowerTerm(ComplexNum.pow(constantVal, newPower)));
-                    }
-                }
-
-                /* Left Side */
-                powTerm.setPower(1);
-                setUSubToLSide(powTerm);
-                break;
-            default:
-                break;
-        }
-
-        // lSide = newLeft;
-        rSide = newRight;
+        /* Left Side */
+        setUSubToLSide(lTerm);
         logSides();
     }
     // #endregion
@@ -199,17 +156,8 @@ public class AlgebraSolver {
         }
 
         /* Left Side */
-        switch (lTerm.getTermType()) {
-            case POWER:
-                PowerTerm powTerm = (PowerTerm) lTerm;
-                if (powTerm.getPower().equals(1)) {
-                    setUSubToLSide(lTerm);
-                }
-                break;
-            default:
-                break;
-        }
         lTerm.setCoef(1);
+        setUSubToLSide(lTerm);
 
         loggy.logDetail("multiplication");
         logSides();
@@ -233,7 +181,7 @@ public class AlgebraSolver {
         TermArray newLeft = new TermArray();
         TermArray newRight = new TermArray();
 
-        for (PowerTerm i : rSide.getArr()) {
+        for (PowerTerm i : rSide) {
             if (i.containsVar(varToSolve)) {
                 newLeft.add(i.negate());
             } else {
@@ -241,7 +189,7 @@ public class AlgebraSolver {
             }
         }
 
-        for (PowerTerm i : lSide.getArr()) {
+        for (PowerTerm i : lSide) {
             if (i.containsVar(varToSolve)) {
                 newLeft.add(i);
             } else {
@@ -255,8 +203,8 @@ public class AlgebraSolver {
         }
         opPerformed = true;
 
-        newLeft.add();
-        newRight.add();
+        newLeft.addition();
+        newRight.addition();
 
         lSide = newLeft;
         rSide = newRight;
@@ -301,50 +249,49 @@ public class AlgebraSolver {
      * @param rightSide
      * @return
      */
-    private static final ArrayList<ComplexNum> getSolutions(TermArray rightSide) {
-        /* Term Types */
-        TermArray pmTerms = rightSide.getTermsUnion(PlusMinusTerm.class);
-        TermArray otherTerms = rightSide.getTermsExcluding(PlusMinusTerm.class);
+    private static final ArrayList<Complex> getSolutions() {
+        // by now, we know that all terms are constant.
+        loggy.logHeader("Get Solutions");
 
-        ComplexNum total = new ComplexNum(0, 0);
-        for (PowerTerm i : otherTerms.getArr()) {
-            total = ComplexNum.add(total, i.getCoef());
-        }
+        /* Term Types */
+        TermArray otherTerms = rSide.getTermsExcluding(PlusMinusTerm.class);
+        TermArray pmTerms = rSide.getTermsUnion(PlusMinusTerm.class);
+        loggy.logVal("otherTerms", otherTerms);
+        loggy.logVal("pmTerms", pmTerms);
+        otherTerms.addition();
+        Complex constant = otherTerms.getConstant().getCoef();
 
         if (pmTerms.isEmpty()) {
-            return total.toArrayList();
+            return new ArrayList<Complex>() {
+                {
+                    add(constant);
+                }
+            };
         }
 
         /* Plus Minus specifics */
-        ArrayList<ComplexNum> output = new ArrayList<ComplexNum>();
-        ComplexNum staticCoef = pmTerms.get(0).getCoef(); // the coef which will be unchanged
-        if (pmTerms.size() == 1) {
-            output.add(ComplexNum.add(total, staticCoef));
-            output.add(ComplexNum.add(total, staticCoef.negate()));
-
-        } else {
-            // for (int i = 0; i < )
-
+        ArrayList<Complex> allCombos = TermUtils.addConstantPlusMinusTerms(pmTerms);
+        for (Complex i : allCombos) {
+            i.copy(NumberUtils.add(i, constant));
         }
 
-        return output;
-
+        return allCombos;
     }
 
-    private static final ArrayList<ComplexNum> extraneousSolutions(ArrayList<PowerTerm> left,
-            ArrayList<PowerTerm> right) {
-        ArrayList<ComplexNum> potentialSols = getSolutions(rSide);
-        loggy.logHeader("---- Extraneous Solutions ----");
+    private static final ArrayList<Complex> extraneousSolutions(TermArray left,
+            TermArray right) {
+        ArrayList<Complex> potentialSols = getSolutions();
+        loggy.logHeader("Extraneous Solutions");
         loggy.logVal("potential solutions", potentialSols);
 
         /* Original EQs */
         AdditiveEQ lEQ = new AdditiveEQ(left);
         AdditiveEQ rEQ = new AdditiveEQ(right);
 
-        ArrayList<ComplexNum> actualSols = new ArrayList<ComplexNum>();
-        for (ComplexNum i : potentialSols) {
-            PowerTerm lSol = lEQ.solve(varToSolve, i);
-            PowerTerm rSol = rEQ.solve(varToSolve, i);
+        ArrayList<Complex> actualSols = new ArrayList<Complex>();
+        for (Complex i : potentialSols) {
+            PowerTerm lSol = lEQ.solve(varToSolve, new PowerTerm(i));
+            PowerTerm rSol = rEQ.solve(varToSolve, new PowerTerm(i));
 
             if (lSol.equals(rSol)) {
                 actualSols.add(i);
@@ -386,8 +333,8 @@ public class AlgebraSolver {
     }
 
     private static final boolean isMultivariate(TermArray rightSide) {
-        for (PowerTerm i : rightSide.getArr()) {
-            if (!i.containsVar(Variable.noVar)) {
+        for (PowerTerm i : rightSide) {
+            if (!i.containsVar("")) {
                 return true;
             }
         }
@@ -395,7 +342,7 @@ public class AlgebraSolver {
     }
 
     private static final boolean sideContainsVar(TermArray terms) {
-        for (PowerTerm i : terms.getArr()) {
+        for (PowerTerm i : terms) {
             if (i.containsVar(varToSolve)) {
                 return true;
             }

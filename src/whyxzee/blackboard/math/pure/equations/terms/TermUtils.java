@@ -2,9 +2,9 @@ package whyxzee.blackboard.math.pure.equations.terms;
 
 import java.util.ArrayList;
 
-import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.utils.Loggy;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.equations.TermArray;
+import whyxzee.blackboard.math.pure.numbers.Complex;
+import whyxzee.blackboard.math.utils.pure.NumberUtils;
 
 public class TermUtils {
     // #region Plus Minus Addition
@@ -24,14 +24,14 @@ public class TermUtils {
      * @param pmTerms
      * @return
      */
-    public static final ArrayList<ComplexNum> addConstantPlusMinusTerms(ArrayList<PowerTerm> pmTerms) {
+    public static final ArrayList<Complex> addConstantPlusMinusTerms(TermArray pmTerms) {
         if (pmTerms == null || pmTerms.size() == 0) {
-            return new ArrayList<ComplexNum>();
+            return new ArrayList<Complex>();
         }
 
-        ArrayList<ComplexNum> out = new ArrayList<ComplexNum>();
-        ArrayList<PowerTerm> clonedPmTerms = EquationUtils.deepCopyTerms(pmTerms);
-        ComplexNum coef = pmTerms.get(0).getCoef();
+        ArrayList<Complex> out = new ArrayList<Complex>();
+        TermArray clonedPmTerms = pmTerms.clone();
+        Complex coef = pmTerms.get(0).getCoef();
         clonedPmTerms.remove(0);
 
         if (pmTerms.size() == 1) {
@@ -40,9 +40,9 @@ public class TermUtils {
             return out;
         }
 
-        ArrayList<ComplexNum> nextI = addConstantPlusMinusTerms(clonedPmTerms);
-        for (ComplexNum i : nextI) {
-            ComplexNum iNum = ComplexNum.add(coef, i);
+        ArrayList<Complex> nextI = addConstantPlusMinusTerms(clonedPmTerms);
+        for (Complex i : nextI) {
+            Complex iNum = NumberUtils.add(coef, i);
             if (out.contains(coef))
                 out.add(iNum);
             out.add(iNum.negate());

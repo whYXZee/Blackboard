@@ -1,11 +1,15 @@
-package whyxzee.blackboard.math.pure.numbers;
+package whyxzee.blackboard.math.utils.pure;
 
 import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.math.pure.numbers.Complex;
+import whyxzee.blackboard.math.pure.numbers.NumberTheory;
+import whyxzee.blackboard.math.pure.numbers.BNum;
+import whyxzee.blackboard.utils.ObjectUtils;
 import whyxzee.blackboard.utils.UnicodeUtils;
 
-public class NumberUtils {
+public final class NumberUtils {
     /**
      * Counts the number of significant figures in <b>value</b>.
      * 
@@ -196,6 +200,7 @@ public class NumberUtils {
         return output;
     }
     // #endregion
+
     // #region Range
 
     /**
@@ -255,107 +260,22 @@ public class NumberUtils {
     }
     // #endregion
 
-    // #region DNEs
-    public static final boolean containsDNE(ComplexNum... numbers) {
-        if (numbers == null) {
-            return false;
-        }
-
-        for (ComplexNum i : numbers) {
-            if (i.isDNE()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static final boolean containsDNE(ArrayList<ComplexNum> numbers) {
-        if (numbers == null) {
-            return false;
-        }
-
-        for (ComplexNum i : numbers) {
-            if (i.isDNE()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    // #endregion
-
-    // #region Power
-    public static final ComplexNum powWithInf(double base, ComplexNum power) {
-        boolean posConverge = Math.abs(base) < 1; // converges as x -> pos infinity
-        // boolean negConverge = Math.abs(base) > 1; // converges as x -> neg infinity
-
-        if (!power.isAZero() && power.isBZero()) {
-            if (base == 1) {
-                return new ComplexNum(1, 0);
-            } else if (base == -1) {
-                return new ComplexNum();
-            }
-
-            // TODO: what is 0^infty?
-
-            if (power.getA().isNegative()) {
-                // Power is Real Negative Infinity, so x -> neg infinity
-                if (posConverge) {
-                    if (base < 0) {
-                        // negative base
-                        return new ComplexNum(); // alternates
-                    }
-                    Value real = Value.infinity(false, 2);
-                    return new ComplexNum(real, 0);
-                }
-                return new ComplexNum(0, 0);
-            } else {
-                // Power is Real Positive Infinity, so x -> pos infinity
-                if (posConverge) {
-                    return new ComplexNum(0, 0);
-                }
-
-                if (base < 0) {
-                    // neg base
-                    return new ComplexNum(); // alternates
-                }
-                Value real = Value.infinity(false, 2);
-                return new ComplexNum(real, 0);
-            }
-
-        } else if (power.isAZero() && !power.isBZero()) {
-            // "imaginary" infinity
-            return new ComplexNum();
-
-        } else {
+    public static final Complex powWithInf(double base, Complex power) {
+        if (!power.isAZero() && !power.isBZero()) {
             // "complex" infinity
-
-            // negative base = DNE always, b = infinity then DNE
-            if (base < 0 || power.getB().isInfinity()) {
-                return new ComplexNum();
-            }
-
-            if (power.getA().isNegative()) {
-                // negative power
-                return ComplexNum.zero();
+            if (base < 0) {
+                // negative base -> converges
+                return NumberUtils.DNE();
+            } else if (power.getA().isNegative()) {
+                // negative power, positive base
+                return new Complex(0, 0);
             }
 
             double cTheta = power.getB().getValue() * Math.log(base);
-            double cosVal = Math.cos(cTheta);
-            Value a, b;
-            if (!NumberUtils.precisionCheck(cosVal, 0)) {
-                a = Value.infinity(cosVal < 0, 1);
-            } else {
-                a = new Value(0);
-            }
-
-            double sinVal = Math.sin(cTheta);
-            if (!NumberUtils.precisionCheck(sinVal, 0)) {
-                b = Value.infinity(sinVal < 0, 1);
-            } else {
-                b = new Value(0);
-            }
-            return new ComplexNum(a, b);
+            return NumberUtils.Complex.uncountableCis(BNum.infinity(false, 1), cTheta);
         }
+
+        return new Complex(new BNum(base).power(power.getA()), 0);
     }
-    // #endregion
+
 }

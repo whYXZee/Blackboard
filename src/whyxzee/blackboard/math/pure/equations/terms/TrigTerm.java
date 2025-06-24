@@ -2,7 +2,10 @@ package whyxzee.blackboard.math.pure.equations.terms;
 
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.numbers.Complex;
+import whyxzee.blackboard.math.utils.pure.NumberUtils;
+import whyxzee.blackboard.math.utils.pure.TrigUtils;
+import whyxzee.blackboard.math.utils.pure.TrigUtils.TrigType;
 
 /**
  * A package for trigonometric terms. This package is contructed as an
@@ -10,24 +13,7 @@ import whyxzee.blackboard.math.pure.numbers.ComplexNum;
  */
 public class TrigTerm extends PowerTerm {
     /* Variables */
-    private TrigType type;
-    private String trigString;
-
-    public enum TrigType {
-        SINE,
-        COSINE,
-        TANGENT,
-        COSECANT,
-        SECANT,
-        COTANGENT,
-
-        ARC_SINE,
-        ARC_COSINE,
-        ARC_TANGENT,
-        ARC_COSECANT,
-        ARC_SECANT,
-        ARC_COTANGENT,
-    }
+    private TrigType trigType;
 
     /**
      * {@code a*trig(var)}
@@ -38,8 +24,7 @@ public class TrigTerm extends PowerTerm {
      */
     public TrigTerm(Object coef, Variable<?> var, TrigType type) {
         super(coef, var);
-        this.type = type;
-        this.trigString = getTrigString(type);
+        this.trigType = type;
     }
 
     /**
@@ -52,102 +37,53 @@ public class TrigTerm extends PowerTerm {
      */
     public TrigTerm(Object coef, Variable<?> var, Object power, TrigType type) {
         super(coef, var, power);
-        this.type = type;
-        this.trigString = getTrigString(type);
+        this.trigType = type;
     }
 
     // #region String/Display
-    private static final String getTrigString(TrigType type) {
-        switch (type) {
-            case SINE:
-                return "sin";
-            case COSINE:
-                return "cos";
-            case TANGENT:
-                return "tan";
-            case COSECANT:
-                return "csc";
-            case SECANT:
-                return "sec";
-            case COTANGENT:
-                return "cot";
-
-            case ARC_SINE:
-                return "arcsin";
-            case ARC_COSINE:
-                return "arccos";
-            case ARC_TANGENT:
-                return "arctan";
-            case ARC_COSECANT:
-                return "arccsc";
-            case ARC_SECANT:
-                return "arcsec";
-            case ARC_COTANGENT:
-                return "arccot";
-            default:
-                return "what";
-        }
-    }
-
     @Override
     public final String termString() {
-        return trigString + "(" + getVar() + ")";
+        return trigType.getTrigString() + "(" + getVar() + ")";
     }
     // #endregion
 
     // #region Copying/Cloning
     @Override
     public final TrigTerm clone() {
-        return new TrigTerm(getCoef().clone(), getVar().clone(), getPower().clone(), type);
+        return new TrigTerm(getCoef().clone(), getVar().clone(), getPower().clone(), trigType);
     }
     // #endregion
 
     // #region Trig Get/Set
     public final TrigType getTrigType() {
-        return type;
+        return trigType;
     }
     // #endregion
 
     // #region Coefficient
     @Override
     public final TrigTerm negate() {
-        return new TrigTerm(getCoef().negate(), getVar().clone(), getPower().clone(), type);
+        return new TrigTerm(getCoef().negate(), getVar().clone(), getPower().clone(), trigType);
     }
 
     // #endregion
 
     // #region Solve
     @Override
-    public final PowerTerm solve(String variable, ComplexNum value) {
+    public final PowerTerm solve(String variable, PowerTerm value) {
         if (getVar().equals(Variable.noVar)) {
             return new PowerTerm(getCoef());
         } else {
             PowerTerm solved = getVar().solve(variable, value);
             if (solved.isConstant()) {
-                ComplexNum inVal = solved.getCoef();
-                switch (type) {
-                    case SINE:
-
-                    case COSINE:
-                    case TANGENT:
-                    case COSECANT:
-                    case SECANT:
-                    case COTANGENT:
-
-                    case ARC_SINE:
-                    case ARC_COSINE:
-                    case ARC_TANGENT:
-                    case ARC_COSECANT:
-                    case ARC_SECANT:
-                    case ARC_COTANGENT:
-                    default:
-                }
-                ComplexNum val = ComplexNum.multiply(getCoef(), ComplexNum.pow(inVal, getPower()));
+                Complex inVal = solved.getCoef();
+                inVal = trigType.performOp(inVal);
+                Complex val = NumberUtils.multiply(getCoef(), NumberUtils.pow(inVal, getPower()));
                 return new PowerTerm(val);
+            } else {
+                return new TrigTerm(getCoef(), new Variable<PowerTerm>(solved), trigType);
             }
         }
-
-        throw new UnsupportedOperationException("lolz");
     }
 
     // #endregion
@@ -165,7 +101,7 @@ public class TrigTerm extends PowerTerm {
         }
 
         /* Similar Trig Type */
-        return type == ((TrigTerm) addend).getTrigType();
+        return trigType == ((TrigTerm) addend).getTrigType();
     }
     // #endregion
 
@@ -182,43 +118,11 @@ public class TrigTerm extends PowerTerm {
         }
 
         /* Similar Trig Type */
-        return type == ((TrigTerm) factor).getTrigType();
+        return trigType == ((TrigTerm) factor).getTrigType();
     }
     // #endregion
 
     // #region Inverse
-    private TrigType inverseType() {
-        switch (type) {
-            case SINE:
-                return TrigType.ARC_SINE;
-            case COSINE:
-                return TrigType.ARC_COSINE;
-            case TANGENT:
-                return TrigType.ARC_TANGENT;
-            case COSECANT:
-                return TrigType.ARC_COSECANT;
-            case SECANT:
-                return TrigType.ARC_SECANT;
-            case COTANGENT:
-                return TrigType.ARC_COTANGENT;
-
-            case ARC_SINE:
-                return TrigType.SINE;
-            case ARC_COSINE:
-                return TrigType.COSINE;
-            case ARC_TANGENT:
-                return TrigType.TANGENT;
-            case ARC_COSECANT:
-                return TrigType.COSECANT;
-            case ARC_SECANT:
-                return TrigType.SECANT;
-            case ARC_COTANGENT:
-                return TrigType.COTANGENT;
-            default:
-                return TrigType.SINE;
-        }
-    }
-
     @Override
     public final TrigTerm applyInverseTo(Object arg) {
         if (arg instanceof PowerTerm) {
@@ -228,16 +132,16 @@ public class TrigTerm extends PowerTerm {
                 setPower(1);
             }
 
-            return new TrigTerm(1, new Variable<PowerTerm>(powTerm), inverseType());
+            return new TrigTerm(1, new Variable<PowerTerm>(powTerm), TrigUtils.inverseOf(trigType));
 
         } else if (arg instanceof MathEQ) {
-
+            PowerTerm powTerm = ((MathEQ) arg).toTerm();
             if (!getPower().equals(1)) {
-
+                powTerm = applyInversePowTo(arg);
+                setPower(1);
             }
 
-            return new TrigTerm(1, new Variable<MathEQ>((MathEQ) arg), inverseType());
-
+            return new TrigTerm(1, new Variable<PowerTerm>(powTerm), TrigUtils.inverseOf(trigType));
         }
         return null;
     }
@@ -247,7 +151,7 @@ public class TrigTerm extends PowerTerm {
     @Override
     public final boolean equalsCriteria(PowerTerm arg) {
         TrigTerm other = (TrigTerm) arg;
-        return type == other.getTrigType();
+        return trigType == other.getTrigType();
     }
     // #endregion
 }

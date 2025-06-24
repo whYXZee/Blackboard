@@ -4,23 +4,22 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 
 public class AdditiveEQ extends MathEQ {
     // #region Constructors
     public AdditiveEQ(ArrayList<PowerTerm> terms) {
         super(EQType.ADDITIVE, terms);
-        getTerms().add();
+        getTerms().addition();
     }
 
     public AdditiveEQ(PowerTerm... terms) {
         super(EQType.ADDITIVE, terms);
-        getTerms().add();
+        getTerms().addition();
     }
 
     public AdditiveEQ(TermArray terms) {
         super(EQType.ADDITIVE, terms);
-        getTerms().add();
+        getTerms().addition();
     }
     // #endregion
 
@@ -35,12 +34,12 @@ public class AdditiveEQ extends MathEQ {
         String output = termArr.get(0).toString();
         for (int i = 1; i < termArr.size(); i++) {
             PowerTerm iTerm = termArr.get(i);
-            // if (iTerm.isNegative()) {
-            // // TODO: isNegative
-            // output += " - " + iTerm.toString();
-            // } else {
-            // }
-            output += " + " + iTerm.toString();
+            if (iTerm.needsNegString()) {
+                // TODO: isNegative
+                output += " - " + iTerm.negativeString();
+            } else {
+                output += " + " + iTerm.toString();
+            }
         }
         return output;
     }
@@ -49,8 +48,7 @@ public class AdditiveEQ extends MathEQ {
     // #region Copying/Cloning
     @Override
     public MathEQ clone() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'clone'");
+        return new AdditiveEQ(getTerms().clone());
     }
     // #endregion
 
@@ -67,46 +65,14 @@ public class AdditiveEQ extends MathEQ {
 
     // #region Solve
     @Override
-    public final PowerTerm solve(String variable, ComplexNum value) {
+    public final PowerTerm solve(String variable, PowerTerm value) {
         TermArray solvedTerms = new TermArray();
         for (PowerTerm i : getTerms().getArr()) {
             solvedTerms.add(i.solve(variable, value));
         }
 
-        solvedTerms.add();
+        solvedTerms.addition(); // not needed cuz it already adds when creating the eq
         return new AdditiveEQ(solvedTerms).toTerm();
     }
     // #endregion
-
-    // @Override
-    // @Deprecated
-    // public final DefinedList solutions() {
-    // // TODO: complex/imaginary numbers?
-
-    // ArrayList<ComplexNum> numbers = new ArrayList<ComplexNum>();
-    // ArrayList<PowerTerm> plusMin = getTermArr(TermType.PLUS_MINUS);
-
-    // if (plusMin.size() != 0) {
-    // for (Term i : plusMin) {
-    // ComplexNum iNum = new ComplexNum(0, 0);
-    // for (Term j : getTerms()) {
-    // if (!j.equals(i)) {
-    // iNum = ComplexNum.add(iNum, j.getCoef());
-    // }
-    // }
-    // ComplexNum numOne = ComplexNum.add(iNum, i.getCoef());
-    // ComplexNum numTwo = ComplexNum.add(iNum, i.getCoef().negate());
-    // numbers.add(numOne);
-    // numbers.add(numTwo);
-    // }
-    // } else {
-    // ComplexNum output = new ComplexNum(0, 0);
-    // for (Term i : getTerms()) {
-    // output = ComplexNum.add(output, i.getCoef());
-    // }
-    // numbers.add(output);
-    // }
-
-    // return new DefinedList("", numbers);
-    // }
 }

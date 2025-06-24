@@ -1,6 +1,6 @@
 package whyxzee.blackboard.math.applied.settheory;
 
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.numbers.Complex;
 
 /**
  * An abstract package for generic sets in Set Theory.
@@ -46,7 +46,7 @@ public abstract class SetAbstract {
     // #endregion
 
     // #region Get / Set
-    public abstract ComplexNum cardinality();
+    public abstract Complex cardinality();
 
     public final String getSetName() {
         return setName;
@@ -66,7 +66,7 @@ public abstract class SetAbstract {
     // #endregion
 
     // #region Overlap Bools
-    public abstract boolean inSet(ComplexNum number);
+    public abstract boolean inSet(Complex number);
 
     /**
      * Checks if the two sets have no terms in common.

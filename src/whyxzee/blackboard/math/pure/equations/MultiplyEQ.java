@@ -4,23 +4,23 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.numbers.Complex;
 
 public class MultiplyEQ extends MathEQ {
     // #region Constructors
     public MultiplyEQ(ArrayList<PowerTerm> terms) {
         super(EQType.MULTIPLY, terms);
-        getTerms().multiply();
+        getTerms().multiplication();
     }
 
     public MultiplyEQ(PowerTerm... terms) {
         super(EQType.MULTIPLY, terms);
-        getTerms().multiply();
+        getTerms().multiplication();
     }
 
     public MultiplyEQ(TermArray terms) {
         super(EQType.MULTIPLY, terms);
-        getTerms().multiply();
+        getTerms().multiplication();
     }
     // #endregion
 
@@ -59,20 +59,20 @@ public class MultiplyEQ extends MathEQ {
         }
 
         // brings out the coefficient
-        ComplexNum coef = terms.getConstantAndRemove().getCoef();
+        Complex coef = terms.getConstantAndRemove().getCoef();
         return new PowerTerm(coef, new Variable<MathEQ>(new MultiplyEQ(terms)));
     }
     // #endregion
 
     // #region Solve
     @Override
-    public final PowerTerm solve(String variable, ComplexNum value) {
+    public final PowerTerm solve(String variable, PowerTerm value) {
         TermArray solvedTerms = new TermArray();
         for (PowerTerm i : getTerms().getArr()) {
             solvedTerms.add(i.solve(variable, value));
         }
 
-        solvedTerms.multiply();
+        solvedTerms.multiplication();
         return new MultiplyEQ(solvedTerms).toTerm();
     }
     // #endregion

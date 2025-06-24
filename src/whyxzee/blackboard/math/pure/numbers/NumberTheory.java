@@ -3,6 +3,7 @@ package whyxzee.blackboard.math.pure.numbers;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.math.utils.pure.NumberUtils;
 
 public class NumberTheory {
     // #region Elementary Num Theory
@@ -103,7 +104,7 @@ public class NumberTheory {
      */
     public static class Factors {
         /* Variables */
-        private static ArrayList<ComplexNum> numbers = new ArrayList<ComplexNum>();
+        private static ArrayList<Complex> numbers = new ArrayList<Complex>();
 
         /**
          * Gets all of the factors of the <b>number</b>.
@@ -111,8 +112,8 @@ public class NumberTheory {
          * @param number Must be an integer.
          * @return
          */
-        public static final ArrayList<ComplexNum> factorsOf(ComplexNum number) {
-            numbers = new ArrayList<ComplexNum>();
+        public static final ArrayList<Complex> factorsOf(Complex number) {
+            numbers = new ArrayList<Complex>();
             if (!number.isReal()) {
                 throw new UnsupportedOperationException("A number can only have factors iff it is an integer");
             }
@@ -120,7 +121,7 @@ public class NumberTheory {
             double a = number.getA().abs();
             for (int i = 1; i <= a / 2; i++) {
                 if ((a / i) % 1 == 0) {
-                    add(new ComplexNum(a / i, 0), new ComplexNum(i, 0));
+                    add(new Complex(a / i, 0), new Complex(i, 0));
                 }
             }
 
@@ -130,8 +131,8 @@ public class NumberTheory {
         ///
         /// Get & Set Methods
         ///
-        private static final void add(ComplexNum... factors) {
-            for (ComplexNum i : factors) {
+        private static final void add(Complex... factors) {
+            for (Complex i : factors) {
                 if (!numbers.contains(i)) {
                     numbers.add(i);
                 }
@@ -145,7 +146,7 @@ public class NumberTheory {
         return value % 1 == 0;
     }
 
-    public static final boolean isInteger(ComplexNum value) {
+    public static final boolean isInteger(Complex value) {
         return value.mod(1).equals(0);
     }
 

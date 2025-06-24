@@ -3,7 +3,7 @@ package whyxzee.blackboard.math.applied.settheory;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.numbers.Complex;
 
 /**
  * A package that is a set of numbers.
@@ -14,9 +14,9 @@ import whyxzee.blackboard.math.pure.numbers.ComplexNum;
  */
 public class DefinedList extends SetAbstract {
     /* Variables */
-    private ArrayList<ComplexNum> numbers;
+    private ArrayList<Complex> numbers;
 
-    public DefinedList(String setName, ArrayList<ComplexNum> numbers) {
+    public DefinedList(String setName, ArrayList<Complex> numbers) {
         super(setName, SetType.DEFINED_LIST);
         this.numbers = numbers;
     }
@@ -62,13 +62,13 @@ public class DefinedList extends SetAbstract {
 
     // #region Get/Set
     @Override
-    public final ComplexNum cardinality() {
-        return new ComplexNum(numbers.size(), 0);
+    public final Complex cardinality() {
+        return new Complex(numbers.size(), 0);
     }
     // #endregion
 
     // #region DefinedList Get/Set
-    public final ArrayList<ComplexNum> getNumbers() {
+    public final ArrayList<Complex> getNumbers() {
         return numbers;
     }
     // #endregion
@@ -147,8 +147,8 @@ public class DefinedList extends SetAbstract {
 
     // #region Overlap Bools
     @Override
-    public boolean inSet(ComplexNum number) {
-        for (ComplexNum i : numbers) {
+    public boolean inSet(Complex number) {
+        for (Complex i : numbers) {
             if (i.equals(number)) {
                 return true;
             }

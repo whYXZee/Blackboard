@@ -2,7 +2,8 @@ package whyxzee.blackboard.math.pure.equations.terms;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.numbers.Complex;
+import whyxzee.blackboard.math.utils.pure.NumberUtils;
 
 /**
  * A package for plus or minus terms. This package is constructed as an
@@ -27,7 +28,7 @@ public class PlusMinusTerm extends PowerTerm {
      * 
      * @param coef
      */
-    public PlusMinusTerm(ComplexNum coef) {
+    public PlusMinusTerm(Complex coef) {
         super(coef, Variable.noVar);
     }
 
@@ -45,7 +46,7 @@ public class PlusMinusTerm extends PowerTerm {
      * 
      * @param coef
      */
-    public PlusMinusTerm(ComplexNum coef, Variable<?> var) {
+    public PlusMinusTerm(Complex coef, Variable<?> var) {
         super(coef, var);
     }
     // #endregion
@@ -65,6 +66,11 @@ public class PlusMinusTerm extends PowerTerm {
 
         return output;
     }
+
+    @Override
+    public final String negativeString() {
+        return toString();
+    }
     // #endregion
 
     // #region Copying / Cloning
@@ -81,20 +87,22 @@ public class PlusMinusTerm extends PowerTerm {
     }
     // #endregion
 
+    // #region Solve
     @Override
-    public final PowerTerm solve(String variable, ComplexNum value) {
+    public final PowerTerm solve(String variable, PowerTerm value) {
         if (getVar().equals(Variable.noVar)) {
             return this;
         } else {
             PowerTerm solved = getVar().solve(variable, value);
             if (solved.isConstant()) {
-                ComplexNum val = ComplexNum.multiply(getCoef(), ComplexNum.pow(solved.getCoef(), getPower()));
+                Complex val = NumberUtils.multiply(getCoef(), NumberUtils.pow(solved.getCoef(), getPower()));
                 return new PlusMinusTerm(val);
             } else {
                 return new PlusMinusTerm(getCoef(), new Variable<PowerTerm>(solved));
             }
         }
     }
+    // #endregion
 
     // #region Addition
     @Override
@@ -118,7 +126,7 @@ public class PlusMinusTerm extends PowerTerm {
 
     @Override
     public final void multiply(PowerTerm factor) {
-        setCoef(ComplexNum.multiply(getCoef(), factor.getCoef()));
+        setCoef(NumberUtils.multiply(getCoef(), factor.getCoef()));
 
         // TODO: multiply variables
     }

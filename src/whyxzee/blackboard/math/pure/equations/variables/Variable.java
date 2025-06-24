@@ -2,7 +2,6 @@ package whyxzee.blackboard.math.pure.equations.variables;
 
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
 
 /**
  * The package for a polynomial variable. The variable class is modeled after
@@ -86,11 +85,18 @@ public class Variable<T> {
     // #endregion
 
     // #region Solve
-    public final PowerTerm solve(String variable, ComplexNum value) {
+    /**
+     * Plugs in a term for the variable.
+     * 
+     * @param variable the variable to replace.
+     * @param value
+     * @return
+     */
+    public final PowerTerm solve(String variable, PowerTerm value) {
         if (inner instanceof String) {
             // String var = (String) inner; // dunno if this is needed
             if (inner.equals(variable)) {
-                return new PowerTerm(value);
+                return value;
             } else {
                 return new PowerTerm(1, this);
             }

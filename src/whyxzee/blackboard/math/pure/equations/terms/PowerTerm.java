@@ -4,8 +4,10 @@ import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.TermArray;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
-import whyxzee.blackboard.math.pure.numbers.ComplexNum;
+import whyxzee.blackboard.math.pure.numbers.Complex;
+import whyxzee.blackboard.math.utils.pure.NumberUtils;
 import whyxzee.blackboard.utils.Loggy;
+import whyxzee.blackboard.utils.ObjectUtils;
 
 /**
  * A package for power terms. This package is constructed as an {@code a*(x)^n}
@@ -22,9 +24,9 @@ import whyxzee.blackboard.utils.Loggy;
 public class PowerTerm {
     /* Variables */
     private static final Loggy loggy = new Loggy(Constants.Loggy.POW_TERM_LOGGY);
-    private ComplexNum coef;
+    private Complex coef;
     private Variable<?> var;
-    private ComplexNum power;
+    private Complex power;
 
     // #region Constructors
     /**
@@ -33,9 +35,10 @@ public class PowerTerm {
      * @param coef
      */
     public PowerTerm(Object coef) {
-        this.coef = ComplexNum.fromObj(coef);
+        this.coef = ObjectUtils.objToComplex(coef);
         this.var = Variable.noVar;
-        this.power = new ComplexNum(0, 0);
+        this.power = new Complex(0, 0);
+        simplify();
     }
 
     /**
@@ -46,9 +49,10 @@ public class PowerTerm {
      * @param var
      */
     public PowerTerm(Object coef, Variable<?> var) {
-        this.coef = ComplexNum.fromObj(coef);
+        this.coef = ObjectUtils.objToComplex(coef);
         this.var = var;
-        this.power = new ComplexNum(1, 0);
+        this.power = new Complex(1, 0);
+        simplify();
     }
 
     /**
@@ -60,9 +64,10 @@ public class PowerTerm {
      * @param power a double, int Value, or ComplexNum
      */
     public PowerTerm(Object coef, Variable<?> var, Object power) {
-        this.coef = ComplexNum.fromObj(coef);
+        this.coef = ObjectUtils.objToComplex(coef);
         this.var = var;
-        this.power = ComplexNum.fromObj(power);
+        this.power = ObjectUtils.objToComplex(power);
+        simplify();
     }
     // #endregion
 
@@ -81,6 +86,8 @@ public class PowerTerm {
             return "";
         } else if (hasVar && coef.equals(-1)) {
             return "-";
+        } else if (hasVar && coef.equals(new Complex(0, -1))) {
+            return "-i";
         } else {
             return coef.toString();
         }
@@ -115,6 +122,75 @@ public class PowerTerm {
         return output;
     }
 
+    /**
+     * Checks if the negative version of the Term String is needed.
+     * 
+     * @return
+     */
+    public final boolean needsNegString() {
+        return coef.isANegative() && coef.isBZero() // real negative
+                || coef.isBNegative() && coef.isAZero(); // imaginary negative
+
+    }
+
+    /**
+     * Outputs a String value dependent on the coef and var. However, the terms are
+     * negated for negativeString().
+     * 
+     * @return
+     */
+    public final String negCoefString() {
+        boolean hasVar = !var.equals(Variable.noVar);
+
+        if (coef.isComplex()) {
+            return "(" + coef + ")";
+        } else if (hasVar && coef.equals(1) || coef.equals(-1)) {
+            return "";
+        } else if (hasVar && coef.equals(new Complex(0, -1))) {
+            return "i";
+        } else {
+            return coef.negate().toString();
+        }
+    }
+
+    /**
+     * Returns a String that is used for MathEQ.
+     * 
+     * @return
+     */
+    public String negativeString() {
+        String output = "";
+
+        /* Coefficient */
+        if (coef.isZero()) {
+            return "0";
+        } else if (coef.isDNE() || power.isDNE()) {
+            return "DNE";
+        }
+        output += negCoefString();
+
+        /* Variable + power */
+        if (power.equals(1)) {
+            output += termString();
+        } else if (!power.isZero()) {
+            // power not one nor zero
+
+            if (var.isUSub() || this.getClass() != PowerTerm.class) {
+                output += "(" + termString() + ")";
+            } else {
+                output += termString();
+            }
+            output += "^(" + power + ")";
+        }
+
+        return output;
+    }
+
+    /**
+     * The String for term-specific content.
+     * 
+     * @return
+     */
     public String termString() {
         return var.toString();
     }
@@ -152,6 +228,9 @@ public class PowerTerm {
      * Distributes the variable amongst the real and imaginary components of the
      * coefficient.
      * 
+     * <p>
+     * <em>Performs a deep copy of the term</em>.
+     * 
      * @return
      */
     public final TermArray distributeTerm() {
@@ -160,34 +239,34 @@ public class PowerTerm {
         }
 
         PowerTerm real = clone();
-        real.setCoef(new ComplexNum(coef.getA(), 0));
+        real.setCoef(new Complex(coef.getA(), 0));
         PowerTerm imaginary = clone();
-        imaginary.setCoef(new ComplexNum(0, coef.getB()));
+        imaginary.setCoef(new Complex(0, coef.getB()));
         return new TermArray(real, imaginary);
     }
 
-    public final ComplexNum getCoef() {
+    public final Complex getCoef() {
         return coef;
     }
 
     public void setCoef(Object coef) {
-        this.coef = ComplexNum.fromObj(coef);
+        this.coef = ObjectUtils.objToComplex(coef);
     }
 
-    public final void addToCoef(ComplexNum addend) {
-        coef = ComplexNum.add(coef, addend);
+    public final void addToCoef(Complex addend) {
+        coef = NumberUtils.add(coef, addend);
     }
 
     public final void multiplyCoefBy(Object factor) {
-        coef = ComplexNum.multiply(coef, ComplexNum.fromObj(factor));
+        coef = NumberUtils.multiply(coef, ObjectUtils.objToComplex(factor));
     }
 
     public final void divideCoefBy(Object dividend) {
-        coef = ComplexNum.divide(coef, ComplexNum.fromObj(dividend));
+        coef = NumberUtils.divide(coef, ObjectUtils.objToComplex(dividend));
     }
 
     public final void coefToPow(Object power) {
-        coef = ComplexNum.pow(coef, ComplexNum.fromObj(power));
+        coef = NumberUtils.pow(coef, ObjectUtils.objToComplex(power));
     }
 
     /**
@@ -199,7 +278,7 @@ public class PowerTerm {
     // #endregion
 
     // #region Power
-    public final ComplexNum getPower() {
+    public final Complex getPower() {
         return power;
     }
 
@@ -209,11 +288,11 @@ public class PowerTerm {
      * @param power a double, int, Value, or ComplexNum
      */
     public void setPower(Object power) {
-        this.power = ComplexNum.fromObj(power);
+        this.power = ObjectUtils.objToComplex(power);
     }
 
     public final void addToPower(Object addend) {
-        power = ComplexNum.add(power, ComplexNum.fromObj(addend));
+        power = NumberUtils.add(power, ObjectUtils.objToComplex(addend));
     }
 
     /**
@@ -225,13 +304,13 @@ public class PowerTerm {
      * @param arg a double, int, Value, or ComplexNum
      */
     public void toPower(Object arg) {
-        ComplexNum power = ComplexNum.fromObj(arg);
+        Complex power = ObjectUtils.objToComplex(arg);
 
         /* Power */
-        this.power = ComplexNum.multiply(this.power, power);
+        this.power = NumberUtils.multiply(this.power, power);
 
         /* Coefficient */
-        coef = ComplexNum.pow(getCoef(), power);
+        coef = NumberUtils.pow(getCoef(), power);
     }
 
     /**
@@ -246,7 +325,7 @@ public class PowerTerm {
      */
     public final PowerTerm applyInversePowTo(Object arg) {
         loggy.logHeader("Applying inverse power of " + power + " onto " + arg);
-        ComplexNum inversePow = ComplexNum.divide(new ComplexNum(1, 0), power);
+        Complex inversePow = NumberUtils.divide(new Complex(1, 0), power);
         loggy.logVal("inverse power", inversePow);
 
         if (arg instanceof Variable) {
@@ -259,29 +338,24 @@ public class PowerTerm {
 
         } else if (arg instanceof PowerTerm) {
             PowerTerm other = (PowerTerm) arg;
-            /* Coefficient */
-            other.coefToPow(inversePow);
-
-            inversePow = ComplexNum.multiply(inversePow, other.getPower()); // the inverse power is applied here
-            other.setPower(inversePow);
-
-            ComplexNum coef = other.getCoef().clone();
-            other.setCoef(1);
+            other.toPower(inversePow);
 
             if (power.mod(2).equals(0)) {
+                Complex coef = other.getCoef().clone();
+                other.setCoef(1);
                 return new PlusMinusTerm(coef, new Variable<PowerTerm>(other));
             } else {
                 return other;
             }
 
         } else if (arg instanceof MathEQ) {
-            PowerTerm powTerm = new PowerTerm(1, new Variable<MathEQ>((MathEQ) arg), inversePow);
+            PowerTerm powTerm = ((MathEQ) arg).toTerm();
+            powTerm.toPower(inversePow);
             if (power.mod(2).equals(0)) {
                 return new PlusMinusTerm(1, new Variable<PowerTerm>(powTerm));
             } else {
                 return powTerm;
             }
-
         }
         return null;
     }
@@ -297,13 +371,13 @@ public class PowerTerm {
     // #endregion
 
     // #region Solve
-    public PowerTerm solve(String variable, ComplexNum value) {
+    public PowerTerm solve(String variable, PowerTerm value) {
         if (var.equals(Variable.noVar)) {
             return this;
         } else {
             PowerTerm solved = var.solve(variable, value);
             if (solved.isConstant()) {
-                ComplexNum val = ComplexNum.multiply(coef, ComplexNum.pow(solved.getCoef(), power));
+                Complex val = NumberUtils.multiply(coef, NumberUtils.pow(solved.getCoef(), power));
                 return new PowerTerm(val);
             } else {
                 solved.toPower(power);
@@ -371,13 +445,19 @@ public class PowerTerm {
 
     // #region Inverse
     /**
-     * Applies the inverse of <b>this</b> onto <b>arg</b>.
+     * Applies the inverse of <b>this</b> onto <b>this</b> and <b>arg</b>.
      * 
      * @param arg
      * @return
      */
     public PowerTerm applyInverseTo(Object arg) {
-        return applyInversePowTo(arg);
+        /* Applying inverse to arg */
+        PowerTerm output = applyInversePowTo(arg);
+
+        /* Applying inverse to this */
+        setPower(1);
+
+        return output;
     }
     // #endregion
 
@@ -391,16 +471,16 @@ public class PowerTerm {
         }
 
         PowerTerm innerTerm = (PowerTerm) var.getInner();
-        ComplexNum newPow = ComplexNum.multiply(this.power, innerTerm.getPower());
-        ComplexNum newCoef = ComplexNum.multiply(this.coef, ComplexNum.pow(innerTerm.getCoef(), this.power));
+        Complex newPow = NumberUtils.multiply(this.power, innerTerm.getPower());
+        Complex newCoef = NumberUtils.multiply(this.coef, NumberUtils.pow(innerTerm.getCoef(), this.power));
 
         /* Setting new values */
         setCoef(newCoef);
         setPower(newPow);
 
         /* Variable Simplification */
-        // TODO: clean up variables in case its MathEQ with one term.
-        setVar(new Variable<>(var.getInner())); // infers the generic from var.getInner()
+        // TODO: clean up variables in case its MathEQ with one term. is this needed?
+        setVar(innerTerm.getVar()); // infers the generic from var.getInner()
     }
     // #endregion
 
@@ -421,9 +501,7 @@ public class PowerTerm {
      */
     @Override
     public final boolean equals(Object arg) {
-        if (arg == null) {
-            return false;
-        } else if (arg instanceof PowerTerm) {
+        if (arg instanceof PowerTerm) {
             PowerTerm other = (PowerTerm) arg;
             if (getClass() != other.getClass()) {
                 return false;
@@ -433,9 +511,8 @@ public class PowerTerm {
                     && power.equals(other.getPower())
                     && coef.equals(other.getCoef())
                     && equalsCriteria(other);
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**

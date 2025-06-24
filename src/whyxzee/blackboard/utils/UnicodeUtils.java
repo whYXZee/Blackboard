@@ -2,6 +2,9 @@ package whyxzee.blackboard.utils;
 
 import whyxzee.blackboard.Constants;
 
+/**
+ * 
+ */
 public class UnicodeUtils {
     // #region General
     /**
