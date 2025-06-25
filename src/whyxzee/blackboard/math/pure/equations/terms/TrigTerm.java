@@ -3,7 +3,6 @@ package whyxzee.blackboard.math.pure.equations.terms;
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
 import whyxzee.blackboard.math.pure.numbers.Complex;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
 import whyxzee.blackboard.math.utils.pure.TrigUtils;
 import whyxzee.blackboard.math.utils.pure.TrigUtils.TrigType;
 
@@ -15,6 +14,7 @@ public class TrigTerm extends PowerTerm {
     /* Variables */
     private TrigType trigType;
 
+    // #region Constructors
     /**
      * {@code a*trig(var)}
      * 
@@ -39,11 +39,12 @@ public class TrigTerm extends PowerTerm {
         super(coef, var, power);
         this.trigType = type;
     }
+    // #endregion
 
     // #region String/Display
     @Override
     public final String termString() {
-        return trigType.getTrigString() + "(" + getVar() + ")";
+        return trigType.getString() + "(" + getVar() + ")";
     }
     // #endregion
 
@@ -77,8 +78,8 @@ public class TrigTerm extends PowerTerm {
             PowerTerm solved = getVar().solve(variable, value);
             if (solved.isConstant()) {
                 Complex inVal = solved.getCoef();
-                inVal = trigType.performOp(inVal);
-                Complex val = NumberUtils.multiply(getCoef(), NumberUtils.pow(inVal, getPower()));
+                Complex trigVal = trigType.performOp(inVal);
+                Complex val = Complex.statMultiply(getCoef(), trigVal.power(getPower()));
                 return new PowerTerm(val);
             } else {
                 return new TrigTerm(getCoef(), new Variable<PowerTerm>(solved), trigType);
@@ -123,6 +124,7 @@ public class TrigTerm extends PowerTerm {
     // #endregion
 
     // #region Inverse
+
     @Override
     public final TrigTerm applyInverseTo(Object arg) {
         if (arg instanceof PowerTerm) {
@@ -132,16 +134,11 @@ public class TrigTerm extends PowerTerm {
                 setPower(1);
             }
 
-            return new TrigTerm(1, new Variable<PowerTerm>(powTerm), TrigUtils.inverseOf(trigType));
+            TrigTerm output = new TrigTerm(1, new Variable<PowerTerm>(powTerm), TrigUtils.inverseOf(trigType));
+            return output;
 
         } else if (arg instanceof MathEQ) {
-            PowerTerm powTerm = ((MathEQ) arg).toTerm();
-            if (!getPower().equals(1)) {
-                powTerm = applyInversePowTo(arg);
-                setPower(1);
-            }
-
-            return new TrigTerm(1, new Variable<PowerTerm>(powTerm), TrigUtils.inverseOf(trigType));
+            return applyInverseTo(((MathEQ) arg).toTerm());
         }
         return null;
     }

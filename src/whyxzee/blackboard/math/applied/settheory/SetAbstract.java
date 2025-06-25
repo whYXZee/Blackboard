@@ -1,5 +1,6 @@
 package whyxzee.blackboard.math.applied.settheory;
 
+import whyxzee.blackboard.math.pure.numbers.BNum;
 import whyxzee.blackboard.math.pure.numbers.Complex;
 
 /**
@@ -46,7 +47,7 @@ public abstract class SetAbstract {
     // #endregion
 
     // #region Get / Set
-    public abstract Complex cardinality();
+    public abstract BNum cardinality();
 
     public final String getSetName() {
         return setName;

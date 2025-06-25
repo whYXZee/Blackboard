@@ -15,8 +15,8 @@ import whyxzee.blackboard.math.pure.equations.*;
 import whyxzee.blackboard.math.pure.equations.terms.*;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
 import whyxzee.blackboard.math.pure.numbers.*;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
 import whyxzee.blackboard.math.utils.pure.TrigUtils;
+import whyxzee.blackboard.math.utils.pure.TrigUtils.TrigType;
 import whyxzee.blackboard.utils.*;
 
 @SuppressWarnings("unused")
@@ -32,11 +32,13 @@ public class Debugger {
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
                 /* Math Debugging */
-                Complex z1 = Complex.cmplx(-5, 0);
-                Complex z2 = Complex.cmplx(Math.sqrt(2), -3);
+                TermArray lTerms = new TermArray(
+                                new TrigTerm(2, xVar, 2, TrigType.SIN),
+                                new PowerTerm(15));
+                TermArray rTerms = new TermArray(new PowerTerm(1));
 
                 display.appendScript(
-                                z1.power(z2),
+                                AlgebraSolver.performOp("x", lTerms, rTerms),
                                 0.05);
 
                 /* Displaying */

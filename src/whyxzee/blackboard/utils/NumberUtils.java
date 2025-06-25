@@ -1,15 +1,63 @@
-package whyxzee.blackboard.math.utils.pure;
-
-import java.util.ArrayList;
+package whyxzee.blackboard.utils;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.numbers.Complex;
 import whyxzee.blackboard.math.pure.numbers.NumberTheory;
+import whyxzee.blackboard.math.pure.numbers.Complex.ComplexType;
 import whyxzee.blackboard.math.pure.numbers.BNum;
-import whyxzee.blackboard.utils.ObjectUtils;
-import whyxzee.blackboard.utils.UnicodeUtils;
 
 public final class NumberUtils {
+    // #region Conversion Methods
+    /**
+     * Turns a number primitive into a double value. The following are valid
+     * primitive data types:
+     * <ul>
+     * <li>byte
+     * <li>short
+     * <li>int
+     * <li>long
+     * <li>float
+     * <li>double
+     * 
+     * @param arg
+     * @return
+     */
+    public static final double doubleFromObj(Object arg) {
+        if (arg instanceof Double) {
+            return (double) arg;
+        } else if (arg instanceof Integer) {
+            return (int) arg;
+        } else if (arg instanceof Byte) {
+            return (byte) arg;
+        } else if (arg instanceof Short) {
+            return (short) arg;
+        } else if (arg instanceof Long) {
+            return (long) arg;
+        } else if (arg instanceof Float) {
+            return (float) arg;
+        }
+        return 0;
+    }
+
+    /**
+     * Checks if the <b>arg</b> is one of the following types:
+     * <ul>
+     * <li>byte
+     * <li>short
+     * <li>int
+     * <li>long
+     * <li>float
+     * <li>double
+     * 
+     * @param arg
+     * @return
+     */
+    public static final boolean isNumPrimitive(Object arg) {
+        return arg instanceof Double || arg instanceof Integer
+                || arg instanceof Byte || arg instanceof Short || arg instanceof Long || arg instanceof Float;
+    }
+    // #endregion
+
     /**
      * Counts the number of significant figures in <b>value</b>.
      * 
@@ -265,17 +313,17 @@ public final class NumberUtils {
             // "complex" infinity
             if (base < 0) {
                 // negative base -> converges
-                return NumberUtils.DNE();
+                return Complex.DNE();
             } else if (power.getA().isNegative()) {
                 // negative power, positive base
-                return new Complex(0, 0);
+                return Complex.cmplx(0, 0);
             }
 
             double cTheta = power.getB().getValue() * Math.log(base);
-            return NumberUtils.Complex.uncountableCis(BNum.infinity(false, 1), cTheta);
+            return Complex.fromPolar(ComplexType.COMPLEX, BNum.infinity(false, 1), cTheta);
         }
 
-        return new Complex(new BNum(base).power(power.getA()), 0);
+        return Complex.cmplx(new BNum(base).power(power.getA()), 0);
     }
 
 }

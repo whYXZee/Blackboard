@@ -84,6 +84,12 @@ public class Variable<T> {
     }
     // #endregion
 
+    // #region Conversions
+    public final PowerTerm toTerm() {
+        return new PowerTerm(1, this, 1);
+    }
+    // #endregion
+
     // #region Solve
     /**
      * Plugs in a term for the variable.

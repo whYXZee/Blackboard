@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.math.pure.equations.TermArray;
 import whyxzee.blackboard.math.pure.numbers.Complex;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
 
 public class TermUtils {
     // #region Plus Minus Addition
@@ -18,7 +17,7 @@ public class TermUtils {
      * <li>TODO: uncountables
      * </ul>
      * 
-     * TODO: write this logic in the journal
+     * TODO: write this logic in the journals
      * 
      * 
      * @param pmTerms
@@ -42,7 +41,7 @@ public class TermUtils {
 
         ArrayList<Complex> nextI = addConstantPlusMinusTerms(clonedPmTerms);
         for (Complex i : nextI) {
-            Complex iNum = NumberUtils.add(coef, i);
+            Complex iNum = Complex.statAdd(coef, i);
             if (out.contains(coef))
                 out.add(iNum);
             out.add(iNum.negate());

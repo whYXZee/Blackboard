@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.numbers.Complex;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
 
 /**
  * <p>
@@ -551,11 +550,11 @@ public class TermArray implements Collection<PowerTerm> {
         }
 
         TermArray mTerms = new TermArray();
-        Complex coef = new Complex(1, 0);
+        Complex coef = Complex.cmplx(1, 0);
         for (PowerTerm i : arr) {
             /* Coefficient */
             if (!i.getCoef().equals(1)) {
-                coef = NumberUtils.multiply(coef, i.getCoef());
+                coef.multiply(i.getCoef());
                 i.setCoef(1);
             }
 

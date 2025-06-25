@@ -11,7 +11,6 @@ import whyxzee.blackboard.math.pure.equations.terms.PlusMinusTerm;
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.equations.terms.TermUtils;
 import whyxzee.blackboard.math.pure.numbers.Complex;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
 import whyxzee.blackboard.utils.Loggy;
 
 /**
@@ -82,7 +81,9 @@ public class AlgebraSolver {
         TermArray otherTerms = rSide.getTermsExcluding(PlusMinusTerm.class); // all terms except plus-minus
         otherTerms.addition(); // ngl idk if this is needed
 
+        // REDO THIS
         if (!otherTerms.areAllConstants()) {
+            loggy.logHeader("Multivariate eq");
             if (!areSidesSwapped && isMultivariate(rightSide)) {
                 return new SolutionData(var, new AdditiveEQ(rSide).toTerm());
             } else {
@@ -111,7 +112,13 @@ public class AlgebraSolver {
         rSide = lTerm.applyInverseTo(new AdditiveEQ(rSide)).toTermArray();
 
         /* Left Side */
-        setUSubToLSide(lTerm);
+        if (lTerm.getClass() != PowerTerm.class) {
+            // TODO: it would be nice if the lTerm could turn into a PowerTerm without this,
+            // although it is hard to convert from child to parent
+            lSide = new PowerTerm(1, lTerm.getVar()).toTermArray();
+        } else {
+            setUSubToLSide(lTerm);
+        }
         logSides();
     }
     // #endregion
@@ -259,6 +266,7 @@ public class AlgebraSolver {
         loggy.logVal("otherTerms", otherTerms);
         loggy.logVal("pmTerms", pmTerms);
         otherTerms.addition();
+        // TODO: how to solve when plus minus is u-subbed?
         Complex constant = otherTerms.getConstant().getCoef();
 
         if (pmTerms.isEmpty()) {
@@ -272,7 +280,7 @@ public class AlgebraSolver {
         /* Plus Minus specifics */
         ArrayList<Complex> allCombos = TermUtils.addConstantPlusMinusTerms(pmTerms);
         for (Complex i : allCombos) {
-            i.copy(NumberUtils.add(i, constant));
+            i.add(constant);
         }
 
         return allCombos;

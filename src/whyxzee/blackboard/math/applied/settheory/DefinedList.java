@@ -3,6 +3,7 @@ package whyxzee.blackboard.math.applied.settheory;
 import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
+import whyxzee.blackboard.math.pure.numbers.BNum;
 import whyxzee.blackboard.math.pure.numbers.Complex;
 
 /**
@@ -62,8 +63,8 @@ public class DefinedList extends SetAbstract {
 
     // #region Get/Set
     @Override
-    public final Complex cardinality() {
-        return new Complex(numbers.size(), 0);
+    public final BNum cardinality() {
+        return new BNum(numbers.size());
     }
     // #endregion
 

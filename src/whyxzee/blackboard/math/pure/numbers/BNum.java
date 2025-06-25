@@ -1,9 +1,8 @@
 package whyxzee.blackboard.math.pure.numbers;
 
 import whyxzee.blackboard.Constants;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
 import whyxzee.blackboard.math.utils.pure.TrigUtils;
-import whyxzee.blackboard.utils.ObjectUtils;
+import whyxzee.blackboard.utils.NumberUtils;
 import whyxzee.blackboard.utils.UnicodeUtils;
 
 public class BNum implements Comparable<BNum> {
@@ -120,8 +119,8 @@ public class BNum implements Comparable<BNum> {
     public static final BNum fromObj(Object arg) {
         if (arg instanceof BNum) {
             return (BNum) arg;
-        } else if (ObjectUtils.isNumPrimitive(arg)) {
-            return new BNum(ObjectUtils.doubleFromObj(arg));
+        } else if (NumberUtils.isNumPrimitive(arg)) {
+            return new BNum(NumberUtils.doubleFromObj(arg));
         }
         return BNum.DNE;
     }
@@ -203,13 +202,11 @@ public class BNum implements Comparable<BNum> {
      * <em>Calling add() will change the data of <b>this</b>, but not the data of
      * <b>other</b></em>.
      * 
-     * @param addends
+     * @param args
      * @return A Value of all of the added terms.
      */
-    public final BNum add(BNum... addends) {
-        if (addends == null) {
-            return this;
-        }
+    public final BNum add(Object... args) {
+        BNum[] addends = BNum.fromObjArr(args);
 
         for (BNum i : addends) {
             /* DNE */
@@ -237,7 +234,7 @@ public class BNum implements Comparable<BNum> {
 
     /**
      * Performs
-     * {@link whyxzee.blackboard.math.pure.numbers.BNum#add(BNum...)} without
+     * {@link whyxzee.blackboard.math.pure.numbers.BNum#add(Object...)} without
      * the use of an object.
      * 
      * <p>
@@ -248,7 +245,7 @@ public class BNum implements Comparable<BNum> {
      * @param addends
      * @return
      */
-    public static final BNum statAdd(BNum addendA, BNum... addends) {
+    public static final BNum statAdd(BNum addendA, Object... addends) {
         return addendA.clone().add(addends);
     }
     // #endregion
@@ -328,7 +325,7 @@ public class BNum implements Comparable<BNum> {
 
     // #region Divide
     /**
-     * Divides <b>this</b> by a dividend. The following are implemented:
+     * Divides <b>this</b> by n divisors. The following are implemented:
      * <ul>
      * <li>DNE
      * <li>Infinite division: treated as limits
@@ -338,13 +335,13 @@ public class BNum implements Comparable<BNum> {
      * <em>Calling divide() will change the data of <b>this</b>, but not the data of
      * <b>dividend</b></em>.
      * 
-     * @param dividends
+     * @param args
      * @return
      */
     public final BNum divide(Object... args) {
-        BNum[] dividends = BNum.fromObjArr(args);
+        BNum[] divisors = BNum.fromObjArr(args);
 
-        for (BNum i : dividends) {
+        for (BNum i : divisors) {
             /* DNE */
             if (this.isDNE() || i.isDNE()) {
                 this.copyDNE();
@@ -390,12 +387,12 @@ public class BNum implements Comparable<BNum> {
      * <em>Calling statDivide() does not change the data of any of the
      * factors</em>.
      * 
-     * @param factorA
-     * @param factors
+     * @param dividend
+     * @param divisors
      * @return
      */
-    public static final BNum statDivide(Object divisor, Object... dividends) {
-        return BNum.fromObj(divisor).clone().divide(dividends);
+    public static final BNum statDivide(Object dividend, Object... divisors) {
+        return BNum.fromObj(dividend).clone().divide(divisors);
     }
     // #endregion
 
@@ -1179,6 +1176,143 @@ public class BNum implements Comparable<BNum> {
         }
         return BNum.DNE;
     }
+    // #endregion
+
+    // #region Combinatorics
+    /**
+     * Returns a new BNum that is the factorial of <b>this</b>.
+     * 
+     * <p>
+     * <em>Calling factorial() does not change the data of <b>this</b></em>.
+     * 
+     * @return
+     */
+    public final BNum factorial() {
+        if (this.isInfinity()) {
+            return BNum.infinity(false, 3);
+        }
+
+        if (this.isInteger()) {
+            int intVal = (int) value;
+            int outVal = 1;
+            for (int i = intVal; i > 0; i--) {
+                outVal *= i;
+            }
+            return new BNum(outVal);
+        }
+
+        /* Gamma Function territory */
+        return BNum.DNE;
+    }
+
+    /**
+     * A permutation is the number of ways <b>r</b> objects can be sorted into
+     * <b>n</b> slots. The order does number, so 123 is not the same as 132.
+     * 
+     * <p>
+     * <em>Calling permutation() does not change the data of either of the
+     * args</em>.
+     * 
+     * @param argN real and positive integer: should be a Value or a number
+     *             primitive
+     * @param argR real and positive integer: should be a Value or a number
+     *             primitive
+     * @return a real value
+     */
+    public static final BNum permutation(Object argN, Object argR) {
+        BNum n = BNum.fromObj(argN);
+        BNum r = BNum.fromObj(argR);
+
+        if (!n.isInteger() || !r.isInteger()) {
+            throw new ArithmeticException("Either value " + n + " and/or value " + r + " are not integers.");
+        } else if (r.compareTo(n) > 0) {
+            throw new ArithmeticException("Value " + r + " is greater than the value " + n + ".");
+        } else if (r.compareTo(n) == 0) {
+            return r.factorial();
+        }
+
+        BNum output = new BNum(1);
+        int nVal = (int) n.getValue();
+        int rVal = (int) r.getValue();
+        for (int i = nVal; i > (nVal - rVal); i--) {
+            output.multiply(i);
+        }
+        return output;
+    }
+
+    /**
+     * A combination is the amount of ways <b>r</b> objects can be picked out of
+     * <b>n</b> objects. The order does not matter, so 123 is the same as 132.
+     * 
+     * <p>
+     * <em>Calling combination() does not change the data of either of the
+     * args</em>.
+     * 
+     * @param argN real and positive integer: should be a Value or a number
+     *             primitive
+     * @param argR real and positive integer: should be a Value or a number
+     *             primitive
+     * @return a real value
+     */
+    public static final BNum combination(Object argN, Object argR) {
+        BNum n = BNum.fromObj(argN);
+        BNum r = BNum.fromObj(argR);
+
+        if (!n.isInteger() || !r.isInteger()) {
+            throw new ArithmeticException("Either value " + n + " and/or value " + r + " are not integers.");
+        } else if (r.compareTo(n) > 0) {
+            throw new ArithmeticException("Value " + r + " is greater than the value " + n + ".");
+        } else if (r.compareTo(n) == 0) {
+            return new BNum(1);
+        }
+
+        return permutation(argN, argR).divide(r.factorial());
+    }
+    // #endregion
+
+    // #region Number Theory
+    /**
+     * Finds which two numbers makes the ratio.
+     * 
+     * <p>
+     * <em>Calling findRatio() does not change the data of <b>this</b></em>.
+     * 
+     * @param sigFigs the multiplier of precision, where the fraction has a
+     *                10^(-2 * <b>sigFigs</b>) tolerance due to how double can
+     *                sometimes be imprecise.
+     * @return
+     */
+    public final int[] findRatio(int sigFigs) {
+        int integer = 0;
+        if (value < 0) {
+            integer = -1;
+        }
+        if (Math.abs(value) > 1) {
+            integer += (int) Math.abs(value);
+        }
+
+        double valToFind = Math.abs(value - (int) value);
+        double epsilon = Math.pow(10, -2 * sigFigs);
+        for (int i = 2; i < Constants.Number.MAX_PRIME_NUMBER + 1; i++) {
+            for (int j = 1; j < i; j++) {
+                if (NumberUtils.withinEpsilon((double) j / i, valToFind, epsilon)) {
+                    int[] output = new int[2];
+                    output[0] = (integer * i) + j;
+                    output[1] = i;
+                    return output;
+                }
+            }
+        }
+
+        /* Turning into fraction was unsuccessful */
+        int[] out = { 1, 1 };
+        return out;
+    }
+
+    public final int[] findRatio() {
+        return this.findRatio(Constants.Number.SIG_FIGS);
+    }
+    // #endregion
 
     /**
      * Returns a new BNum that is the hyperbolic arc-cotangent of <b>this</b> as
@@ -1217,15 +1351,27 @@ public class BNum implements Comparable<BNum> {
     }
 
     public final boolean isInteger() {
-        return NumberTheory.isInteger(value);
+        return value % 1 == 0;
     }
 
     public final boolean isRational(int sigFigs) {
-        return NumberTheory.isRational(sigFigs);
+        /* Variables */
+        double valToFind = Math.abs(value - (int) value);
+        double epsilon = Math.pow(10, -2 * sigFigs);
+
+        for (int i = 2; i < Constants.Number.MAX_PRIME_NUMBER + 1; i++) {
+            for (int j = 1; j < i; j++) {
+                if (NumberUtils.withinEpsilon((double) j / i, valToFind, epsilon)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public final boolean isRational() {
-        return NumberTheory.isRational(Constants.Number.SIG_FIGS);
+        return this.isRational(Constants.Number.SIG_FIGS);
     }
 
     /**
@@ -1239,10 +1385,10 @@ public class BNum implements Comparable<BNum> {
 
     /**
      * 
-     * @return <em>true</em> if the order is greater than
+     * @return {@code true} if the order is greater than
      *         {@link whyxzee.blackboard.Constants.Number#VALUE_ORDER} and it is not
      *         DNE.
-     *         <li><em>false</em> if otherwise
+     *         <li>{@code false} if otherwise
      */
     public final boolean isInfinity() {
         // not a value && not DNE
@@ -1261,10 +1407,6 @@ public class BNum implements Comparable<BNum> {
     // #region Comparison Bools
     @Override
     public final boolean equals(Object arg) {
-        if (arg == null) {
-            return false;
-        }
-
         if (arg instanceof BNum) {
             BNum other = (BNum) arg;
 
@@ -1276,8 +1418,8 @@ public class BNum implements Comparable<BNum> {
             }
             return NumberUtils.precisionCheck(value, other.getValue());
 
-        } else if (ObjectUtils.isNumPrimitive(arg)) { // doubt that this is needed
-            return NumberUtils.precisionCheck(value, ObjectUtils.doubleFromObj(arg));
+        } else if (NumberUtils.isNumPrimitive(arg)) { // doubt that this is needed
+            return NumberUtils.precisionCheck(value, NumberUtils.doubleFromObj(arg));
         }
         return false;
     }

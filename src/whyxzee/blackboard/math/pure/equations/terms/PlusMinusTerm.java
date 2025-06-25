@@ -3,7 +3,6 @@ package whyxzee.blackboard.math.pure.equations.terms;
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
 import whyxzee.blackboard.math.pure.numbers.Complex;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
 
 /**
  * A package for plus or minus terms. This package is constructed as an
@@ -95,7 +94,7 @@ public class PlusMinusTerm extends PowerTerm {
         } else {
             PowerTerm solved = getVar().solve(variable, value);
             if (solved.isConstant()) {
-                Complex val = NumberUtils.multiply(getCoef(), NumberUtils.pow(solved.getCoef(), getPower()));
+                Complex val = Complex.statMultiply(getCoef(), Complex.statPower(solved.getCoef(), getPower()));
                 return new PlusMinusTerm(val);
             } else {
                 return new PlusMinusTerm(getCoef(), new Variable<PowerTerm>(solved));
@@ -126,7 +125,7 @@ public class PlusMinusTerm extends PowerTerm {
 
     @Override
     public final void multiply(PowerTerm factor) {
-        setCoef(NumberUtils.multiply(getCoef(), factor.getCoef()));
+        getCoef().multiply(factor.getCoef());
 
         // TODO: multiply variables
     }

@@ -67,7 +67,7 @@ public class AdditiveEQ extends MathEQ {
     @Override
     public final PowerTerm solve(String variable, PowerTerm value) {
         TermArray solvedTerms = new TermArray();
-        for (PowerTerm i : getTerms().getArr()) {
+        for (PowerTerm i : getTerms()) {
             solvedTerms.add(i.solve(variable, value));
         }
 

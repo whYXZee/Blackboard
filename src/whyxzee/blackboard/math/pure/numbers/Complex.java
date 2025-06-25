@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
-import whyxzee.blackboard.utils.ObjectUtils;
+import whyxzee.blackboard.utils.NumberUtils;
 
+/**
+ * All Complex objects default to COMPLEX unless specificied.
+ */
 public class Complex {
     /* Variables */
     private BNum a;
@@ -222,22 +224,24 @@ public class Complex {
     }
 
     public final Complex clone() {
-        return null;
+        return new Complex(a.clone(), b.clone(), type);
     }
     // #endregion
 
     // #region Conversion Methods
-    public static final Complex fromObj(ComplexType defaultType, Object arg) {
+    public static final Complex fromObj(Object arg) {
         if (arg instanceof Complex) {
             return (Complex) arg;
+        } else if (NumberUtils.isNumPrimitive(arg)) {
+            return Complex.cmplx(NumberUtils.doubleFromObj(arg), 0);
         }
         return Complex.DNE();
     }
 
-    public static final Complex[] fromObjArr(ComplexType defaultType, Object[] args) {
+    public static final Complex[] fromObjArr(Object[] args) {
         Complex[] out = new Complex[args.length];
         for (int i = 0; i < args.length; i++) {
-            out[i] = Complex.fromObj(defaultType, args[i]);
+            out[i] = Complex.fromObj(args[i]);
         }
         return out;
     }
@@ -384,7 +388,7 @@ public class Complex {
      * @return
      */
     public final Complex add(Object... args) {
-        Complex[] addends = Complex.fromObjArr(type, args);
+        Complex[] addends = Complex.fromObjArr(args);
 
         switch (type) {
             case COMPLEX:
@@ -398,6 +402,23 @@ public class Complex {
             default:
                 return null;
         }
+    }
+
+    /**
+     * Performs
+     * {@link whyxzee.blackboard.math.pure.numbers.Complex#add(Object...)}
+     * without the use of an object.
+     * 
+     * <p>
+     * <em>Calling statAdd() does not change the data of any of the
+     * addends</em>.
+     * 
+     * @param addendA
+     * @param addends
+     * @return
+     */
+    public static final Complex statAdd(Complex addendA, Object... addends) {
+        return addendA.clone().add(addends);
     }
     // #endregion
 
@@ -420,7 +441,7 @@ public class Complex {
      * @return
      */
     public final Complex multiply(Object... args) {
-        Complex[] factors = Complex.fromObjArr(type, args);
+        Complex[] factors = Complex.fromObjArr(args);
 
         switch (type) {
             case COMPLEX:
@@ -446,11 +467,28 @@ public class Complex {
         b.multiply(value);
         calcPolar();
     }
+
+    /**
+     * Performs
+     * {@link whyxzee.blackboard.math.pure.numbers.Complex#multiply(Object...)}
+     * without the use of an object.
+     * 
+     * <p>
+     * <em>Calling statMultiply() does not change the data of any of the
+     * factors</em>.
+     * 
+     * @param factorA
+     * @param factors
+     * @return
+     */
+    public static final Complex statMultiply(Complex factorA, Object... args) {
+        return factorA.clone().multiply(args);
+    }
     // #endregion
 
     // #region Division
     /**
-     * Divides the divisor by <b>n</b> dividends. A deep copy is not required to
+     * Divides the dividend by <b>n</b> divisors. A deep copy is not required to
      * call this method. The following are implemented:
      * 
      * <ul>
@@ -460,18 +498,18 @@ public class Complex {
      * <li>TODO: what if args not the same type?
      * </ul>
      * 
-     * <em>Calling divide() does not change the data of the arguments, as deep
-     * copies are created</em>.
+     * <em>Calling divide() changes the data of <b>this</b>, but not the data of the
+     * arguments</em>.
      * 
-     * @param dividends
+     * @param args
      * @return
      */
     public final Complex divide(Object... args) {
-        Complex[] dividends = Complex.fromObjArr(type, args);
+        Complex[] divisors = Complex.fromObjArr(args);
 
         switch (type) {
             case COMPLEX:
-                for (Complex i : dividends) {
+                for (Complex i : divisors) {
                     /* Variables */
                     double cTheta = this.getTheta() - i.getTheta(); // combinedTheta
                     BNum cModulus = BNum.statDivide(modulus, BNum.fromObj(i.getModulus())); // combinedModulus
@@ -481,6 +519,23 @@ public class Complex {
             default:
                 return Complex.DNE();
         }
+    }
+
+    /**
+     * Performs
+     * {@link whyxzee.blackboard.math.pure.numbers.Complex#divide(Object...)}
+     * without the use of an object.
+     * 
+     * <p>
+     * <em>Calling statPower() does not change the data of the base nor the
+     * power</em>.
+     * 
+     * @param dividend
+     * @param divisors
+     * @return
+     */
+    public static final Complex statDivide(Object dividend, Object... divisors) {
+        return Complex.fromObj(dividend).clone().divide(divisors);
     }
     // #endregion
 
@@ -512,7 +567,9 @@ public class Complex {
      * @param power
      * @return
      */
-    public final Complex power(Complex power) {
+    public final Complex power(Object arg) {
+        Complex power = Complex.fromObj(arg);
+
         switch (type) {
             case COMPLEX:
                 this.copy(CmplxUtils.pow(this, power));
@@ -521,11 +578,42 @@ public class Complex {
                 return Complex.DNE();
         }
     }
+
+    /**
+     * Performs
+     * {@link whyxzee.blackboard.math.pure.numbers.Complex#power(Object)}
+     * without the use of an object.
+     * 
+     * <p>
+     * <em>Calling statPower() does not change the data of the base nor the
+     * power</em>.
+     * 
+     * @param base
+     * @param power
+     * @return
+     */
+    public static final Complex statPower(Object base, Object power) {
+        return Complex.fromObj(base).clone().power(power);
+    }
+    // #endregion
+
+    // #region Modulo
+    public final Complex mod(Object arg) {
+        Complex modulo = Complex.fromObj(arg);
+
+        if (this.isReal() && modulo.isReal()) {
+            return new Complex(a.mod(modulo.getA().getValue()), 0, type);
+        }
+        return Complex.DNE();
+    }
     // #endregion
 
     // #region Circle Trig
     /**
-     * Returns the sine value of <b>value</b>.
+     * Returns a Complex that is the sine of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling sin() does not change the data of <b>value</b></em>.
      * 
      * @param value
      * @return
@@ -539,31 +627,300 @@ public class Complex {
         BNum re, im;
         switch (value.getType()) {
             case COMPLEX:
-                if (value.isReal()) {
-                    // real argument
-                    re = a.sin();
-                    im = new BNum(0);
-                } else if (value.isImaginary()) {
-                    // imaginary argument
-                    re = new BNum(0);
-                    im = b.sinh();
-                } else {
-                    // complex argument
-                    if (value.isANegative()) {
-                        return Complex.sin(Complex.cmplx(a.negate(), b.negate())).negate();
-                    }
-                    re = BNum.statMultiply(a.sin(), b.cosh());
-                    im = BNum.statMultiply(a.cos(), b.sinh());
-                    if (b.isNegative()) {
-                        im = im.negate();
-                    }
-                }
+                re = BNum.statMultiply(a.sin(), b.cosh());
+                im = BNum.statMultiply(a.cos(), b.sinh());
                 break;
             default:
                 re = im = BNum.DNE;
                 break;
         }
         return new Complex(re, im, value.getType());
+    }
+
+    /**
+     * Returns a Complex that is the cosine of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling cos() does not change the data of <b>value</b></em>.
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex cos(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        BNum a = value.getA(), b = value.getB();
+        BNum re, im;
+        switch (value.getType()) {
+            case COMPLEX:
+                // complex argument
+                re = BNum.statMultiply(a.cos(), b.cosh());
+                im = BNum.statMultiply(a.sin(), b.sinh()).negate();
+                break;
+            default:
+                re = im = BNum.DNE;
+                break;
+        }
+        return new Complex(re, im, value.getType());
+    }
+
+    /**
+     * Returns a Complex that is the tangent of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling tan() does not change the data of <b>value</b></em>.
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex tan(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        BNum a = value.getA(), b = value.getB();
+        BNum re, im;
+        switch (value.getType()) {
+            case COMPLEX:
+                // complex argument
+                if (value.isANegative()) {
+                    return Complex.tan(Complex.cmplx(a.negate(), b.negate())).negate();
+                }
+
+                Complex num, denom;
+                if (b.isNegative()) {
+                    num = Complex.cmplx(a.tan(), b.tanh());
+                    denom = Complex.cmplx(1, BNum.statMultiply(a.tan(), b.tanh()).negate());
+                } else {
+                    num = Complex.cmplx(a.tan(), b.tanh().negate());
+                    denom = Complex.cmplx(1, BNum.statMultiply(a.tan(), b.tanh()));
+                }
+                return num.divide(denom);
+            default:
+                re = im = BNum.DNE;
+                break;
+        }
+        return new Complex(re, im, value.getType());
+    }
+
+    /**
+     * Returns a Complex that is the cosecant of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling csc() does not change the data of <b>value</b></em>.
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex csc(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        // sin already performs appropiate ops based on the ComplexType
+        Complex sinVal = Complex.sin(value);
+        if (sinVal.isZero()) {
+            return Complex.DNE();
+        }
+        return sinVal.reciprocal(); // reciprocal is always based on the type
+    }
+
+    /**
+     * Returns a Complex that is the secant of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling sec() does not change the data of <b>value</b></em>.
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex sec(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        Complex cosVal = Complex.cos(value);
+        if (cosVal.isZero()) {
+            return Complex.DNE();
+        }
+        return cosVal.reciprocal();
+    }
+
+    /**
+     * Returns a Complex that is the cotangent of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling cot() does not change the data of <b>value</b></em>.
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex cot(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        Complex tanVal = Complex.tan(value);
+        if (tanVal.isZero()) {
+            return Complex.DNE();
+        }
+        return tanVal.reciprocal();
+    }
+    // #endregion
+
+    // #region Inv Circle Trig
+    /**
+     * Returns a Complex that is the arc-sine of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling asin() does not change the data of <b>value</b></em>.
+     * 
+     * TODO: this method is not a thing sob
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex asin(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        switch (value.getType()) {
+            case COMPLEX:
+                if (value.isReal()) {
+                    BNum asin = value.getA().asin();
+                    if (value.isANegative()) {
+                        asin.add(Math.PI);
+                    }
+                    return Complex.cmplx(asin, 0);
+                } else if (value.isImaginary()) {
+
+                } else {
+                    // cry >:D
+                }
+            default:
+                return Complex.DNE();
+        }
+    }
+
+    /**
+     * Returns a Complex that is the arc-sine of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling asin() does not change the data of <b>value</b></em>.
+     * 
+     * TODO: this method is not a thing sob
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex acos(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        switch (value.getType()) {
+            case COMPLEX:
+                if (value.isReal()) {
+                    BNum acos = value.getA().acos();
+                    if (value.isBNegative()) {
+                        acos.add(Math.PI);
+                    }
+                    return Complex.cmplx(acos, 0);
+                }
+            default:
+                return Complex.DNE();
+        }
+    }
+
+    /**
+     * Returns a Complex that is the arc-sine of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling asin() does not change the data of <b>value</b></em>.
+     * 
+     * TODO: this method is not a thing sob
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex atan(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        switch (value.getType()) {
+            default:
+                return Complex.DNE();
+        }
+    }
+
+    /**
+     * Returns a Complex that is the arc-sine of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling asin() does not change the data of <b>value</b></em>.
+     * 
+     * TODO: this method is not a thing sob
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex acsc(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        switch (value.getType()) {
+            default:
+                return Complex.DNE();
+        }
+    }
+
+    /**
+     * Returns a Complex that is the arc-sine of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling asin() does not change the data of <b>value</b></em>.
+     * 
+     * TODO: this method is not a thing sob
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex asec(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        switch (value.getType()) {
+            default:
+                return Complex.DNE();
+        }
+    }
+
+    /**
+     * Returns a Complex that is the arc-sine of <b>value</b>.
+     * 
+     * <p>
+     * <em>Calling asin() does not change the data of <b>value</b></em>.
+     * 
+     * TODO: this method is not a thing sob
+     * 
+     * @param value
+     * @return
+     */
+    public static final Complex acot(Complex value) {
+        if (value.isDNE()) {
+            return Complex.DNE();
+        }
+
+        switch (value.getType()) {
+            default:
+                return Complex.DNE();
+        }
     }
     // #endregion
 
@@ -574,8 +931,8 @@ public class Complex {
      */
     @Override
     public boolean equals(Object arg) {
-        if (ObjectUtils.isNumPrimitive(arg)) {
-            double other = ObjectUtils.doubleFromObj(arg);
+        if (NumberUtils.isNumPrimitive(arg)) {
+            double other = NumberUtils.doubleFromObj(arg);
             return NumberUtils.precisionCheck(a.getValue(), other) && b.isZero();
         }
 
@@ -583,7 +940,7 @@ public class Complex {
             return false;
         }
 
-        Complex other = Complex.fromObj(type, arg);
+        Complex other = Complex.fromObj(arg);
         return NumberUtils.precisionCheck(a.getValue(), other.getA().getValue())
                 && NumberUtils.precisionCheck(b.getValue(), other.getB().getValue());
     }

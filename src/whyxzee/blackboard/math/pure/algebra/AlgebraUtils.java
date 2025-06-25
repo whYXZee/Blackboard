@@ -5,16 +5,15 @@ import java.util.ArrayList;
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.applied.settheory.DefinedList;
 import whyxzee.blackboard.math.pure.algebra.solver.*;
-import whyxzee.blackboard.math.pure.combinatorics.CombinatoricsUtils;
 import whyxzee.blackboard.math.pure.equations.AdditiveEQ;
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.MultiplyEQ;
 import whyxzee.blackboard.math.pure.equations.TermArray;
 import whyxzee.blackboard.math.pure.equations.terms.PowerTerm;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
+import whyxzee.blackboard.math.pure.numbers.BNum;
 import whyxzee.blackboard.math.pure.numbers.Complex;
 import whyxzee.blackboard.math.pure.numbers.NumberTheory;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
 import whyxzee.blackboard.utils.Loggy;
 
 /**
@@ -80,7 +79,7 @@ public class AlgebraUtils {
             oneFactor.toPower(power - k);
             PowerTerm twoFactor = two.clone();
             twoFactor.toPower(k);
-            Complex coef = CombinatoricsUtils.combination(power, power - k);
+            Complex coef = Complex.cmplx(BNum.combination(power, power - k), 0);
 
             MultiplyEQ innerEQ = new MultiplyEQ(new PowerTerm(coef), oneFactor, twoFactor);
             outputArr.add(innerEQ.toTerm());
@@ -136,17 +135,17 @@ public class AlgebraUtils {
         if (a.equals(1)) {
             square = b.clone();
             square.multiplyScalar(0.5);
-            rightAddend = NumberUtils.pow(square.clone(), 2);
+            rightAddend = Complex.statPower(square.clone(), 2);
 
         } else {
-            Complex bPrime = NumberUtils.divide(b.clone(), a);
+            Complex bPrime = b.clone().divide(a);
             square = bPrime.clone();
             square.multiplyScalar(0.5);
-            rightAddend = NumberUtils.pow(square.clone(), 2);
-            rightAddend = NumberUtils.multiply(rightAddend, a);
+            rightAddend = square.clone().power(2);
+            rightAddend.multiply(a);
         }
 
-        Complex rSide = NumberUtils.add(rightSide, c.negate(), rightAddend);
+        Complex rSide = Complex.statAdd(rightSide, c.negate(), rightAddend);
         term.setCoef(1);
         AdditiveEQ binom = new AdditiveEQ(term, new PowerTerm(square));
 
@@ -178,7 +177,7 @@ public class AlgebraUtils {
             } catch (java.lang.ClassCastException e) {
                 // could be something like a trig term, but the first one would be a power with
                 // u-sub
-                powOfTerms[i] = new Complex(1, 0);
+                powOfTerms[i] = Complex.cmplx(1, 0);
             }
         }
         if (!powOfTerms[2].equals(0)) {
@@ -189,7 +188,7 @@ public class AlgebraUtils {
         // TODO: what if it is 1 + 2x^(-1) + x^(-2)?
 
         // the power of term 1 must be two times the power of the second
-        if (!NumberUtils.divide(powOfTerms[0], powOfTerms[1]).equals(2)) {
+        if (!Complex.statDivide(powOfTerms[0], powOfTerms[1]).equals(2)) {
             return false;
         }
 
@@ -223,7 +222,7 @@ public class AlgebraUtils {
 
             for (Complex denom : qFactors) {
                 for (Complex num : pFactors) {
-                    Complex factor = NumberUtils.divide(num, denom);
+                    Complex factor = Complex.statDivide(num, denom);
                     if (!uniqueRoots.contains(factor)) {
                         uniqueRoots.add(factor);
                     }
@@ -252,7 +251,7 @@ public class AlgebraUtils {
             } catch (java.lang.ClassCastException e) {
                 // could be something like a trig term, but the first one would be a power with
                 // u-sub
-                powOfTerms[i] = new Complex(1, 0);
+                powOfTerms[i] = Complex.cmplx(1, 0);
             }
 
             /* Tracking the number of terms with power of one */
@@ -268,7 +267,7 @@ public class AlgebraUtils {
 
         // all powers must be integers.
         for (Complex i : powOfTerms) {
-            if (!NumberTheory.isInteger(i)) {
+            if (!i.isInteger()) {
                 loggy.log("One of the powers is not an integer.");
                 return false;
             }

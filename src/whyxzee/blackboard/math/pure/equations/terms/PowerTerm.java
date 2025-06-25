@@ -1,13 +1,9 @@
 package whyxzee.blackboard.math.pure.equations.terms;
 
-import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.TermArray;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
 import whyxzee.blackboard.math.pure.numbers.Complex;
-import whyxzee.blackboard.math.utils.pure.NumberUtils;
-import whyxzee.blackboard.utils.Loggy;
-import whyxzee.blackboard.utils.ObjectUtils;
 
 /**
  * A package for power terms. This package is constructed as an {@code a*(x)^n}
@@ -23,7 +19,6 @@ import whyxzee.blackboard.utils.ObjectUtils;
  */
 public class PowerTerm {
     /* Variables */
-    private static final Loggy loggy = new Loggy(Constants.Loggy.POW_TERM_LOGGY);
     private Complex coef;
     private Variable<?> var;
     private Complex power;
@@ -35,9 +30,9 @@ public class PowerTerm {
      * @param coef
      */
     public PowerTerm(Object coef) {
-        this.coef = ObjectUtils.objToComplex(coef);
+        this.coef = Complex.fromObj(coef);
         this.var = Variable.noVar;
-        this.power = new Complex(0, 0);
+        this.power = Complex.cmplx(0, 0);
         simplify();
     }
 
@@ -49,9 +44,9 @@ public class PowerTerm {
      * @param var
      */
     public PowerTerm(Object coef, Variable<?> var) {
-        this.coef = ObjectUtils.objToComplex(coef);
+        this.coef = Complex.fromObj(coef);
         this.var = var;
-        this.power = new Complex(1, 0);
+        this.power = Complex.cmplx(1, 0);
         simplify();
     }
 
@@ -64,9 +59,9 @@ public class PowerTerm {
      * @param power a double, int Value, or ComplexNum
      */
     public PowerTerm(Object coef, Variable<?> var, Object power) {
-        this.coef = ObjectUtils.objToComplex(coef);
+        this.coef = Complex.fromObj(coef);
         this.var = var;
-        this.power = ObjectUtils.objToComplex(power);
+        this.power = Complex.fromObj(power);
         simplify();
     }
     // #endregion
@@ -86,7 +81,7 @@ public class PowerTerm {
             return "";
         } else if (hasVar && coef.equals(-1)) {
             return "-";
-        } else if (hasVar && coef.equals(new Complex(0, -1))) {
+        } else if (hasVar && coef.equals(Complex.cmplx(0, -1))) {
             return "-i";
         } else {
             return coef.toString();
@@ -146,7 +141,7 @@ public class PowerTerm {
             return "(" + coef + ")";
         } else if (hasVar && coef.equals(1) || coef.equals(-1)) {
             return "";
-        } else if (hasVar && coef.equals(new Complex(0, -1))) {
+        } else if (hasVar && coef.equals(Complex.cmplx(0, -1))) {
             return "i";
         } else {
             return coef.negate().toString();
@@ -239,9 +234,9 @@ public class PowerTerm {
         }
 
         PowerTerm real = clone();
-        real.setCoef(new Complex(coef.getA(), 0));
+        real.setCoef(Complex.cmplx(coef.getA(), 0));
         PowerTerm imaginary = clone();
-        imaginary.setCoef(new Complex(0, coef.getB()));
+        imaginary.setCoef(Complex.cmplx(0, coef.getB()));
         return new TermArray(real, imaginary);
     }
 
@@ -250,23 +245,23 @@ public class PowerTerm {
     }
 
     public void setCoef(Object coef) {
-        this.coef = ObjectUtils.objToComplex(coef);
+        this.coef = Complex.fromObj(coef);
     }
 
     public final void addToCoef(Complex addend) {
-        coef = NumberUtils.add(coef, addend);
+        coef.add(addend);
     }
 
     public final void multiplyCoefBy(Object factor) {
-        coef = NumberUtils.multiply(coef, ObjectUtils.objToComplex(factor));
+        coef.multiply(Complex.fromObj(factor));
     }
 
     public final void divideCoefBy(Object dividend) {
-        coef = NumberUtils.divide(coef, ObjectUtils.objToComplex(dividend));
+        coef.divide(Complex.fromObj(dividend));
     }
 
     public final void coefToPow(Object power) {
-        coef = NumberUtils.pow(coef, ObjectUtils.objToComplex(power));
+        coef.power(Complex.fromObj(power));
     }
 
     /**
@@ -288,11 +283,11 @@ public class PowerTerm {
      * @param power a double, int, Value, or ComplexNum
      */
     public void setPower(Object power) {
-        this.power = ObjectUtils.objToComplex(power);
+        this.power = Complex.fromObj(power);
     }
 
     public final void addToPower(Object addend) {
-        power = NumberUtils.add(power, ObjectUtils.objToComplex(addend));
+        power.add(Complex.fromObj(addend));
     }
 
     /**
@@ -304,13 +299,13 @@ public class PowerTerm {
      * @param arg a double, int, Value, or ComplexNum
      */
     public void toPower(Object arg) {
-        Complex power = ObjectUtils.objToComplex(arg);
+        Complex power = Complex.fromObj(arg);
 
         /* Power */
-        this.power = NumberUtils.multiply(this.power, power);
+        this.power.multiply(power);
 
         /* Coefficient */
-        coef = NumberUtils.pow(getCoef(), power);
+        coef.power(power);
     }
 
     /**
@@ -324,9 +319,7 @@ public class PowerTerm {
      * @return
      */
     public final PowerTerm applyInversePowTo(Object arg) {
-        loggy.logHeader("Applying inverse power of " + power + " onto " + arg);
-        Complex inversePow = NumberUtils.divide(new Complex(1, 0), power);
-        loggy.logVal("inverse power", inversePow);
+        Complex inversePow = power.clone().reciprocal();
 
         if (arg instanceof Variable) {
             PowerTerm powTerm = new PowerTerm(1, (Variable<?>) arg, inversePow);
@@ -349,13 +342,7 @@ public class PowerTerm {
             }
 
         } else if (arg instanceof MathEQ) {
-            PowerTerm powTerm = ((MathEQ) arg).toTerm();
-            powTerm.toPower(inversePow);
-            if (power.mod(2).equals(0)) {
-                return new PlusMinusTerm(1, new Variable<PowerTerm>(powTerm));
-            } else {
-                return powTerm;
-            }
+            return this.applyInversePowTo(((MathEQ) arg).toTerm());
         }
         return null;
     }
@@ -377,7 +364,7 @@ public class PowerTerm {
         } else {
             PowerTerm solved = var.solve(variable, value);
             if (solved.isConstant()) {
-                Complex val = NumberUtils.multiply(coef, NumberUtils.pow(solved.getCoef(), power));
+                Complex val = Complex.statMultiply(coef, Complex.statPower(solved.getCoef(), power));
                 return new PowerTerm(val);
             } else {
                 solved.toPower(power);
@@ -410,6 +397,10 @@ public class PowerTerm {
     /**
      * Adds the <b>addend</b> into <b>this</b>.
      * 
+     * <p>
+     * <em>Calling add() will change the data of <b>this</b>, but not the data of
+     * <b>factor</b></em>.
+     * 
      * @param addend
      */
     public void add(PowerTerm addend) {
@@ -434,6 +425,10 @@ public class PowerTerm {
 
     /**
      * Multiplies the <b>factor</b> into <b>this</b>.
+     * 
+     * <p>
+     * <em>Calling multiply() will change the data of <b>this</b>, but not the data
+     * of <b>factor</b></em>.
      * 
      * @param factor
      */
@@ -471,8 +466,8 @@ public class PowerTerm {
         }
 
         PowerTerm innerTerm = (PowerTerm) var.getInner();
-        Complex newPow = NumberUtils.multiply(this.power, innerTerm.getPower());
-        Complex newCoef = NumberUtils.multiply(this.coef, NumberUtils.pow(innerTerm.getCoef(), this.power));
+        Complex newPow = Complex.statMultiply(this.power, innerTerm.getPower());
+        Complex newCoef = Complex.statMultiply(this.coef, Complex.statPower(innerTerm.getCoef(), this.power));
 
         /* Setting new values */
         setCoef(newCoef);
