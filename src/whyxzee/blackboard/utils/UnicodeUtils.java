@@ -6,6 +6,10 @@ import whyxzee.blackboard.Constants;
  * 
  */
 public class UnicodeUtils {
+    // #region Characters
+    public static final String LOWER_PHI = "\u03C6";
+    // #endregion
+
     // #region General
     /**
      * Turns one individual superscript char or subscript char into a number

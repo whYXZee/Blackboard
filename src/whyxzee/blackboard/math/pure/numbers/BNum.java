@@ -58,6 +58,13 @@ public class BNum implements Comparable<BNum> {
     }
     // #endregion
 
+    // #region Value Constants
+    public static final BNum goldenRatio(boolean isNegative) {
+        return new BNum(isNegative ? -(1.0 + Math.sqrt(5)) / 2.0 : (1.0 + Math.sqrt(5)) / 2.0, 0, VALUE_ORDER,
+                UnicodeUtils.LOWER_PHI);
+    }
+    // #endregion
+
     // #region Infinitesimal
     /**
      * A pre-made static constructor for an infinitesimal value.
@@ -75,7 +82,7 @@ public class BNum implements Comparable<BNum> {
     }
     // #endregion
 
-    // #region Aleph
+    // #region Infinities
     /**
      * A pre-made static constructor for an Aleph.
      * 
@@ -87,9 +94,7 @@ public class BNum implements Comparable<BNum> {
         return new BNum(isNegative ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY, NumberUtils.clampByte(size),
                 BNum.ALEPH_ORDER, Constants.Unicode.ALEPH);
     }
-    // #endregion
 
-    // #region Blanket Infinity
     /**
      * A pre-made static constructor for a blanket Infinity.
      * 
@@ -104,14 +109,24 @@ public class BNum implements Comparable<BNum> {
     // #endregion
 
     // #region String/Display
-    @Override
-    public final String toString() {
+    public final String display() {
         if (isInfinity()) {
             return ((isNegative()) ? "-" : "") + string + UnicodeUtils.intToSubscript(size);
         } else if (isInfinitesimal() || isDNE()) {
             return string;
         }
         return NumberUtils.valueToString(value);
+    }
+
+    @Override
+    public final String toString() {
+        if (isInfinity()) {
+            return ((isNegative()) ? "-" : "") + string + UnicodeUtils.intToSubscript(size);
+        } else if (isInfinitesimal() || isDNE() || !string.equals("")) {
+            return string;
+        }
+        return NumberUtils.valueToString(value);
+        // return new BigDecimal(value).toPlainString();
     }
     // #endregion
 
@@ -229,6 +244,10 @@ public class BNum implements Comparable<BNum> {
             // by now, this > addend or this == addend so no need to change
         }
 
+        // make a "constant" like the golden ratio stop being represented by phi
+        if (this.hasValue() && !string.equals("")) {
+            string = "";
+        }
         return this;
     }
 
@@ -289,6 +308,11 @@ public class BNum implements Comparable<BNum> {
                 this.copy(i);
             }
 
+        }
+
+        // make a "constant" like the golden ratio stop being represented by phi
+        if (this.hasValue() && !string.equals("")) {
+            string = "";
         }
         return this;
     }
@@ -375,6 +399,11 @@ public class BNum implements Comparable<BNum> {
             }
             // numerator reaches infinity faster, nothing needs to be done
         }
+
+        // make a "constant" like the golden ratio stop being represented by phi
+        if (this.hasValue() && !string.equals("")) {
+            string = "";
+        }
         return this;
     }
 
@@ -440,6 +469,7 @@ public class BNum implements Comparable<BNum> {
      */
     public final BNum power(Object arg) {
         BNum power = BNum.fromObj(arg);
+        System.out.println("this: " + this.isInfinitesimal());
 
         /* DNE */
         if (power.isDNE() || this.isDNE()) {
@@ -1454,6 +1484,14 @@ public class BNum implements Comparable<BNum> {
             return 1;
         }
         return 0;
+    }
+
+    public static final boolean inClosedRange(Object argLBound, Object argMiddle, Object argUBound) {
+        BNum lBound = BNum.fromObj(argLBound);
+        BNum middle = BNum.fromObj(argMiddle);
+        BNum uBound = BNum.fromObj(argUBound);
+
+        return (lBound.compareTo(middle) <= 0) && (middle.compareTo(uBound) <= 0);
     }
     // #endregion
 }

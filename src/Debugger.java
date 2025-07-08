@@ -10,7 +10,6 @@ import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.display.*;
 import whyxzee.blackboard.math.pure.algebra.AlgebraUtils;
 import whyxzee.blackboard.math.pure.algebra.solver.AlgebraSolver;
-import whyxzee.blackboard.math.pure.combinatorics.CombinatoricsUtils;
 import whyxzee.blackboard.math.pure.equations.*;
 import whyxzee.blackboard.math.pure.equations.terms.*;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
@@ -32,10 +31,9 @@ public class Debugger {
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
                 /* Math Debugging */
-                TermArray lTerms = new TermArray(
-                                new TrigTerm(2, xVar, 2, TrigType.SIN),
-                                new PowerTerm(15));
-                TermArray rTerms = new TermArray(new PowerTerm(1));
+                TermArray terms = new TermArray(
+                                new PowerTerm(1, xVar),
+                                new PowerTerm(-15));
 
                 display.appendScript(
                                 AlgebraSolver.performOp("x", lTerms, rTerms),

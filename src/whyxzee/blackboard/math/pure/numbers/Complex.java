@@ -9,7 +9,7 @@ import whyxzee.blackboard.utils.NumberUtils;
 /**
  * All Complex objects default to COMPLEX unless specificied.
  */
-public class Complex {
+public class Complex implements Comparable<Complex> {
     /* Variables */
     private BNum a;
     private BNum b;
@@ -944,5 +944,27 @@ public class Complex {
         return NumberUtils.precisionCheck(a.getValue(), other.getA().getValue())
                 && NumberUtils.precisionCheck(b.getValue(), other.getB().getValue());
     }
+
+    public static final boolean inClosedRange(Object argLBound, Object argMiddle, Object argUBound) {
+        // TODO: what if not the same type?
+        Complex lBound = Complex.fromObj(argLBound);
+        Complex middle = Complex.fromObj(argMiddle);
+        Complex uBound = Complex.fromObj(argUBound);
+
+        boolean reRange = BNum.inClosedRange(lBound.getA(), middle.getA(), uBound.getA());
+        boolean imRange = BNum.inClosedRange(lBound.getB(), middle.getB(), uBound.getB());
+        return reRange && imRange;
+    }
+
+    @Override
+    public int compareTo(Complex arg0) {
+        if (a.compareTo(arg0.getA()) < 0 || b.compareTo(arg0.getB()) < 0) {
+            return -1;
+        } else if (a.compareTo(arg0.getA()) > 0 || b.compareTo(arg0.getB()) > 0) {
+            return 1;
+        }
+        return 0;
+    }
     // #endregion
+
 }

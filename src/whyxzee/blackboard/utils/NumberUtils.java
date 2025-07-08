@@ -2,7 +2,6 @@ package whyxzee.blackboard.utils;
 
 import whyxzee.blackboard.Constants;
 import whyxzee.blackboard.math.pure.numbers.Complex;
-import whyxzee.blackboard.math.pure.numbers.NumberTheory;
 import whyxzee.blackboard.math.pure.numbers.Complex.ComplexType;
 import whyxzee.blackboard.math.pure.numbers.BNum;
 
@@ -129,7 +128,7 @@ public final class NumberUtils {
             return Integer.toString((int) value - 1);
         }
 
-        if (!NumberTheory.isInteger(value)) {
+        if (value % 1 != 0) {
             // can be represented by a fraction
             return toFraction(value, sigFigs);
 
@@ -183,8 +182,10 @@ public final class NumberUtils {
         for (int i = 2; i < Constants.Number.MAX_PRIME_NUMBER + 1; i++) {
             for (int j = 1; j < i; j++) {
                 if (withinEpsilon((double) j / i, valToFind, epsilon)) {
-                    return integer + UnicodeUtils.intToSuperscript(j) + Constants.Unicode.FRACTION_SLASH
-                            + UnicodeUtils.intToSubscript(i);
+                    // return integer + UnicodeUtils.intToSuperscript(j) +
+                    // Constants.Unicode.FRACTION_SLASH
+                    // + UnicodeUtils.intToSubscript(i);
+                    return integer + " " + j + "/" + i;
                 }
             }
         }

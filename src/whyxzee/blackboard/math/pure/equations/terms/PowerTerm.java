@@ -2,6 +2,8 @@ package whyxzee.blackboard.math.pure.equations.terms;
 
 import whyxzee.blackboard.math.pure.equations.MathEQ;
 import whyxzee.blackboard.math.pure.equations.TermArray;
+import whyxzee.blackboard.math.pure.equations.terms.TermData.TermType;
+import whyxzee.blackboard.math.pure.equations.terms.data.SimpleTerm;
 import whyxzee.blackboard.math.pure.equations.variables.Variable;
 import whyxzee.blackboard.math.pure.numbers.Complex;
 
@@ -22,6 +24,7 @@ public class PowerTerm {
     private Complex coef;
     private Variable<?> var;
     private Complex power;
+    private TermData data;
 
     // #region Constructors
     /**
@@ -64,6 +67,20 @@ public class PowerTerm {
         this.power = Complex.fromObj(power);
         simplify();
     }
+
+    public PowerTerm(Complex coef, Variable<?> var, Complex power, TermData data) {
+        this.coef = coef;
+        this.var = var;
+        this.power = power;
+        this.data = data;
+    }
+    // #endregion
+
+    // #region Factory
+    public static final PowerTerm powTerm(Complex coef, Variable<?> var, Complex power) {
+        SimpleTerm data = new SimpleTerm(TermType.POWER);
+        return new PowerTerm(coef, var, power, data);
+    }
     // #endregion
 
     // #region String / Display
@@ -102,14 +119,14 @@ public class PowerTerm {
 
         /* Variable + power */
         if (power.equals(1)) {
-            output += termString();
+            output += data.termString(var.toString());
         } else if (!power.isZero()) {
             // power not one nor zero
 
             if (var.isUSub() || this.getClass() != PowerTerm.class) {
-                output += "(" + termString() + ")";
+                output += "(" + data.termString(var.toString()) + ")";
             } else {
-                output += termString();
+                output += data.termString(var.toString());
             }
             output += "^(" + power + ")";
         }
@@ -125,7 +142,6 @@ public class PowerTerm {
     public final boolean needsNegString() {
         return coef.isANegative() && coef.isBZero() // real negative
                 || coef.isBNegative() && coef.isAZero(); // imaginary negative
-
     }
 
     /**
@@ -166,38 +182,37 @@ public class PowerTerm {
 
         /* Variable + power */
         if (power.equals(1)) {
-            output += termString();
+            output += data.termString(var.toString());
         } else if (!power.isZero()) {
             // power not one nor zero
 
             if (var.isUSub() || this.getClass() != PowerTerm.class) {
-                output += "(" + termString() + ")";
+                output += "(" + data.termString(var.toString()) + ")";
             } else {
-                output += termString();
+                output += data.termString(var.toString());
             }
             output += "^(" + power + ")";
         }
 
         return output;
     }
-
-    /**
-     * The String for term-specific content.
-     * 
-     * @return
-     */
-    public String termString() {
-        return var.toString();
-    }
     // #endregion
 
     // #region Copying / Cloning
+    public void copy(PowerTerm o) {
+        this.coef = o.getCoef().clone();
+        this.var = o.getVar().clone();
+        this.power = o.getPower().clone();
+        this.data = o.getData().clone();
+    }
+
     public PowerTerm clone() {
         return new PowerTerm(coef.clone(), var.clone(), power.clone());
     }
     // #endregion
 
     // #region Conversion Methods
+    @Deprecated
     public final TermArray toTermArray() {
         return new TermArray(this);
     }
@@ -268,7 +283,7 @@ public class PowerTerm {
      * Performs a deep copy of the PowerTerm with the coefficient * -1.
      */
     public PowerTerm negate() {
-        return new PowerTerm(coef.negate(), var.clone(), power.clone());
+        return new PowerTerm(coef.negate(), var.clone(), power.clone(), data.clone());
     }
     // #endregion
 
@@ -357,6 +372,16 @@ public class PowerTerm {
     }
     // #endregion
 
+    // #region Data
+    public final TermData getData() {
+        return data;
+    }
+
+    public final void setData(TermData data) {
+        this.data = data;
+    }
+    // #endregion
+
     // #region Solve
     public PowerTerm solve(String variable, PowerTerm value) {
         if (var.equals(Variable.noVar)) {
@@ -382,16 +407,8 @@ public class PowerTerm {
      * @param addend
      * @return
      */
-    public boolean isAddend(PowerTerm addend) {
-        if (addend.getClass() != PowerTerm.class) {
-            return false;
-        }
-
-        if (!var.equals(addend.getVar()) || !power.equals(addend.getPower())) {
-            return false;
-        }
-
-        return true;
+    public final boolean isAddend(PowerTerm addend) {
+        return data.isAddend(this, addend);
     }
 
     /**
@@ -403,8 +420,8 @@ public class PowerTerm {
      * 
      * @param addend
      */
-    public void add(PowerTerm addend) {
-        addToCoef(addend.getCoef());
+    public final void add(PowerTerm addend) {
+        this.copy(data.add(this, addend));
     }
     // #endregion
 
@@ -415,12 +432,8 @@ public class PowerTerm {
      * @param factor
      * @return
      */
-    public boolean isFactor(PowerTerm factor) {
-        if (factor.getClass() != PowerTerm.class) {
-            return false;
-        }
-
-        return var.equals(factor.getVar());
+    public final boolean isFactor(PowerTerm factor) {
+        return data.isFactor(this, factor);
     }
 
     /**
@@ -432,9 +445,8 @@ public class PowerTerm {
      * 
      * @param factor
      */
-    public void multiply(PowerTerm factor) {
-        multiplyCoefBy(factor.getCoef());
-        addToPower(factor.getPower());
+    public final void multiply(PowerTerm factor) {
+        this.copy(data.multiply(this, factor));
     }
     // #endregion
 
@@ -480,13 +492,6 @@ public class PowerTerm {
     // #endregion
 
     // #region Comparison Bools
-    public final boolean similarTo(PowerTerm other) {
-        if (!var.equals(other.getVar()) || !power.equals(other.getPower())) {
-            return false;
-        }
-        return true;
-    }
-
     /**
      * Override equals method for various methods that utilize the equals(Object)
      * method.
@@ -497,15 +502,7 @@ public class PowerTerm {
     @Override
     public final boolean equals(Object arg) {
         if (arg instanceof PowerTerm) {
-            PowerTerm other = (PowerTerm) arg;
-            if (getClass() != other.getClass()) {
-                return false;
-            }
-
-            return var.equals(other.getVar())
-                    && power.equals(other.getPower())
-                    && coef.equals(other.getCoef())
-                    && equalsCriteria(other);
+            return data.equals(this, (PowerTerm) arg);
         }
         return false;
     }
