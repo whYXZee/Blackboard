@@ -83,8 +83,6 @@ public final class Constants {
         public static final String INFINITESIMAL = "d";
 
         /* General */
-        public static final char FRACTION_SLASH = '\u2044';
-        public static final char IMAGINARY_NUMBER = 'i';
         public static final char INTEGRAL = '\u222B';
         public static final char PLUS_MINUS = '\u00B1';
         public static final char THEREFORE = '\u061E';
