@@ -19,6 +19,7 @@ public class Term {
      * @param data
      */
     public Term(BNum coef, Variable<?> var, BNum power, TermData data) {
+        this is a test lol
         this.coef = coef;
         this.var = var;
         this.power = power;
